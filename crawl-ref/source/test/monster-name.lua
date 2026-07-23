@@ -96,7 +96,7 @@ local name_checks = {
     { "a", crawl.jtrans("kobold") .. "のDurwentの" ..
            crawl.jtrans("corpse") } },
   { "kobold name:wearing_mittens name_suffix",
-    { "a", crawl.jtrans("kobold") .. " wearing mittens" },
+    { "a", crawl.jtrans("kobold") .. "wearing mittens" },
     body("kobold") },
   { "gnoll name:gnoll_lieutenant name_replace name_descriptor name_species",
     { "a", "gnoll lieutenant" },
