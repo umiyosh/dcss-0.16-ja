@@ -99,7 +99,7 @@ unless ($db)
     open IN, "util/cpp_version spl-summoning.cc|" or die "Can't read spl-summoning.cc\n";
     while (<IN>)
     {
-        $mons{$1} = 1 if (/^    { MONS_[A-Z0-9_]+, "([A-Za-z0-9 ']+)" },$/);
+        $mons{$1} = 1 if (/^    \{ MONS_[A-Z0-9_]+, "([A-Za-z0-9 ']+)" \},$/);
     }
     close IN;
 }
