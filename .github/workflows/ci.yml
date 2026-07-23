@@ -156,6 +156,8 @@ jobs:
         shell: bash
         working-directory: crawl-ref/source
         run: |
+          # Upstream Lua assertions use canonical English object names.
+          export CRAWL='timeout 595 ./crawl -seed 1 -no-save -name test -wizard -no-throttle -extra-opt-last language=en'
           if [[ -n "$FULLDEBUG" ]]; then
             make test
           else
