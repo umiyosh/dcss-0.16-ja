@@ -1,5 +1,9 @@
 local place = dgn.point(20, 20)
 
+local function body(monster)
+  return crawl.jtrans(monster) .. "の" .. crawl.jtrans("corpse")
+end
+
 debug.goto_place("D:2")
 dgn.reset_level()
 
@@ -79,26 +83,31 @@ end
 -- 3. Optionally, the expected item name for DESC_PLAIN or a table of
 --    item description type and expected item name.
 local name_checks = {
-  { "griffon", { "the", "the griffon" }, { "a", "a griffon corpse" } },
+  { "griffon", { "the", crawl.jtrans("griffon") },
+    { "a", body("griffon") } },
   { "kobold name:ugly name_adjective",
-    { "a", "an ugly kobold" } },
+    { "a", "ugly " .. crawl.jtrans("kobold") } },
   { "kobold name:ugly name_adjective",
-    { "the", "the ugly kobold" } },
-  { "kobold name:ugly n_adj n_spe", "ugly kobold", "ugly kobold corpse" },
+    { "the", "ugly " .. crawl.jtrans("kobold") } },
+  { "kobold name:ugly n_adj n_spe", "ugly " .. crawl.jtrans("kobold"),
+    "ugly" .. body("kobold") },
   { "kobold name:Durwent",
-    { "a", "Durwent the kobold" },
-    { "a", "the kobold corpse of Durwent" } },
+    { "a", crawl.jtrans("kobold") .. "『Durwent』" },
+    { "a", crawl.jtrans("kobold") .. "のDurwentの" ..
+           crawl.jtrans("corpse") } },
   { "kobold name:wearing_mittens name_suffix",
-    { "a", "a kobold wearing mittens" },
-    "kobold corpse" },
+    { "a", crawl.jtrans("kobold") .. " wearing mittens" },
+    body("kobold") },
   { "gnoll name:gnoll_lieutenant name_replace name_descriptor name_species",
-    { "a", "a gnoll lieutenant" },
-    { "a", "a gnoll lieutenant corpse" } },
+    { "a", "gnoll lieutenant" },
+    { "a", "gnoll lieutenantの" .. crawl.jtrans("corpse") } },
   { "gnoll name:gnoll_lieutenant name_replace name_descriptor",
-    { "a", "a gnoll lieutenant" },
-    -- [ds] FIXME: this should probably be just "a gnoll corpse"
-    { "a", "a gnoll corpse of gnoll lieutenant" } },
+    { "a", "gnoll lieutenant" },
+    { "a", crawl.jtrans("gnoll") .. "のgnoll lieutenantの" ..
+           crawl.jtrans("corpse") } },
 }
 check_names(name_checks)
 
-test.eq(itemname("hydra chunk q:10"), "10 poisonous chunks of flesh")
+test.eq(itemname("hydra chunk q:10"),
+        "10個の" .. crawl.jtrans("poisonous") ..
+          crawl.jtrans("chunk of flesh"))
