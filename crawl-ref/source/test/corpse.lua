@@ -6,6 +6,10 @@ local p = dgn.point(20, 20)
 
 debug.goto_place("Depths:2")
 
+local function body(monster, kind)
+  return crawl.jtrans(monster) .. "の" .. crawl.jtrans(kind)
+end
+
 local function ok(corpse, pattern)
   dgn.reset_level()
   dgn.fill_grd_area(1, 1, dgn.GXM - 2, dgn.GYM - 2, 'floor')
@@ -31,12 +35,12 @@ local function fail(corpse, pattern)
 end
 
 -- All set up!
-ok("hydra corpse")
-ok("hippogriff skeleton")
+ok("hydra corpse", body("hydra", "corpse"))
+ok("hippogriff skeleton", body("hippogriff", "skeleton"))
 for i = 1,100 do
-  ok("any corpse", "corpse")
+  ok("any corpse", crawl.jtrans("corpse"))
 end
-ok("rat chunk", "chunk of flesh")
+ok("rat chunk", crawl.jtrans("chunk of flesh"))
 fail("zombie chunk")
 fail("giant eyeball corpse")
-ok("orc warrior corpse", "orc corpse")
+ok("orc warrior corpse", body("orc", "corpse"))

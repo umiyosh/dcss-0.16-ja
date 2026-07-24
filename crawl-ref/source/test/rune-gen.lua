@@ -1,12 +1,19 @@
 local niters = 20
 
+local function rune_name(item)
+  if item == "Orb of Zot" then
+    return crawl.jtrans(item)
+  end
+  return crawl.jtrans(item .. " of Zot")
+end
+
 local function test_item_level(place, item, nlevels)
   debug.goto_place(place)
   for i = 1, nlevels do
     crawl.message(place .. " rune test " .. i .. " of " .. nlevels)
     crawl.delay(0)
     test.regenerate_level()
-    test.map_assert(test.level_contains_item(item),
+    test.map_assert(test.level_contains_item(rune_name(item)),
                     "No " .. item .. " created at " .. place)
   end
 end

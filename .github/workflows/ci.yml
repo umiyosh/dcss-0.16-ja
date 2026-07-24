@@ -1,0 +1,174 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.compiler.name }} / ${{ matrix.variant.name }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - name: GCC
+            cc: gcc
+            cxx: g++
+          - name: Clang
+            cc: clang
+            cxx: clang++
+        variant:
+          - name: Console
+            full_debug: ""
+            tiles: ""
+            webtiles: ""
+            use_dgamelaunch: ""
+            build_all: ""
+          - name: Console (debug)
+            full_debug: "1"
+            tiles: ""
+            webtiles: ""
+            use_dgamelaunch: ""
+            build_all: ""
+          - name: Tiles
+            full_debug: ""
+            tiles: "1"
+            webtiles: ""
+            use_dgamelaunch: ""
+            build_all: ""
+          - name: Tiles (debug)
+            full_debug: "1"
+            tiles: "1"
+            webtiles: ""
+            use_dgamelaunch: ""
+            build_all: ""
+          - name: Webtiles
+            full_debug: ""
+            tiles: ""
+            webtiles: "1"
+            use_dgamelaunch: ""
+            build_all: ""
+          - name: Webtiles (debug)
+            full_debug: "1"
+            tiles: ""
+            webtiles: "1"
+            use_dgamelaunch: ""
+            build_all: ""
+          - name: DGL
+            full_debug: ""
+            tiles: ""
+            webtiles: ""
+            use_dgamelaunch: "1"
+            build_all: ""
+          - name: DGL Webtiles
+            full_debug: ""
+            tiles: ""
+            webtiles: "1"
+            use_dgamelaunch: "1"
+            build_all: ""
+          - name: Tiles (bundled dependencies)
+            full_debug: ""
+            tiles: "1"
+            webtiles: ""
+            use_dgamelaunch: ""
+            build_all: "1"
+          - name: Webtiles (bundled dependencies)
+            full_debug: ""
+            tiles: ""
+            webtiles: "1"
+            use_dgamelaunch: ""
+            build_all: "1"
+    env:
+      CC: ${{ matrix.compiler.cc }}
+      CXX: ${{ matrix.compiler.cxx }}
+      FORCE_CC: ${{ matrix.compiler.cc }}
+      FORCE_CXX: ${{ matrix.compiler.cxx }}
+      FULLDEBUG: ${{ matrix.variant.full_debug }}
+      TILES: ${{ matrix.variant.tiles }}
+      WEBTILES: ${{ matrix.variant.webtiles }}
+      USE_DGAMELAUNCH: ${{ matrix.variant.use_dgamelaunch }}
+      BUILD_ALL: ${{ matrix.variant.build_all }}
+      # The legacy Makefile uses this flag to shorten stress-test timeouts in CI.
+      TRAVIS: "1"
+      TERM: dumb
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          packages=(
+            build-essential
+            clang
+            gdb
+            libfreetype6-dev
+            liblua5.1-0-dev
+            libncurses-dev
+            libpng-dev
+            libsdl2-dev
+            libsdl2-image-dev
+            libsdl2-mixer-dev
+            pkg-config
+          )
+          if [[ -n "$BUILD_ALL" ]]; then
+            packages+=(
+              libasound2-dev
+              libegl1-mesa-dev
+              libxss-dev
+            )
+          fi
+          sudo apt-get update
+          sudo apt-get install --yes "${packages[@]}"
+
+      - name: Check out bundled dependencies
+        if: matrix.variant.build_all != ''
+        shell: bash
+        run: |
+          git config --global url."https://github.com/".insteadOf git://github.com/
+          git submodule update --init --recursive
+
+      - name: Initialize build version
+        working-directory: crawl-ref/source
+        run: printf '%s\n' 'v0.0-a0' > util/release_ver
+
+      - name: Build
+        shell: bash
+        working-directory: crawl-ref/source
+        run: |
+          if [[ -n "$FULLDEBUG" ]]; then
+            make -j2 debug
+          else
+            make -j2
+          fi
+
+      - name: Test
+        if: matrix.variant.tiles == ''
+        shell: bash
+        working-directory: crawl-ref/source
+        run: |
+          if [[ -n "$FULLDEBUG" ]]; then
+            make test
+          else
+            make nondebugtest
+          fi
+
+      - name: Print crash reports
+        if: failure()
+        shell: bash
+        working-directory: crawl-ref/source
+        run: |
+          shopt -s nullglob
+          crash_reports=(morgue/crash-*.txt)
+          if (( ${#crash_reports[@]} > 0 )); then
+            cat "${crash_reports[@]}"
+          fi
