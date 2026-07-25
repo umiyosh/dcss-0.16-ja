@@ -172,3 +172,77 @@ jobs:
           if (( ${#crash_reports[@]} > 0 )); then
             cat "${crash_reports[@]}"
           fi
+
+  build-macos:
+    name: macOS / ${{ matrix.variant.name }}
+    runs-on: macos-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        variant:
+          - name: Console
+            tiles: ""
+          - name: Tiles
+            tiles: "1"
+    env:
+      TILES: ${{ matrix.variant.tiles }}
+      TERM: dumb
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          # Console links the system ncurses and needs nothing extra. Tiles
+          # cannot use the bundled SDL2: it is a 2014 snapshot that no longer
+          # compiles with a current clang.
+          if [[ -n "$TILES" ]]; then
+            brew install pkg-config sdl2 sdl2_image freetype libpng
+          fi
+
+      - name: Check out bundled dependencies
+        shell: bash
+        run: |
+          # macOS ships no lua 5.1 or sqlite development files, so those two
+          # contribs are always built. The .gitmodules URLs still use git://,
+          # which GitHub dropped, hence the rewrite.
+          git config --global url."https://github.com/".insteadOf git://github.com/
+          git submodule update --init \
+            crawl-ref/source/contrib/lua \
+            crawl-ref/source/contrib/sqlite
+
+      - name: Initialize build version
+        working-directory: crawl-ref/source
+        run: printf '%s\n' 'v0.0-a0' > util/release_ver
+
+      - name: Build
+        shell: bash
+        working-directory: crawl-ref/source
+        run: |
+          # NO_APPLE_GCC=y skips the Apple block, whose SDK version detection
+          # does not understand a versionless MacOSX.sdk.
+          if [[ -n "$TILES" ]]; then
+            make TILES=y NO_APPLE_GCC=y \
+                 NO_PKGCONFIG= BUILD_SDL2= BUILD_SDL2IMAGE= \
+                 BUILD_FREETYPE= BUILD_LIBPNG= -j3
+          else
+            make NO_APPLE_GCC=y -j3
+          fi
+
+      - name: Check the binary runs
+        shell: bash
+        working-directory: crawl-ref/source
+        run: ./crawl --version
+
+      - name: Print crash reports
+        if: failure()
+        shell: bash
+        working-directory: crawl-ref/source
+        run: |
+          shopt -s nullglob
+          crash_reports=(morgue/crash-*.txt)
+          if (( ${#crash_reports[@]} > 0 )); then
+            cat "${crash_reports[@]}"
+          fi

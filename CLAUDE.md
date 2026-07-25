@@ -45,8 +45,12 @@ make -C crawl-ref/source nondebugtest    # 非debugビルド向け（-test は�
    git submodule update --init --recursive
    ```
 
-macOS でのフルビルド成功は未確認。CI は ubuntu-22.04 + apt の native ライブラリで回している。
-ビルド確認が目的なら CI に任せるのが早い。
+macOS では contrib のうち lua と sqlite だけが必要（他は system / Homebrew 側を使う）なので、
+submodule も次の 2 つを取れば足りる。
+
+```bash
+git submodule update --init crawl-ref/source/contrib/lua crawl-ref/source/contrib/sqlite
+```
 
 ### テスト
 
@@ -205,11 +209,15 @@ CI・テスト・ビルド周りの変更のみ英語の Conventional Commits（
 
 ## CI
 
-`.github/workflows/ci.yml`（Travis からは移行済み）。ubuntu-22.04 上で
-GCC × Clang の 2 コンパイラ × 10 バリアント（Console / Tiles / Webtiles / DGL、
-それぞれ debug 有無、bundled dependencies 版）のマトリクスをビルドする。
-Tiles 以外のバリアントでは `make test`（debug）または `make nondebugtest` も実行される。
-`develop` への push と PR で起動。
+`.github/workflows/ci.yml`（Travis からは移行済み）。`develop` への push と PR で起動する。
+
+`build` ジョブは ubuntu-22.04 上で GCC × Clang の 2 コンパイラ × 10 バリアント
+（Console / Tiles / Webtiles / DGL、それぞれ debug 有無、bundled dependencies 版）を
+ビルドする。Tiles 以外のバリアントでは `make test`（debug）または `make nondebugtest` も走る。
+
+`build-macos` ジョブは macos-latest（arm64）で Console と Tiles をビルドし、
+`./crawl --version` が動くところまで確認する。テストを回さないのは
+`util/fake_pty.c` が macOS でビルドできず（Issue #7）、`crawl -test` も失敗する（Issue #6）ため。
 
 ## AGENTS.md との関係
 
