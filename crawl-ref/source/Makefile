@@ -942,6 +942,20 @@ ifdef TILES
 OUR_PROPORTIONAL_FONT=DejaVuSans.ttf
 OUR_MONOSPACED_FONT=DejaVuSansMono.ttf
 
+# Every string this fork displays is Japanese, and DejaVu contains no CJK
+# glyphs at all, so tiles builds rendered every one of them as the
+# MISSING_CHAR placeholder. Default to the bundled HackGen (SIL OFL 1.1,
+# see ../docs/license/hackgen-LICENSE.txt) instead; it covers the whole
+# translation corpus and keeps a full width to half width ratio of exactly
+# 2:1, which is what the tile grid assumes. It lives in dat/tiles/, the same
+# directory fonts are installed into, so the compiled-in path resolves for
+# source tree runs, `make install` and the macOS app bundle alike.
+# Pass PROPORTIONAL_FONT=/path/to/font.ttf to override, or an empty value to
+# fall back to searching the system for DejaVu.
+BUNDLED_FONT = dat/tiles/HackGenConsole-Regular.ttf
+PROPORTIONAL_FONT ?= $(BUNDLED_FONT)
+MONOSPACED_FONT ?= $(BUNDLED_FONT)
+
 ifdef PROPORTIONAL_FONT
   DEFINES += -DPROPORTIONAL_FONT=\"$(PROPORTIONAL_FONT)\"
   ifneq (,$(COPY_FONTS))
@@ -1442,6 +1456,7 @@ endif
 ifdef TILES
 	mkdir -p $(datadir_fp)/dat/tiles
 	$(COPY) dat/tiles/*.png $(datadir_fp)/dat/tiles/
+	$(COPY) dat/tiles/*.ttf $(datadir_fp)/dat/tiles/
 ifneq (,$(INSTALL_FONTS))
 	$(COPY) $(INSTALL_FONTS) $(datadir_fp)/dat/tiles/
 endif
