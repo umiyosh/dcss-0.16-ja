@@ -58,6 +58,28 @@
 #ifndef __included_cc_platform_detect_h
 #define __included_cc_platform_detect_h
 
+/* Apple's <TargetConditionals.h> defines every TARGET_CPU_* and TARGET_OS_*
+ * it knows about as either 0 or 1, but the detection below tests whether
+ * they are *defined* at all.  Without this, a modern macOS SDK makes us
+ * believe we are building for Windows (TARGET_OS_WINDOWS 0) on a PowerPC
+ * (TARGET_CPU_PPC 0).  The header has an include guard, so undefining the
+ * names here keeps them undefined for the rest of the translation unit. */
+#if defined (__APPLE__)
+#include <TargetConditionals.h>
+#undef TARGET_CPU_68K
+#undef TARGET_CPU_ALPHA
+#undef TARGET_CPU_ARM
+#undef TARGET_CPU_ARM64
+#undef TARGET_CPU_MIPS
+#undef TARGET_CPU_PPC
+#undef TARGET_CPU_PPC64
+#undef TARGET_CPU_SPARC
+#undef TARGET_CPU_X86
+#undef TARGET_CPU_X86_64
+#undef TARGET_OS_LINUX
+#undef TARGET_OS_WINDOWS
+#endif
+
 #undef PROCESSOR_DETECTED
 #undef COMPILER_DETECTED
 #undef OS_DETECTED
@@ -76,6 +98,15 @@
 #if defined (__arm__)
 #define PROCESSOR_DETECTED
 #define TARGET_CPU_ARM
+#endif
+#endif
+
+/* AArch64 (Apple Silicon and friends) */
+#if !defined (PROCESSOR_DETECTED)
+#if defined (__aarch64__) || defined (_M_ARM64)
+#define PROCESSOR_DETECTED
+#define TARGET_CPU_ARM64
+#define TARGET_LITTLE_ENDIAN
 #endif
 #endif
 

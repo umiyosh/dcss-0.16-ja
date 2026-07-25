@@ -215,19 +215,27 @@ ifeq ($(uname_S),Darwin)
 	LIBNCURSES_IS_UNICODE = Yes
 	NO_PKGCONFIG = Yes
 	BUILD_SQLITE = YesPlease
-	BUILD_ZLIB = YesPlease
+	# The bundled zlib is a 2014 snapshot whose K&R definitions no longer
+	# compile, and macOS ships zlib in the SDK, so link that instead.
+	# Pass BUILD_ZLIB=y to go back to the contrib copy.
 	ifdef TILES
-		EXTRA_LIBS += -framework AppKit -framework AudioUnit -framework CoreAudio -framework ForceFeedback -framework Carbon -framework IOKit -framework OpenGL contrib/install/$(ARCH)/lib/libSDL2main.a
+		EXTRA_LIBS += -framework AppKit -framework AudioUnit -framework CoreAudio -framework ForceFeedback -framework Carbon -framework IOKit -framework OpenGL
 		BUILD_FREETYPE = YesPlease
 		BUILD_SDL2 = YesPlease
 		BUILD_SDL2IMAGE = YesPlease
 		ifdef SOUND
-			ifndef WIN32 
+			ifndef WIN32
 				BUILD_SDL2MIXER = YesPlease
 			endif
 		endif
 		BUILD_LIBPNG = YesPlease
 		COPY_FONTS = yes
+		# The bundled contribs predate Apple Silicon; passing BUILD_SDL2= on
+		# the command line switches to a system SDL2 instead, in which case
+		# pkg-config supplies -lSDL2main for us.
+		ifdef BUILD_SDL2
+			EXTRA_LIBS += contrib/install/$(ARCH)/lib/libSDL2main.a
+		endif
 	endif
 endif
 ifdef USE_ICC
@@ -934,6 +942,20 @@ ifdef TILES
 OUR_PROPORTIONAL_FONT=DejaVuSans.ttf
 OUR_MONOSPACED_FONT=DejaVuSansMono.ttf
 
+# Every string this fork displays is Japanese, and DejaVu contains no CJK
+# glyphs at all, so tiles builds rendered every one of them as the
+# MISSING_CHAR placeholder. Default to the bundled HackGen (SIL OFL 1.1,
+# see ../docs/license/hackgen-LICENSE.txt) instead; it covers the whole
+# translation corpus and keeps a full width to half width ratio of exactly
+# 2:1, which is what the tile grid assumes. It lives in dat/tiles/, the same
+# directory fonts are installed into, so the compiled-in path resolves for
+# source tree runs, `make install` and the macOS app bundle alike.
+# Pass PROPORTIONAL_FONT=/path/to/font.ttf to override, or an empty value to
+# fall back to searching the system for DejaVu.
+BUNDLED_FONT = dat/tiles/HackGenConsole-Regular.ttf
+PROPORTIONAL_FONT ?= $(BUNDLED_FONT)
+MONOSPACED_FONT ?= $(BUNDLED_FONT)
+
 ifdef PROPORTIONAL_FONT
   DEFINES += -DPROPORTIONAL_FONT=\"$(PROPORTIONAL_FONT)\"
   ifneq (,$(COPY_FONTS))
@@ -1434,6 +1456,7 @@ endif
 ifdef TILES
 	mkdir -p $(datadir_fp)/dat/tiles
 	$(COPY) dat/tiles/*.png $(datadir_fp)/dat/tiles/
+	$(COPY) dat/tiles/*.ttf $(datadir_fp)/dat/tiles/
 ifneq (,$(INSTALL_FONTS))
 	$(COPY) $(INSTALL_FONTS) $(datadir_fp)/dat/tiles/
 endif

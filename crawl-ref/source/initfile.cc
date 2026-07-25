@@ -644,13 +644,9 @@ void game_options::set_activity_interrupt(const string &activity_name,
     eints.set(AI_FORCE_INTERRUPT);
 }
 
-#if defined(DGAMELAUNCH)
-static string _resolve_dir(const char* path, const char* suffix)
-{
-    return catpath(path, "");
-}
-#else
-
+// AppHdr.h defines DGAMELAUNCH for every UNIX build in this fork, but the
+// macOS branch of reset_options() still needs the home directory helpers.
+#if !defined(DGAMELAUNCH) || defined(TARGET_OS_MACOSX)
 static string _user_home_dir()
 {
 #ifdef TARGET_OS_WINDOWS
@@ -672,7 +668,14 @@ static string _user_home_subpath(const string subpath)
 {
     return catpath(_user_home_dir(), subpath);
 }
+#endif
 
+#if defined(DGAMELAUNCH)
+static string _resolve_dir(const char* path, const char* suffix)
+{
+    return catpath(path, "");
+}
+#else
 static string _resolve_dir(const char* path, const char* suffix)
 {
     if (path[0] != '~')
