@@ -215,19 +215,27 @@ ifeq ($(uname_S),Darwin)
 	LIBNCURSES_IS_UNICODE = Yes
 	NO_PKGCONFIG = Yes
 	BUILD_SQLITE = YesPlease
-	BUILD_ZLIB = YesPlease
+	# The bundled zlib is a 2014 snapshot whose K&R definitions no longer
+	# compile, and macOS ships zlib in the SDK, so link that instead.
+	# Pass BUILD_ZLIB=y to go back to the contrib copy.
 	ifdef TILES
-		EXTRA_LIBS += -framework AppKit -framework AudioUnit -framework CoreAudio -framework ForceFeedback -framework Carbon -framework IOKit -framework OpenGL contrib/install/$(ARCH)/lib/libSDL2main.a
+		EXTRA_LIBS += -framework AppKit -framework AudioUnit -framework CoreAudio -framework ForceFeedback -framework Carbon -framework IOKit -framework OpenGL
 		BUILD_FREETYPE = YesPlease
 		BUILD_SDL2 = YesPlease
 		BUILD_SDL2IMAGE = YesPlease
 		ifdef SOUND
-			ifndef WIN32 
+			ifndef WIN32
 				BUILD_SDL2MIXER = YesPlease
 			endif
 		endif
 		BUILD_LIBPNG = YesPlease
 		COPY_FONTS = yes
+		# The bundled contribs predate Apple Silicon; passing BUILD_SDL2= on
+		# the command line switches to a system SDL2 instead, in which case
+		# pkg-config supplies -lSDL2main for us.
+		ifdef BUILD_SDL2
+			EXTRA_LIBS += contrib/install/$(ARCH)/lib/libSDL2main.a
+		endif
 	endif
 endif
 ifdef USE_ICC
