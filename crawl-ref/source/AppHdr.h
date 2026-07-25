@@ -109,11 +109,13 @@ static inline double pow(int x, double y) { return std::pow((double)x, y); }
 // =========================================================================
 
 #ifdef UNIX
-    // Uncomment if you're running Crawl with dgamelaunch and have
-    // problems viewing games in progress. This affects how Crawl
-    // clears the screen (see DGL_CLEAR_SCREEN) below.
+    // Defining DGAMELAUNCH hands name entry and save selection to an external
+    // launcher, which removes the startup menu and the name prompt from the
+    // build: a local build can then never start a game. Build server binaries
+    // with `make USE_DGAMELAUNCH=y` instead, which defines it from the
+    // Makefile and also affects how Crawl clears the screen (DGL_CLEAR_SCREEN).
     //
-    #define DGAMELAUNCH
+    // #define DGAMELAUNCH
 
     #define USE_UNIX_SIGNALS
 
