@@ -19,10 +19,21 @@
 #include "tilefont.h"
 #include "unicode.h"
 
-// maximum number of unique glyphs that can be rendered with this font at once; e.g. 4096, 256, 36
-#define MAX_GLYPHS 256
+// Maximum number of unique glyphs that can be rendered with this font at once.
+//
+// A cell that gets recycled is overwritten immediately, but the quads that
+// reference it are only drawn later: FontBuffer keeps cell indices, and its
+// owner rebuilds it just once, when its text changes (see TextItem::render).
+// So a cell has to stay valid from the moment a buffer is built until that
+// buffer is rebuilt, which may be many frames and many other buffers later.
+// Recycling anything still referenced draws the wrong character.
+//
+// 256 is plenty for the 95 printable ASCII glyphs upstream needs, but this
+// fork renders Japanese: the command help alone uses 453 distinct characters.
+// 1024 leaves room for a dense screen with the ASCII precache on top.
+#define MAX_GLYPHS 1024
 // dimensions of glyph grid; GLYPHS_PER_ROWCOL^2 <= MAX_GLYPHS; e.g. 64, 16, 6
-#define GLYPHS_PER_ROWCOL 16
+#define GLYPHS_PER_ROWCOL 32
 // char to use if we can't find it in the font (upside-down question mark)
 #define MISSING_CHAR 0xbf
 
