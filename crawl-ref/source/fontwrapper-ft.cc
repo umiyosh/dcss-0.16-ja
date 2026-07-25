@@ -32,6 +32,17 @@
 # define dprintf(...) (void)0
 #endif
 
+// FreeType 26.6 fixed point to whole pixels, rounding outwards.
+static int _ft_floor(FT_Pos value)
+{
+    return value >> 6;
+}
+
+static int _ft_ceil(FT_Pos value)
+{
+    return (value + 63) >> 6;
+}
+
 FontWrapper* FontWrapper::create()
 {
     return new FTFontWrapper();
@@ -112,8 +123,16 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size,
     m_max_advance.x = metrics.max_advance >> 6;
     m_max_advance.y = (metrics.ascender-metrics.descender)>>6;
     m_ascender      = (metrics.ascender>>6);
-    m_max_width     = (face->bbox.xMax >> 6) - (face->bbox.xMin >> 6);
-    m_max_height    = (face->bbox.yMax>>6)-(face->bbox.yMin>>6);//m_max_advance.y;
+    // face->bbox is in font design units, so it has to be scaled to the size
+    // we just requested. A bare >> 6 is only large enough by accident, when
+    // units_per_EM happens to be around 2048 as it is for DejaVu; a face with
+    // units_per_EM 1024 ends up with cells half the size it needs, and the
+    // glyphs get cut off. Round outwards so a cell always holds the tallest
+    // and widest glyph in the face.
+    m_max_width     = _ft_ceil(FT_MulFix(face->bbox.xMax, metrics.x_scale))
+                    - _ft_floor(FT_MulFix(face->bbox.xMin, metrics.x_scale));
+    m_max_height    = _ft_ceil(FT_MulFix(face->bbox.yMax, metrics.y_scale))
+                    - _ft_floor(FT_MulFix(face->bbox.yMin, metrics.y_scale));
     m_min_offset    = 0;
     m_glyphs        = new GlyphInfo[MAX_GLYPHS];
 
@@ -228,11 +247,18 @@ void FTFontWrapper::load_glyph(unsigned int c, ucs_t uchar)
         const unsigned int offset_x = 0;
         const unsigned int offset_y = 0;
         memset(pixels, 0, sizeof(unsigned char) * 4 * charsz.x * charsz.y);
+        // The cell is sized from the face's bounding box, so a glyph should
+        // always fit. Clamp regardless: pixels is only charsz.x * charsz.y,
+        // and running off the end of it corrupts the heap rather than merely
+        // drawing something wrong.
+        const int border = outl ? 2 : 0;
+        const ftint cols = min<ftint>(bmp->width, max(0, charsz.x - border));
+        const ftint rows = min<ftint>(bmp->rows, max(0, charsz.y - border));
         if (outl)
         {
             const ftint charw = bmp->width;
-            for (ftint x = 0; x < bmp->width; x++)
-                for (ftint y = 0; y < bmp->rows; y++)
+            for (ftint x = 0; x < cols; x++)
+                for (ftint y = 0; y < rows; y++)
                 {
                     unsigned int idx = offset_x+x+1 + (offset_y+y+1) * charsz.x;
                     idx *= 4;
@@ -257,8 +283,8 @@ void FTFontWrapper::load_glyph(unsigned int c, ucs_t uchar)
         }
         else
         {
-            for (ftint x = 0; x < bmp->width; x++)
-                for (ftint y = 0; y < bmp->rows; y++)
+            for (ftint x = 0; x < cols; x++)
+                for (ftint y = 0; y < rows; y++)
                 {
                     unsigned int idx = offset_x + x + (offset_y + y) * charsz.x;
                     idx *= 4;
