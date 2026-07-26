@@ -39,9 +39,21 @@ STAGING_DIR := $(CRAWL_SRC)/build/app-bundle-stage
 ZIPPED_APP_DIR := $(CRAWL_SRC)/mac-app-zips
 BUNDLE_DIRNAME := $(STAGING_DIR)/$(BUNDLE_NAME).app
 RESOURCES := $(BUNDLE_DIRNAME)/Contents/Resources
+FRAMEWORKS := $(BUNDLE_DIRNAME)/Contents/Frameworks
+
+# The binary the bundled libraries have to resolve against. For tiles that is
+# the bundle executable; the console bundle runs the copy in Resources through
+# a launcher script, so @executable_path points there instead. Either way
+# @executable_path/../Frameworks lands on Contents/Frameworks.
+ifdef TILE_APP
+BUNDLED_BINARY := $(BUNDLE_DIRNAME)/Contents/MacOS/$(BUNDLE_NAME)
+else
+BUNDLED_BINARY := $(RESOURCES)/crawl
+endif
 
 .PHONY: all clean clean-stage stage-dir copy-executable copy-resources \
-	copy-tiledata assemble-app-bundle create-bundle-directory
+	copy-tiledata assemble-app-bundle create-bundle-directory \
+	bundle-dylibs sign-app-bundle
 
 all: $(STAGING_DIR) $(ZIPPED_APP_DIR) \
 	clean-stage assemble-app-bundle zip-app-bundle
@@ -61,7 +73,7 @@ clean-stage:
 	rm -rf $(STAGING_DIR)/*
 
 assemble-app-bundle: create-bundle-directory copy-executable copy-resources \
-		     copy-info-plist
+		     copy-info-plist bundle-dylibs sign-app-bundle
 
 zip-app-bundle:
 	rm -f $(ZIPPED_APP_DIR)/$(ZIP_NAME)
@@ -71,7 +83,7 @@ zip-app-bundle:
 create-bundle-directory: $(BUNDLE_DIRNAME)
 
 $(BUNDLE_DIRNAME):
-	mkdir -p "$@"/Contents/{MacOS/contrib,Resources}
+	mkdir -p "$@"/Contents/{MacOS,Resources,Frameworks}
 
 # The console Crawl bundle has a shell script launcher that uses the
 # real executable from Contents/Resources, so an extra copy for the wrapper+
@@ -82,10 +94,12 @@ ifndef TILE_APP
 	cp $(CRAWL_SRC)/crawl $(RESOURCES)
 endif
 
+# contrib/fonts used to be copied into Contents/MacOS here. It held the two
+# DejaVu faces, which contain no CJK glyphs and so cannot render a single
+# string this fork displays; the font actually loaded is the bundled HackGen
+# in dat/tiles, found through datafile_path. Nothing referenced the copy, and
+# non-code files under Contents/MacOS make the bundle fail codesign.
 copy-resources:
-ifdef TILE_APP
-	cp -r $(CRAWL_SRC)/contrib/fonts $(BUNDLE_DIRNAME)/Contents/MacOS/contrib
-endif
 	cp $(CRAWL_SRC)/mac/Crawl.icns $(RESOURCES)
 	cp -r $(CRAWL_BASE)/settings $(RESOURCES)
 	cp -r $(CRAWL_SRC)/dat $(RESOURCES)
@@ -100,6 +114,26 @@ endif
 	rm -f $(RESOURCES)/docs/*.reST
 	rm -f $(RESOURCES)/docs/crawl.6
 	rm -f $(RESOURCES)/*.png
+
+# A tiles build links SDL2, SDL2_image and FreeType from wherever the build
+# machine keeps them, which for most people is Homebrew. Copy that whole
+# dependency tree into the bundle so the .app runs somewhere else too.
+# Unquoted on purpose: BUNDLE_NAME already carries the backslash escapes the
+# shell needs, the same way every other recipe here spells it.
+bundle-dylibs:
+	perl $(CRAWL_SRC)/mac/bundle-dylibs.pl $(BUNDLED_BINARY) $(FRAMEWORKS)
+
+# Ad-hoc, so the bundle merely runs locally; it is not a Developer ID
+# signature and does not get it past Gatekeeper on a downloaded copy.
+# install_name_tool has invalidated the executable's signature by this point,
+# so this is what makes it loadable again.
+sign-app-bundle:
+	codesign --force --deep --sign - $(BUNDLE_DIRNAME)
+	codesign --verify --deep --strict $(BUNDLE_DIRNAME)
+	@if otool -L $(BUNDLED_BINARY) | grep -q /opt/homebrew; then \
+		echo "error: the bundle still references Homebrew" 1>&2; \
+		exit 1; \
+	fi
 
 copy-info-plist:
 	perl -lpe "s/%VERSION%/$(SRC_VERSION)/g;" \
