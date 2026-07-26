@@ -216,7 +216,7 @@ CI・テスト・ビルド周りの変更のみ英語の Conventional Commits（
 
 ## CI
 
-`.github/workflows/ci.yml`（Travis からは移行済み）。`develop` への push と PR で起動する。
+`.github/workflows/ci.yml`（Travis からは移行済み）。`develop` 宛の PR でのみ起動する。
 
 `build` ジョブは ubuntu-22.04 上で GCC × Clang の 2 コンパイラ × 10 バリアント
 （Console / Tiles / Webtiles / DGL、それぞれ debug 有無、bundled dependencies 版）を
