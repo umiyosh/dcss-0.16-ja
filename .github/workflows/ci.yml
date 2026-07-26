@@ -5,6 +5,10 @@ on:
     branches:
       - develop
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -154,7 +158,9 @@ jobs:
         working-directory: crawl-ref/source
         run: |
           if [[ -n "$FULLDEBUG" ]]; then
-            make test
+            # test-test and test-all are independent, so run both suites on
+            # the runner's two CPUs instead of serially.
+            make -j2 test
           else
             make nondebugtest
           fi
