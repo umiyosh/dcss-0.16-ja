@@ -1,0 +1,137 @@
+name: Release
+
+# Tags in this fork look like 0.16-ja, 0.16-ja-a0, 0.16-ja-b1 — no v prefix.
+# The upstream tags already in the repository never fire this, since they are
+# not being pushed. workflow_dispatch builds the artifacts without publishing,
+# which is the way to try a change here without spending a tag on it.
+on:
+  push:
+    tags:
+      - '*-ja*'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  macos:
+    name: macOS (Apple Silicon)
+    runs-on: macos-latest
+    timeout-minutes: 90
+    env:
+      TERM: dumb
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          # The version baked into the artifacts comes from `git describe
+          # --tags`, so the tags have to be there. The default shallow clone
+          # would silently fall back to util/release_ver instead.
+          fetch-depth: 0
+
+      - name: Install build dependencies
+        run: brew install pkg-config sdl2 sdl2_image freetype libpng
+
+      - name: Check out bundled dependencies
+        shell: bash
+        run: |
+          # macOS ships no lua 5.1 or sqlite development files. The .gitmodules
+          # URLs still use git://, which GitHub dropped.
+          git config --global url."https://github.com/".insteadOf git://github.com/
+          git submodule update --init \
+            crawl-ref/source/contrib/lua \
+            crawl-ref/source/contrib/sqlite
+
+      - name: Show the version being built
+        working-directory: crawl-ref/source
+        run: git describe --tags
+
+      - name: Build release artifacts
+        shell: bash
+        working-directory: crawl-ref/source
+        run: |
+          # NO_APPLE_GCC=y skips the Apple block, whose SDK version detection
+          # does not understand a versionless MacOSX.sdk (#8). It has to be on
+          # this make, not just the sub-makes: the block errors out at parse
+          # time. Fall back to 3 rather than letting an empty value turn into
+          # a bare -j, which would run unlimited jobs in parallel.
+          jobs=$(sysctl -n hw.ncpu 2>/dev/null || echo 3)
+          make NO_APPLE_GCC=y -j"$jobs" dist-macos \
+               DISTDIR="$GITHUB_WORKSPACE/dist"
+
+      - name: Check the zipped bundles still verify
+        shell: bash
+        run: |
+          # sign-app-bundle already proved the staged .app is self-contained
+          # and signed. What it cannot show is whether zip and unzip preserve
+          # that, which is the form users actually receive.
+          cd "$GITHUB_WORKSPACE/dist"
+          for zip in *.zip; do
+            rm -rf check && mkdir check
+            unzip -q "$zip" -d check
+            app=$(find check -maxdepth 1 -name '*.app')
+            codesign --verify --deep --strict "$app"
+            echo "ok: $zip"
+          done
+          rm -rf check
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: dist/*.zip
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    needs: macos
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          # The .app is signed ad-hoc, not with a Developer ID, so macOS
+          # quarantines it on download and reports it as damaged. Say so here
+          # rather than letting every downloader hit it.
+          cat > notes.md <<'EOF'
+          ## ダウンロード
+
+          - `*-tiles-macosx.zip` — タイル版（グラフィカル）
+          - `*-console-macosx.zip` — コンソール版（文字のみ）
+
+          Apple Silicon (arm64) 専用です。Intel Mac では動きません。
+
+          ## 初回起動について
+
+          署名は ad-hoc のため、ダウンロードした `.app` は macOS に隔離され
+          「壊れているため開けません」と表示されます。次のコマンドで隔離属性を
+          外してから起動してください。
+
+          ```
+          xattr -dr com.apple.quarantine "Dungeon Crawl Stone Soup - Tiles.app"
+          ```
+
+          ---
+          EOF
+          gh release create "$TAG" dist/*.zip \
+            --title "$TAG" \
+            --notes-file notes.md \
+            --generate-notes \
+            --verify-tag

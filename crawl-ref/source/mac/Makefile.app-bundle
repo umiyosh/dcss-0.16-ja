@@ -130,10 +130,15 @@ bundle-dylibs:
 sign-app-bundle:
 	codesign --force --deep --sign - $(BUNDLE_DIRNAME)
 	codesign --verify --deep --strict $(BUNDLE_DIRNAME)
-	@if otool -L $(BUNDLED_BINARY) | grep -q /opt/homebrew; then \
-		echo "error: the bundle still references Homebrew" 1>&2; \
+	@leaks=`find $(BUNDLE_DIRNAME) -type f \( -perm +111 -o -name '*.dylib' \) \
+	          -exec otool -L {} + 2>/dev/null \
+	        | grep -E '/opt/homebrew|/usr/local/' || true`; \
+	if [ -n "$$leaks" ]; then \
+		echo "$$leaks" 1>&2; \
+		echo "error: the bundle references libraries outside itself" 1>&2; \
 		exit 1; \
 	fi
+	@echo "  bundle is self-contained"
 
 copy-info-plist:
 	perl -lpe "s/%VERSION%/$(SRC_VERSION)/g;" \
