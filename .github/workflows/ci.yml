@@ -147,9 +147,9 @@ jobs:
         working-directory: crawl-ref/source
         run: |
           if [[ -n "$FULLDEBUG" ]]; then
-            make -j2 debug
+            make -j"$(nproc)" debug
           else
-            make -j2
+            make -j"$(nproc)"
           fi
 
       - name: Test
@@ -157,13 +157,11 @@ jobs:
         shell: bash
         working-directory: crawl-ref/source
         run: |
+          tests=(test-{1..9})
           if [[ -n "$FULLDEBUG" ]]; then
-            # test-test and test-all are independent, so run both suites on
-            # the runner's two CPUs instead of serially.
-            make -j2 test
-          else
-            make nondebugtest
+            tests+=(test-test)
           fi
+          make -j"$(nproc)" "${tests[@]}"
 
       - name: Print crash reports
         if: failure()
