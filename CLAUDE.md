@@ -67,6 +67,13 @@ git submodule update --init crawl-ref/source/contrib/lua crawl-ref/source/contri
 翻訳系の変更で壊れやすいのは `test/monster-name.lua`, `test/corpse.lua`, `test/rune-gen.lua`
 （アイテム名・モンスター名の文字列を assert している）。
 
+**テストは UTF-8 ロケールを要求する。** `LANG` が未設定だと C ロケールになり、
+`ヒドラの死体` が `ヒドラã®死体` と比較されて `corpse.lua` などが落ちる。
+`LANG=en_US.UTF-8` などを設定すること。
+
+`test/stress/run` は `timeout(1)` を使うが、これは GNU coreutils のもので macOS には無い。
+無い場合は時間制限なしで実行される（Homebrew の coreutils を入れると `gtimeout` が使われる）。
+
 ## 日本語化アーキテクチャ
 
 ### jtrans: メッセージ翻訳の中核

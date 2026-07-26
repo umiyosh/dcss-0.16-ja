@@ -1,7 +1,19 @@
 #!/bin/sh
 set -e
 
-CRAWL=${CRAWL:-timeout 595 ./crawl -seed 1 -no-save -name test -wizard -no-throttle}
+# timeout(1) is GNU coreutils and is absent on macOS; Homebrew installs it as
+# gtimeout. Fall back to running without a per-case limit rather than failing
+# with "timeout: command not found".
+if command -v timeout > /dev/null 2>&1; then
+    TIMELIMIT="timeout 595"
+elif command -v gtimeout > /dev/null 2>&1; then
+    TIMELIMIT="gtimeout 595"
+else
+    TIMELIMIT=""
+    echo "warning: no timeout(1); running without a per-case time limit" 1>&2
+fi
+
+CRAWL=${CRAWL:-$TIMELIMIT ./crawl -seed 1 -no-save -name test -wizard -no-throttle}
 
 run_one()
 {
