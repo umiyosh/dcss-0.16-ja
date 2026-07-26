@@ -30,13 +30,57 @@ Wu Jian Council (0.21) のような神、Shapeshifter や Alchemist (0.31) と�
 各版の変更点は本家の
 [changelog.txt](https://github.com/crawl/crawl/blob/master/crawl-ref/docs/changelog.txt) にまとまっています。
 
-## 遊ぶ
+## 遊ぶ (macOS)
 
-ソースからビルドします。`crawl-ref/source/` を作業ディレクトリにして `./crawl` を起動してください
+[リリースページ](https://github.com/umiyosh/dcss-0.16-ja/releases/latest)から zip をダウンロードし、
+`.app` をアプリケーションフォルダに入れてください。
+
+- `stone_soup-<版数>-tiles-macosx.zip` — タイル版 (グラフィカル)
+- `stone_soup-<版数>-console-macosx.zip` — コンソール版 (文字のみ)
+
+**Apple Silicon (arm64) 専用**で、macOS 11 (Big Sur) 以降で動きます。Intel Mac には対応していません。
+必要なライブラリはすべてバイナリに組み込んであるので、Homebrew などの事前準備は要りません。
+
+### 初回起動時の警告について
+
+ダウンロードした `.app` を最初に開こうとすると、次の警告が出ます。
+
+> "Dungeon Crawl Stone Soup - Tiles" は開いていません
+> Apple は、"Dungeon Crawl Stone Soup - Tiles" に Mac に損害を与えたり、
+> プライバシーを侵害する可能性のあるマルウェアが含まれていないことを検証できませんでした。
+
+これは**ダウンロードした人全員に出ます**。アプリが壊れているわけでも、実際に何か検出された
+わけでもありません。Apple の公証 (notarization) を受けていない配布物に対して macOS が一律に出す
+警告で、原因は署名が自己署名相当であることだけです。
+
+開くには次のどちらかを行ってください。
+
+**方法1: システム設定から許可する**
+
+1. 警告ダイアログの「完了」を押して閉じる (「ゴミ箱に入れる」は押さない)
+2. **システム設定 → プライバシーとセキュリティ** を開く
+3. 下の方に「"Dungeon Crawl Stone Soup - Tiles" は開発元を確認できないため
+   使用がブロックされました」と出ているので、その横の**「このまま開く」**を押す
+
+**方法2: ターミナルで隔離属性を外す**
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/Dungeon Crawl Stone Soup - Tiles.app"
+```
+
+どちらも最初の一度だけで、二回目以降は普通に起動します。macOS 15 (Sequoia) 以降では、
+かつて使えた「右クリック → 開く」の回避策は廃止されているので、上記のどちらかになります。
+
+この手順を不要にする Developer ID 署名と公証の対応は
+[#37](https://github.com/umiyosh/dcss-0.16-ja/issues/37) で進めています。
+
+## ソースからビルドする
+
+`crawl-ref/source/` を作業ディレクトリにして `./crawl` を起動してください
 （`dat/` と `docs/` を相対パスで探すため、他の場所からは起動できません）。
 
 同梱ライブラリを使う場合は submodule の取得が必要です。`.gitmodules` の URL が GitHub の廃止した
-`git://` のままなので、書き換えながら取得します。
+`git://` のままなので、書き換えながら取得します (macOS は後述のとおり 2 つだけで足ります)。
 
 ```bash
 git -c url."https://github.com/".insteadOf=git://github.com/ submodule update --init --recursive
@@ -46,18 +90,23 @@ Linux ではコンソール版が `make -C crawl-ref/source -j6`、タイル版�
 必要なパッケージは `.github/workflows/ci.yml` の内容が参考になります。
 
 macOS (Apple Silicon) では、Makefile の SDK 検出が現行 Xcode に対応していないため `NO_APPLE_GCC=y` が要ります。
-また同梱の SDL2 と zlib が 2014 年当時のもので現行 clang を通らないので、Homebrew 側を使います。
 
 ```bash
-brew install sdl2 sdl2_image freetype libpng pkg-config
-make -C crawl-ref/source NO_APPLE_GCC=y -j6                       # コンソール版
-make -C crawl-ref/source TILES=y NO_APPLE_GCC=y \
-     NO_PKGCONFIG= BUILD_SDL2= BUILD_SDL2IMAGE= \
-     BUILD_FREETYPE= BUILD_LIBPNG= -j6                            # タイル版
+git -c url."https://github.com/".insteadOf=git://github.com/ \
+    submodule update --init crawl-ref/source/contrib/lua crawl-ref/source/contrib/sqlite
+make -C crawl-ref/source NO_APPLE_GCC=y -j6            # コンソール版
+make -C crawl-ref/source TILES=y NO_APPLE_GCC=y -j6    # タイル版
 ```
 
-`mac-app-tiles` ターゲットで `.app` バンドルも作れます。macOS 対応の残課題は
-[#16](https://github.com/umiyosh/dcss-0.16-ja/issues/16) にまとめてあります。
+タイル版の SDL2 / SDL2_image / FreeType / libpng / zlib は
+`crawl-ref/source/contrib/build-macos-deps.sh` が上流から取得して静的ビルドするので、
+Homebrew での事前準備は不要です (cmake と curl だけ使います)。
+Homebrew を使わないのは、その bottle がビルドしたマシンの macOS 版数向けに作られていて、
+同梱すると成果物がその版数以降でしか起動しなくなるためです。
+
+配布物と同じものを作るなら `make -C crawl-ref/source NO_APPLE_GCC=y -j6 dist-macos` で、
+コンソール版とタイル版の zip が `crawl-ref/source/dist/` に揃います。
+macOS 対応の残課題は [#16](https://github.com/umiyosh/dcss-0.16-ja/issues/16) にまとめてあります。
 
 遊び方そのものは `crawl-ref/docs/` の quickstart.txt と crawl_manual.reST を参照してください
 （英語のままです）。
