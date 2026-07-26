@@ -157,11 +157,11 @@ jobs:
         shell: bash
         working-directory: crawl-ref/source
         run: |
-          tests=(test-{1..9})
           if [[ -n "$FULLDEBUG" ]]; then
-            tests+=(test-test)
+            make -j2 test
+          else
+            make nondebugtest
           fi
-          make -j"$(nproc)" "${tests[@]}"
 
       - name: Print crash reports
         if: failure()
