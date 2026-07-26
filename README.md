@@ -7,7 +7,6 @@ Dungeon Crawl Stone Soup (DCSS) 0.16 の日本語版です。
 
 いまは WebTiles でオンラインプレイするのが主流ですが、macOS のタイル版を
 ローカルで遊んでみたくて、現行の macOS でも動くアプリをビルドしました。
-個人的に遊ぶためのものなので、大がかりなプロジェクトではありません。
 
 もうひとつ、古い C++ のゲームを現行環境でビルドする作業を題材に、
 Claude Opus 5 がどのくらい使えるのか試してみる目的もあります。
@@ -69,6 +68,7 @@ make -C crawl-ref/source NO_APPLE_GCC=y -j6 dist-macos
 
 このリポジトリは
 [dplusplus/dcss-0.16-ja](https://github.com/dplusplus/dcss-0.16-ja) を元にしています。
+[石鍋試験鯖](http://lazy-life.ddo.jp/wiki/index.php?cmd=read&page=DCSS%2F%E6%97%A5%E6%9C%AC%E8%AA%9E%E7%89%88)には日本語版のweb tileがあるので登録してそちらであそぶこともできます。
 ゲーム内容は 2015 年の 0.16 のままで、
 [本家 DCSS](https://github.com/crawl/crawl) の最新版とは別物です。
 
