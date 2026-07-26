@@ -1,13 +1,17 @@
 name: Release
 
-# Tags in this fork look like 0.16-ja, 0.16-ja-a0, 0.16-ja-b1 — no v prefix.
-# The upstream tags already in the repository never fire this, since they are
-# not being pushed. workflow_dispatch builds the artifacts without publishing,
-# which is the way to try a change here without spending a tag on it.
+# Release tags look like 0.16-ja-1.0.0: the frozen upstream base, then this
+# fork's own version. Requiring a digit after -ja- keeps the older markers
+# (0.16-ja, 0.16-ja-a0, 0.16-ja-b1) from publishing a release, so they can be
+# pushed to the remote for `git describe` without side effects.
+#
+# workflow_dispatch builds the artifacts without publishing, which is the way
+# to try a change here without spending a tag on it. It needs at least one tag
+# reachable from the branch, or the version step below fails.
 on:
   push:
     tags:
-      - '*-ja*'
+      - '*-ja-[0-9]*'
   workflow_dispatch:
 
 concurrency:
@@ -29,8 +33,9 @@ jobs:
         uses: actions/checkout@v7
         with:
           # The version baked into the artifacts comes from `git describe
-          # --tags`, so the tags have to be there. The default shallow clone
-          # would silently fall back to util/release_ver instead.
+          # --tags`, which needs the history and the tags. fetch-depth: 0 gets
+          # both: despite the --no-tags it passes, actions/checkout also uses
+          # an explicit +refs/tags/*:refs/tags/* refspec.
           fetch-depth: 0
 
       - name: Install build dependencies
@@ -47,8 +52,18 @@ jobs:
             crawl-ref/source/contrib/sqlite
 
       - name: Show the version being built
+        shell: bash
         working-directory: crawl-ref/source
-        run: git describe --tags
+        run: |
+          # Fail here rather than 20 minutes into the build: without a tag,
+          # util/gen_ver.pl dies looking for the untracked util/release_ver,
+          # and `git describe` only says "No names found".
+          if ! git describe --tags; then
+            echo "error: no tag is reachable from this ref." >&2
+            echo "The version comes from git describe, so the remote needs" >&2
+            echo "at least one tag. Push one, e.g. git push origin 0.16-ja." >&2
+            exit 1
+          fi
 
       - name: Build release artifacts
         shell: bash
