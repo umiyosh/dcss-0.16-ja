@@ -8,6 +8,9 @@
 # Locally built contribs
 /install
 
+# Sources and build trees of build-macos-deps.sh
+/.macos-deps-build
+
 # MSVC temp files
 *.sdf
 *.opensdf
