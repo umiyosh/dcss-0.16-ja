@@ -1,13 +1,17 @@
 name: Release
 
-# Tags in this fork look like 0.16-ja, 0.16-ja-a0, 0.16-ja-b1 — no v prefix.
-# The upstream tags already in the repository never fire this, since they are
-# not being pushed. workflow_dispatch builds the artifacts without publishing,
-# which is the way to try a change here without spending a tag on it.
+# Release tags look like 0.16-ja-1.0.0: the frozen upstream base, then this
+# fork's own version. Requiring a digit after -ja- keeps the older markers
+# (0.16-ja, 0.16-ja-a0, 0.16-ja-b1) from publishing a release, so they can be
+# pushed to the remote for `git describe` without side effects.
+#
+# workflow_dispatch builds the artifacts without publishing, which is the way
+# to try a change here without spending a tag on it. It needs at least one tag
+# reachable from the branch, or the version step below fails.
 on:
   push:
     tags:
-      - '*-ja*'
+      - '*-ja-[0-9]*'
   workflow_dispatch:
 
 concurrency:
@@ -20,17 +24,28 @@ permissions:
 jobs:
   macos:
     name: macOS (Apple Silicon)
-    runs-on: macos-latest
+    # Pinned, NOT macos-latest. Nothing sets a deployment target here: the
+    # Apple block that would pass -mmacosx-version-min is skipped (#8), so
+    # clang uses the build machine's own version, and the Homebrew bottles
+    # copied into the bundle are built for the runner's macOS too. Whatever
+    # this runner is becomes the minimum macOS the release requires.
+    # macos-latest moved to macOS 26 and produced a release that only ran on
+    # macOS 26. Raise this deliberately, together with MACOS_MIN_TARGET.
+    runs-on: macos-15
     timeout-minutes: 90
     env:
       TERM: dumb
+      # The oldest macOS the artifacts are expected to run on. Must match the
+      # runner above; the check below is what proves it did.
+      MACOS_MIN_TARGET: "15.0"
     steps:
       - name: Check out source
         uses: actions/checkout@v7
         with:
           # The version baked into the artifacts comes from `git describe
-          # --tags`, so the tags have to be there. The default shallow clone
-          # would silently fall back to util/release_ver instead.
+          # --tags`, which needs the history and the tags. fetch-depth: 0 gets
+          # both: despite the --no-tags it passes, actions/checkout also uses
+          # an explicit +refs/tags/*:refs/tags/* refspec.
           fetch-depth: 0
 
       - name: Install build dependencies
@@ -47,8 +62,18 @@ jobs:
             crawl-ref/source/contrib/sqlite
 
       - name: Show the version being built
+        shell: bash
         working-directory: crawl-ref/source
-        run: git describe --tags
+        run: |
+          # Fail here rather than 20 minutes into the build: without a tag,
+          # util/gen_ver.pl dies looking for the untracked util/release_ver,
+          # and `git describe` only says "No names found".
+          if ! git describe --tags; then
+            echo "error: no tag is reachable from this ref." >&2
+            echo "The version comes from git describe, so the remote needs" >&2
+            echo "at least one tag. Push one, e.g. git push origin 0.16-ja." >&2
+            exit 1
+          fi
 
       - name: Build release artifacts
         shell: bash
@@ -68,14 +93,17 @@ jobs:
         run: |
           # sign-app-bundle already proved the staged .app is self-contained
           # and signed. What it cannot show is whether zip and unzip preserve
-          # that, which is the form users actually receive.
+          # that, which is the form users actually receive, nor which macOS
+          # the result actually demands.
           cd "$GITHUB_WORKSPACE/dist"
+          checker=$GITHUB_WORKSPACE/crawl-ref/source/mac/check-min-os.pl
           for zip in *.zip; do
             rm -rf check && mkdir check
             unzip -q "$zip" -d check
             app=$(find check -maxdepth 1 -name '*.app')
+            echo "--- $zip"
             codesign --verify --deep --strict "$app"
-            echo "ok: $zip"
+            perl "$checker" "$MACOS_MIN_TARGET" "$app"
           done
           rm -rf check
 
