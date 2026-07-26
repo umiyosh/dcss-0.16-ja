@@ -938,11 +938,11 @@ const char* potion_type_name(int potiontype)
     }
 }
 
-const char* potion_type_name_j(int potiontype)
+string potion_type_name_j(int potiontype)
 {
     string jname = jtrans(string("potion of ") + potion_type_name(potiontype));
 
-    return replace_all(jname, "の薬", "").c_str();
+    return replace_all(jname, "の薬", "");
 }
 
 static const char* scroll_type_name(int scrolltype)
@@ -1160,11 +1160,11 @@ const char* rune_type_name(short p)
     }
 }
 
-const char* rune_type_name_j(short p)
+string rune_type_name_j(short p)
 {
     string jname = jtrans(rune_type_name(p) + string(" rune of Zot"));
 
-    return replace_all(jname, "のルーン", "").c_str();
+    return replace_all(jname, "のルーン", "");
 }
 
 const char* deck_rarity_name(deck_rarity_type rarity)
