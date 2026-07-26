@@ -252,6 +252,20 @@ jobs:
         working-directory: crawl-ref/source
         run: ./crawl --version
 
+      - name: Assemble the app bundle
+        # Only the release workflow ships a .app, and it only runs on tags,
+        # so without this nothing exercises the bundling until release day.
+        # It is cheap here: the flags match the build above, so mac-app-tiles
+        # reuses the objects and only runs the packaging steps. sign-app-bundle
+        # is what fails if the bundle is not self-contained.
+        if: matrix.variant.tiles != ''
+        shell: bash
+        working-directory: crawl-ref/source
+        run: |
+          make TILES=y NO_APPLE_GCC=y \
+               NO_PKGCONFIG= BUILD_SDL2= BUILD_SDL2IMAGE= \
+               BUILD_FREETYPE= BUILD_LIBPNG= mac-app-tiles
+
       - name: Test
         # -test only exists in a FULLDEBUG build, and `debug` has to stay in
         # the goal list: the Makefile keys DEBUG and NO_OPTIMIZE off

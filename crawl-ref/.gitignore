@@ -39,6 +39,9 @@ noise-grid.html
 last-mac-build.version
 mac-app-zips
 
+# Default DISTDIR of `make dist-macos`
+/source/dist
+
 # Text editor generated junk (backup files and such)
 DEADJOE
 \#*

@@ -64,6 +64,17 @@ make -C crawl-ref/source TILES=y NO_APPLE_GCC=y \
 `mac-app-zips/` に zip を吐く。ステージングは毎回 `clean-stage` で消えるので、
 tiles と console を続けて作ると後者が前者を上書きする（zip は残る）。
 
+配布用に両方まとめて作るなら `dist-macos`。`$(DISTDIR)`（既定 `dist`）に zip が 2 つ揃う。
+
+```bash
+make -C crawl-ref/source NO_APPLE_GCC=y -j8 dist-macos DISTDIR=/path/to/dist
+```
+
+`NO_APPLE_GCC=y` は**外側の make に必要**。Apple ブロックの `$(error)` は makefile の
+読み込み時に評価されるため、サブ make にだけ渡しても手遅れになる（#8）。
+contrib 系のフラグは `MACOS_DIST_FLAGS` としてターゲット内に畳んである。
+console → tiles の順に 2 回フルビルドする（`.cflags` が変わると全再コンパイルになるため）。
+
 `bundle-dylibs` ステップが `mac/bundle-dylibs.pl` を呼び、リンク先の非システム dylib を
 再帰的に `Contents/Frameworks/` へコピーして install name を
 `@executable_path/../Frameworks/` に張り替える。これが無いと `.app` は Homebrew の

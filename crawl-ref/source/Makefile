@@ -81,7 +81,8 @@ MAKEFLAGS += -rR # This only works for recursive makes, i.e. contribs ...
 
 .PHONY: all test install clean clean-contrib clean-rltiles clean-android \
         distclean debug debug-lite profile package-source source \
-        build-windows package-windows rest docs greet api android FORCE
+        build-windows package-windows rest docs greet api android FORCE \
+        dist-macos
 
 include Makefile.obj
 
@@ -1773,6 +1774,42 @@ mac-app-tiles: all
 
 mac-app-console: all
 	+$(MAKE) -j1 -C mac -f Makefile.app-bundle
+
+#############################################################################
+# Release artifacts
+#
+# Both zips end up in $(DISTDIR), which is all the release workflow has to
+# pick up. RELEASE=y only changes the zip names, giving
+# stone_soup-<version>-{console,tiles}-macosx.zip.
+#
+#   make NO_APPLE_GCC=y dist-macos DISTDIR=/somewhere
+#
+# NO_APPLE_GCC=y is not optional and cannot be moved in here: the Apple block
+# calls $(error) while the makefile is being read, so it kills this make
+# before any recipe runs. That applies to every target on a current Xcode,
+# not just this one (#8).
+#
+
+DISTDIR ?= dist
+
+# The bundled SDL2, SDL2_image, FreeType and libpng contribs are 2014
+# snapshots that no longer compile, so build against the Homebrew ones. That
+# needs pkg-config, which the Darwin block turns off. Only the sub-makes
+# build anything, so these belong on them rather than on the command line.
+MACOS_DIST_FLAGS = NO_PKGCONFIG= \
+                   BUILD_SDL2= BUILD_SDL2IMAGE= BUILD_FREETYPE= BUILD_LIBPNG=
+
+# Console and tiles cannot share a tree: TILES changes the compile flags, and
+# .cflags forces a full rebuild whenever those change. So this takes about
+# twice as long as a single build, and the two sub-makes must stay serial.
+dist-macos:
+	$(RM) -r mac-app-zips
+	+$(MAKE) $(MACOS_DIST_FLAGS) RELEASE=y TILES= mac-app-console
+	+$(MAKE) $(MACOS_DIST_FLAGS) RELEASE=y TILES=y mac-app-tiles
+	mkdir -p $(DISTDIR)
+	cp mac-app-zips/*.zip $(DISTDIR)/
+	@echo "artifacts in $(DISTDIR):"
+	@ls -1 $(DISTDIR)
 
 #############################################################################
 # Building the Android package
