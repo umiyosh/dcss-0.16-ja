@@ -24,10 +24,20 @@ permissions:
 jobs:
   macos:
     name: macOS (Apple Silicon)
-    runs-on: macos-latest
+    # Pinned, NOT macos-latest. Nothing sets a deployment target here: the
+    # Apple block that would pass -mmacosx-version-min is skipped (#8), so
+    # clang uses the build machine's own version, and the Homebrew bottles
+    # copied into the bundle are built for the runner's macOS too. Whatever
+    # this runner is becomes the minimum macOS the release requires.
+    # macos-latest moved to macOS 26 and produced a release that only ran on
+    # macOS 26. Raise this deliberately, together with MACOS_MIN_TARGET.
+    runs-on: macos-15
     timeout-minutes: 90
     env:
       TERM: dumb
+      # The oldest macOS the artifacts are expected to run on. Must match the
+      # runner above; the check below is what proves it did.
+      MACOS_MIN_TARGET: "15.0"
     steps:
       - name: Check out source
         uses: actions/checkout@v7
@@ -83,14 +93,17 @@ jobs:
         run: |
           # sign-app-bundle already proved the staged .app is self-contained
           # and signed. What it cannot show is whether zip and unzip preserve
-          # that, which is the form users actually receive.
+          # that, which is the form users actually receive, nor which macOS
+          # the result actually demands.
           cd "$GITHUB_WORKSPACE/dist"
+          checker=$GITHUB_WORKSPACE/crawl-ref/source/mac/check-min-os.pl
           for zip in *.zip; do
             rm -rf check && mkdir check
             unzip -q "$zip" -d check
             app=$(find check -maxdepth 1 -name '*.app')
+            echo "--- $zip"
             codesign --verify --deep --strict "$app"
-            echo "ok: $zip"
+            perl "$checker" "$MACOS_MIN_TARGET" "$app"
           done
           rm -rf check
 
