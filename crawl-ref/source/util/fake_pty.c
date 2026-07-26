@@ -1,4 +1,13 @@
-#include <pty.h>
+/* openpty() lives in a different header outside glibc. */
+#if defined(__APPLE__) || defined(__NetBSD__) || defined(__OpenBSD__)
+# include <util.h>
+# include <sys/ioctl.h>     /* struct winsize */
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
+# include <libutil.h>
+# include <sys/ioctl.h>
+#else
+# include <pty.h>
+#endif
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
