@@ -5,6 +5,10 @@ on:
     branches:
       - develop
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -143,9 +147,9 @@ jobs:
         working-directory: crawl-ref/source
         run: |
           if [[ -n "$FULLDEBUG" ]]; then
-            make -j2 debug
+            make -j"$(nproc)" debug
           else
-            make -j2
+            make -j"$(nproc)"
           fi
 
       - name: Test
@@ -154,7 +158,7 @@ jobs:
         working-directory: crawl-ref/source
         run: |
           if [[ -n "$FULLDEBUG" ]]; then
-            make test
+            make -j2 test
           else
             make nondebugtest
           fi
