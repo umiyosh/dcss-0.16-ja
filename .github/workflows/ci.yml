@@ -234,14 +234,17 @@ jobs:
         run: |
           # NO_APPLE_GCC=y skips the Apple block, whose SDK version detection
           # does not understand a versionless MacOSX.sdk.
+          # Fall back to 3 rather than letting an empty value turn into a bare
+          # -j, which would run unlimited jobs in parallel.
+          jobs=$(sysctl -n hw.ncpu 2>/dev/null || echo 3)
           if [[ -n "$TILES" ]]; then
             make TILES=y NO_APPLE_GCC=y \
                  NO_PKGCONFIG= BUILD_SDL2= BUILD_SDL2IMAGE= \
-                 BUILD_FREETYPE= BUILD_LIBPNG= -j3
+                 BUILD_FREETYPE= BUILD_LIBPNG= -j"$jobs"
           elif [[ -n "$FULLDEBUG" ]]; then
-            make NO_APPLE_GCC=y debug -j3
+            make NO_APPLE_GCC=y debug -j"$jobs"
           else
-            make NO_APPLE_GCC=y -j3
+            make NO_APPLE_GCC=y -j"$jobs"
           fi
 
       - name: Check the binary runs
