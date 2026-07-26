@@ -184,10 +184,16 @@ jobs:
         variant:
           - name: Console
             tiles: ""
+            full_debug: ""
+          - name: Console (debug)
+            tiles: ""
+            full_debug: "1"
           - name: Tiles
             tiles: "1"
+            full_debug: ""
     env:
       TILES: ${{ matrix.variant.tiles }}
+      FULLDEBUG: ${{ matrix.variant.full_debug }}
       TERM: dumb
     steps:
       - name: Check out source
@@ -228,6 +234,8 @@ jobs:
             make TILES=y NO_APPLE_GCC=y \
                  NO_PKGCONFIG= BUILD_SDL2= BUILD_SDL2IMAGE= \
                  BUILD_FREETYPE= BUILD_LIBPNG= -j3
+          elif [[ -n "$FULLDEBUG" ]]; then
+            make NO_APPLE_GCC=y debug -j3
           else
             make NO_APPLE_GCC=y -j3
           fi
@@ -236,6 +244,17 @@ jobs:
         shell: bash
         working-directory: crawl-ref/source
         run: ./crawl --version
+
+      - name: Test
+        # -test only exists in a FULLDEBUG build, and `debug` has to stay in
+        # the goal list: the Makefile keys DEBUG and NO_OPTIMIZE off
+        # MAKECMDGOALS, so dropping it here changes the flags and forces a
+        # full rebuild. Only test-test is run; test-all is the stress suite,
+        # which allows up to 595s per case.
+        if: matrix.variant.full_debug != ''
+        shell: bash
+        working-directory: crawl-ref/source
+        run: make NO_APPLE_GCC=y debug test-test
 
       - name: Print crash reports
         if: failure()

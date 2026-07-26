@@ -215,9 +215,12 @@ CI・テスト・ビルド周りの変更のみ英語の Conventional Commits（
 （Console / Tiles / Webtiles / DGL、それぞれ debug 有無、bundled dependencies 版）を
 ビルドする。Tiles 以外のバリアントでは `make test`（debug）または `make nondebugtest` も走る。
 
-`build-macos` ジョブは macos-latest（arm64）で Console と Tiles をビルドし、
-`./crawl --version` が動くところまで確認する。テストを回さないのは
-`util/fake_pty.c` が macOS でビルドできず（Issue #7）、`crawl -test` も失敗する（Issue #6）ため。
+`build-macos` ジョブは macos-latest（arm64）で Console / Console (debug) / Tiles をビルドし、
+`./crawl --version` が動くところまで確認する。debug バリアントだけ `make test-test`
+（`crawl -test`）も走る。ストレステスト（`test-all`）は 1 本あたり最大 595 秒かかるため回していない。
+
+`test-test` を呼ぶときも `debug` をゴールに残すこと。`Makefile:792` が `DEBUG` と
+`NO_OPTIMIZE` を `MAKECMDGOALS` から決めているため、外すとフラグが変わって全再ビルドになる。
 
 ## AGENTS.md との関係
 
