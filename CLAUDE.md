@@ -67,6 +67,13 @@ git submodule update --init crawl-ref/source/contrib/lua crawl-ref/source/contri
 翻訳系の変更で壊れやすいのは `test/monster-name.lua`, `test/corpse.lua`, `test/rune-gen.lua`
 （アイテム名・モンスター名の文字列を assert している）。
 
+**テストは UTF-8 ロケールを要求する。** `LANG` が未設定だと C ロケールになり、
+`ヒドラの死体` が `ヒドラã®死体` と比較されて `corpse.lua` などが落ちる。
+`LANG=en_US.UTF-8` などを設定すること。
+
+`test/stress/run` は `timeout(1)` を使うが、これは GNU coreutils のもので macOS には無い。
+無い場合は時間制限なしで実行される（Homebrew の coreutils を入れると `gtimeout` が使われる）。
+
 ## 日本語化アーキテクチャ
 
 ### jtrans: メッセージ翻訳の中核
@@ -209,15 +216,18 @@ CI・テスト・ビルド周りの変更のみ英語の Conventional Commits（
 
 ## CI
 
-`.github/workflows/ci.yml`（Travis からは移行済み）。`develop` への push と PR で起動する。
+`.github/workflows/ci.yml`（Travis からは移行済み）。`develop` 宛の PR でのみ起動する。
 
 `build` ジョブは ubuntu-22.04 上で GCC × Clang の 2 コンパイラ × 10 バリアント
 （Console / Tiles / Webtiles / DGL、それぞれ debug 有無、bundled dependencies 版）を
 ビルドする。Tiles 以外のバリアントでは `make test`（debug）または `make nondebugtest` も走る。
 
-`build-macos` ジョブは macos-latest（arm64）で Console と Tiles をビルドし、
-`./crawl --version` が動くところまで確認する。テストを回さないのは
-`util/fake_pty.c` が macOS でビルドできず（Issue #7）、`crawl -test` も失敗する（Issue #6）ため。
+`build-macos` ジョブは macos-latest（arm64）で Console / Console (debug) / Tiles をビルドし、
+`./crawl --version` が動くところまで確認する。debug バリアントだけ `make test-test`
+（`crawl -test`）も走る。ストレステスト（`test-all`）は 1 本あたり最大 595 秒かかるため回していない。
+
+`test-test` を呼ぶときも `debug` をゴールに残すこと。`Makefile:792` が `DEBUG` と
+`NO_OPTIMIZE` を `MAKECMDGOALS` から決めているため、外すとフラグが変わって全再ビルドになる。
 
 ## AGENTS.md との関係
 

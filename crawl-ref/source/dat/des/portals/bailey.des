@@ -363,7 +363,10 @@ ORIENT: encompass
       btype = "bailey_polearm"
     end
   end
-  if crawl.game_started() then
+  -- Skip while validating: the maps carrying these tags are defined further
+  -- down this same file, so they are not registered yet when this map is
+  -- validated at parse time.
+  if crawl.game_started() and not is_validating() then
     local map = dgn.map_by_tag(btype)
     assert(map, "Couldn't find a map for " .. btype)
     dgn.place_map(map, false, false)
