@@ -52,6 +52,33 @@ submodule も次の 2 つを取れば足りる。
 git submodule update --init crawl-ref/source/contrib/lua crawl-ref/source/contrib/sqlite
 ```
 
+### macOS アプリバンドル
+
+```bash
+make -C crawl-ref/source TILES=y NO_APPLE_GCC=y \
+     NO_PKGCONFIG= BUILD_SDL2= BUILD_SDL2IMAGE= BUILD_FREETYPE= BUILD_LIBPNG= \
+     -j8 mac-app-tiles          # mac-app-console も同様
+```
+
+`mac/Makefile.app-bundle` が `-j1` で呼ばれ、`build/app-bundle-stage/` に `.app` を組み立てて
+`mac-app-zips/` に zip を吐く。ステージングは毎回 `clean-stage` で消えるので、
+tiles と console を続けて作ると後者が前者を上書きする（zip は残る）。
+
+`bundle-dylibs` ステップが `mac/bundle-dylibs.pl` を呼び、リンク先の非システム dylib を
+再帰的に `Contents/Frameworks/` へコピーして install name を
+`@executable_path/../Frameworks/` に張り替える。これが無いと `.app` は Homebrew の
+絶対パスを参照したままで、ビルドした本人の環境でしか起動しない。
+
+注意点:
+
+- **Homebrew の dylib は linker-signed ではない**ため、`install_name_tool` が署名を貼り直して
+  くれない（自前ビルドのバイナリは貼り直される）。コピーした dylib は個別に ad-hoc 署名し、
+  最後に `codesign --deep` でバンドル全体を署名している。ad-hoc なので Gatekeeper は通らない
+- **`otool -L` に出ない依存がある**。Homebrew の `sdl2` は実体が sdl2-compat で、
+  SDL3 を `dlopen` する。スクリプト内の `%DLOPENED` テーブルで補っている。
+  取りこぼすとロード時初期化で無言のハングになり原因が分かりにくい
+- `Contents/MacOS/` にコード以外を置くと `codesign` が落ちる
+
 ### テスト
 
 単体テストは `crawl-ref/source/test/*.lua` が 1 ファイル 1 テスト。debug ビルド後に:
