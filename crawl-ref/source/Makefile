@@ -216,11 +216,34 @@ ifeq ($(uname_S),Darwin)
 	LIBNCURSES_IS_UNICODE = Yes
 	NO_PKGCONFIG = Yes
 	BUILD_SQLITE = YesPlease
-	# The bundled zlib is a 2014 snapshot whose K&R definitions no longer
-	# compile, and macOS ships zlib in the SDK, so link that instead.
-	# Pass BUILD_ZLIB=y to go back to the contrib copy.
+	# Not the 2014 submodule, which no longer compiles: on macOS this comes
+	# from contrib/build-macos-deps.sh, which fetches upstream zlib and
+	# builds it against a fixed deployment target. rltiles/Makefile names
+	# contrib/install/$(ARCH)/lib/libz.a outright, so it has to exist.
+	BUILD_ZLIB = YesPlease
+	# One deployment target for the whole build: this makefile, the contrib
+	# submakes, and the dependencies build-macos-deps.sh fetches. Exporting
+	# it is enough, since clang and ld both read it from the environment.
+	# Without it clang targets whatever the build machine runs, which is how
+	# a release once came out requiring macOS 26. 11.0 is the floor for
+	# arm64 anyway, so this covers every Apple Silicon Mac.
+	MACOS_DEPLOYMENT_TARGET ?= 11.0
+	export MACOSX_DEPLOYMENT_TARGET := $(MACOS_DEPLOYMENT_TARGET)
 	ifdef TILES
-		EXTRA_LIBS += -framework AppKit -framework AudioUnit -framework CoreAudio -framework ForceFeedback -framework Carbon -framework IOKit -framework OpenGL
+		# A statically linked SDL2 brings none of its own frameworks, so this
+		# list has to match what sdl2.pc asks for; the 2014 one did not, and
+		# every Metal, haptics and game controller symbol came up undefined.
+		# The last four are weak on purpose, as upstream marks them: they let
+		# the binary keep loading on a macOS that predates them.
+		EXTRA_LIBS += -framework OpenGL -framework AppKit -framework Cocoa \
+		              -framework Foundation -framework CoreVideo \
+		              -framework CoreAudio -framework AudioToolbox \
+		              -framework AudioUnit -framework AVFoundation \
+		              -framework ForceFeedback -framework Carbon \
+		              -framework IOKit \
+		              -weak_framework Metal -weak_framework QuartzCore \
+		              -weak_framework GameController \
+		              -weak_framework CoreHaptics
 		BUILD_FREETYPE = YesPlease
 		BUILD_SDL2 = YesPlease
 		BUILD_SDL2IMAGE = YesPlease
@@ -1792,20 +1815,15 @@ mac-app-console: all
 
 DISTDIR ?= dist
 
-# The bundled SDL2, SDL2_image, FreeType and libpng contribs are 2014
-# snapshots that no longer compile, so build against the Homebrew ones. That
-# needs pkg-config, which the Darwin block turns off. Only the sub-makes
-# build anything, so these belong on them rather than on the command line.
-MACOS_DIST_FLAGS = NO_PKGCONFIG= \
-                   BUILD_SDL2= BUILD_SDL2IMAGE= BUILD_FREETYPE= BUILD_LIBPNG=
-
 # Console and tiles cannot share a tree: TILES changes the compile flags, and
 # .cflags forces a full rebuild whenever those change. So this takes about
 # twice as long as a single build, and the two sub-makes must stay serial.
+# The dependencies survive between the two, though: contrib/ stamps what it
+# has already built.
 dist-macos:
 	$(RM) -r mac-app-zips
-	+$(MAKE) $(MACOS_DIST_FLAGS) RELEASE=y TILES= mac-app-console
-	+$(MAKE) $(MACOS_DIST_FLAGS) RELEASE=y TILES=y mac-app-tiles
+	+$(MAKE) RELEASE=y TILES= mac-app-console
+	+$(MAKE) RELEASE=y TILES=y mac-app-tiles
 	mkdir -p $(DISTDIR)
 	cp mac-app-zips/*.zip $(DISTDIR)/
 	@echo "artifacts in $(DISTDIR):"

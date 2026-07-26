@@ -34,30 +34,51 @@ make -C crawl-ref/source nondebugtest    # 非debugビルド向け（-test は�
    make -C crawl-ref/source NO_APPLE_GCC=y -j4
    ```
 
-2. **contrib が未展開だと `.contrib-libs` で失敗する** — システムに zlib / lua5.1 / sqlite が
-   無い場合 `contrib/` をビルドしようとするが、submodule が空だと
-   `The 'zlib' directory exists, but the Makefile is missing!` で停止する。
-   さらに `.gitmodules` の URL は 11 件すべて `git://github.com/...` で、GitHub は
-   このプロトコルを廃止済み。CI（`.github/workflows/ci.yml`）は insteadOf で回避している:
+2. **submodule が要るのは lua と sqlite の 2 つだけ** — この 2 つは今も contrib の
+   submodule からビルドする。`.gitmodules` の URL は 11 件すべて `git://github.com/...` で、
+   GitHub はこのプロトコルを廃止済みなので insteadOf が要る:
 
    ```bash
    git config --global url."https://github.com/".insteadOf git://github.com/
-   git submodule update --init --recursive
+   git submodule update --init crawl-ref/source/contrib/lua crawl-ref/source/contrib/sqlite
    ```
 
-macOS では contrib のうち lua と sqlite だけが必要（他は system / Homebrew 側を使う）なので、
-submodule も次の 2 つを取れば足りる。
+   残りの submodule（sdl2 / sdl2-image / freetype / libpng / zlib）は**取らなくてよい**。
+   下記のとおりスクリプトが上流から取得してビルドする。
 
-```bash
-git submodule update --init crawl-ref/source/contrib/lua crawl-ref/source/contrib/sqlite
-```
+### 依存ライブラリ（macOS / Tiles）
+
+`contrib/build-macos-deps.sh` が SDL2 / SDL2_image / FreeType / libpng / zlib を
+**上流から commit 固定・sha256 検証つきで取得し、静的ライブラリとしてビルド**する。
+`contrib/Makefile` が macOS でこの 5 つをスクリプトに回し、成果物は
+`contrib/install/$(ARCH)/` に入る。Makefile 側の `BUILD_SDL2` などは Darwin 既定で有効なので、
+`make TILES=y NO_APPLE_GCC=y` だけで一式が揃う。
+
+**Homebrew は使わない。** bottle はビルドマシンの macOS 版数向けに作られているため、
+それを同梱した `.app` はその版数以降でしか起動しない。実際 `macos-latest` が macOS 26 に
+移行した際、requirement が 26.0 のリリースを配布してしまった。
+
+要点:
+
+- **成果物は静的リンク 1 本**。`Contents/Frameworks` は空で、同梱 dylib も署名対象も無い。
+  `bundle-dylibs.pl` は「何も同梱するものが無い」と報告して終わる
+- **deployment target は `MACOSX_DEPLOYMENT_TARGET` で一元管理**（既定 11.0 = arm64 の下限）。
+  Makefile が export するので本体・contrib の submake・依存スクリプトすべてに効く。
+  ただし**これは環境変数なので `.cflags` の再ビルド判定に載らない**。値を変えても make は
+  何も作り直さないため、手元で試すときはオブジェクトを消すこと
+- **SDL2 を静的リンクすると framework は自分で並べる必要がある**。一覧は
+  `contrib/install/$(ARCH)/lib/pkgconfig/sdl2.pc` が正。Metal / QuartzCore /
+  GameController / CoreHaptics は **weak リンク**にする（強リンクだと古い macOS で起動しない）
+- SDL2_image は **PNG のみ**で焼いている。ゲームが読む画像は PNG だけ（`dat/tiles` は 29 個
+  すべて png）で、Homebrew 版が引き込む JPEG-XL / AVIF / AOM / TIFF / WebP は不要
+- ビルド済みかは `contrib/install/$(ARCH)/.stamp-<name>` に記録した commit で判定する。
+  版を上げ直せば自動で再ビルドされる
 
 ### macOS アプリバンドル
 
 ```bash
-make -C crawl-ref/source TILES=y NO_APPLE_GCC=y \
-     NO_PKGCONFIG= BUILD_SDL2= BUILD_SDL2IMAGE= BUILD_FREETYPE= BUILD_LIBPNG= \
-     -j8 mac-app-tiles          # mac-app-console も同様
+make -C crawl-ref/source TILES=y NO_APPLE_GCC=y -j8 mac-app-tiles
+make -C crawl-ref/source NO_APPLE_GCC=y -j8 mac-app-console
 ```
 
 `mac/Makefile.app-bundle` が `-j1` で呼ばれ、`build/app-bundle-stage/` に `.app` を組み立てて
@@ -72,22 +93,17 @@ make -C crawl-ref/source NO_APPLE_GCC=y -j8 dist-macos DISTDIR=/path/to/dist
 
 `NO_APPLE_GCC=y` は**外側の make に必要**。Apple ブロックの `$(error)` は makefile の
 読み込み時に評価されるため、サブ make にだけ渡しても手遅れになる（#8）。
-contrib 系のフラグは `MACOS_DIST_FLAGS` としてターゲット内に畳んである。
 console → tiles の順に 2 回フルビルドする（`.cflags` が変わると全再コンパイルになるため）。
-
-`bundle-dylibs` ステップが `mac/bundle-dylibs.pl` を呼び、リンク先の非システム dylib を
-再帰的に `Contents/Frameworks/` へコピーして install name を
-`@executable_path/../Frameworks/` に張り替える。これが無いと `.app` は Homebrew の
-絶対パスを参照したままで、ビルドした本人の環境でしか起動しない。
+依存ライブラリはスタンプで持ち越されるので焼き直されない。
 
 注意点:
 
-- **Homebrew の dylib は linker-signed ではない**ため、`install_name_tool` が署名を貼り直して
-  くれない（自前ビルドのバイナリは貼り直される）。コピーした dylib は個別に ad-hoc 署名し、
-  最後に `codesign --deep` でバンドル全体を署名している。ad-hoc なので Gatekeeper は通らない
-- **`otool -L` に出ない依存がある**。Homebrew の `sdl2` は実体が sdl2-compat で、
-  SDL3 を `dlopen` する。スクリプト内の `%DLOPENED` テーブルで補っている。
-  取りこぼすとロード時初期化で無言のハングになり原因が分かりにくい
+- 依存は静的リンクなので `Contents/Frameworks` は空。`bundle-dylibs` ステップは
+  `mac/bundle-dylibs.pl` を呼ぶが「同梱するものが無い」と報告して終わる。
+  非システム依存が混入したときだけ働く保険として残してある
+- `sign-app-bundle` はバンドル全体を **ad-hoc 署名**し、全 Mach-O に Homebrew や
+  `/usr/local` への参照が無いことを検査する。ad-hoc なので Gatekeeper は通らない
+  （ダウンロードした `.app` は `xattr -dr com.apple.quarantine` が要る）
 - `Contents/MacOS/` にコード以外を置くと `codesign` が落ちる
 
 ### テスト

@@ -24,20 +24,19 @@ permissions:
 jobs:
   macos:
     name: macOS (Apple Silicon)
-    # Pinned, NOT macos-latest. Nothing sets a deployment target here: the
-    # Apple block that would pass -mmacosx-version-min is skipped (#8), so
-    # clang uses the build machine's own version, and the Homebrew bottles
-    # copied into the bundle are built for the runner's macOS too. Whatever
-    # this runner is becomes the minimum macOS the release requires.
-    # macos-latest moved to macOS 26 and produced a release that only ran on
-    # macOS 26. Raise this deliberately, together with MACOS_MIN_TARGET.
-    runs-on: macos-15
+    # macos-latest is fine again. This used to be pinned because the runner's
+    # own macOS became the minimum the release required, but the build now
+    # sets a deployment target and builds its dependencies from source
+    # instead of taking Homebrew's per-macOS bottles, so the runner version no
+    # longer leaks into the artifacts.
+    runs-on: macos-latest
     timeout-minutes: 90
     env:
       TERM: dumb
-      # The oldest macOS the artifacts are expected to run on. Must match the
-      # runner above; the check below is what proves it did.
-      MACOS_MIN_TARGET: "15.0"
+      # The oldest macOS the artifacts must run on: the floor for arm64, and
+      # the default the makefile compiles against. The check below is what
+      # proves the artifacts really came out that way.
+      MACOS_MIN_TARGET: "11.0"
     steps:
       - name: Check out source
         uses: actions/checkout@v7
@@ -48,8 +47,17 @@ jobs:
           # an explicit +refs/tags/*:refs/tags/* refspec.
           fetch-depth: 0
 
-      - name: Install build dependencies
-        run: brew install pkg-config sdl2 sdl2_image freetype libpng
+      # Nothing to install: SDL2, SDL2_image, FreeType, libpng and zlib come
+      # from contrib/build-macos-deps.sh, which needs only cmake and curl.
+      # Homebrew is deliberately not used — its bottles are built for the
+      # runner's exact macOS, which is what tied an earlier release to it.
+      - name: Cache the built dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            crawl-ref/source/contrib/install
+            crawl-ref/source/contrib/.macos-deps-build/cache
+          key: macos-deps-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('crawl-ref/source/contrib/build-macos-deps.sh') }}
 
       - name: Check out bundled dependencies
         shell: bash

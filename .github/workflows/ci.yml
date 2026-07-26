@@ -203,15 +203,19 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v7
 
-      - name: Install build dependencies
-        shell: bash
-        run: |
-          # Console links the system ncurses and needs nothing extra. Tiles
-          # cannot use the bundled SDL2: it is a 2014 snapshot that no longer
-          # compiles with a current clang.
-          if [[ -n "$TILES" ]]; then
-            brew install pkg-config sdl2 sdl2_image freetype libpng
-          fi
+      # Nothing to install: console links the system ncurses, and tiles gets
+      # SDL2, SDL2_image, FreeType, libpng and zlib from
+      # contrib/build-macos-deps.sh, which needs only cmake and curl. Both are
+      # already on the runner. Homebrew is deliberately not used here — its
+      # bottles are built for the runner's exact macOS, which would tie the
+      # artifacts to it.
+      - name: Cache the built dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            crawl-ref/source/contrib/install
+            crawl-ref/source/contrib/.macos-deps-build/cache
+          key: macos-deps-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('crawl-ref/source/contrib/build-macos-deps.sh') }}
 
       - name: Check out bundled dependencies
         shell: bash
@@ -238,9 +242,7 @@ jobs:
           # -j, which would run unlimited jobs in parallel.
           jobs=$(sysctl -n hw.ncpu 2>/dev/null || echo 3)
           if [[ -n "$TILES" ]]; then
-            make TILES=y NO_APPLE_GCC=y \
-                 NO_PKGCONFIG= BUILD_SDL2= BUILD_SDL2IMAGE= \
-                 BUILD_FREETYPE= BUILD_LIBPNG= -j"$jobs"
+            make TILES=y NO_APPLE_GCC=y -j"$jobs"
           elif [[ -n "$FULLDEBUG" ]]; then
             make NO_APPLE_GCC=y debug -j"$jobs"
           else
@@ -258,13 +260,19 @@ jobs:
         # It is cheap here: the flags match the build above, so mac-app-tiles
         # reuses the objects and only runs the packaging steps. sign-app-bundle
         # is what fails if the bundle is not self-contained.
+        #
+        # The min-os check matters most on this job: the runner is whatever
+        # macos-latest currently is, so it is the one place that proves a
+        # build on a brand new macOS still produces artifacts that run on old
+        # ones. A release once shipped requiring macOS 26 for exactly this
+        # reason, and every other check passed.
         if: matrix.variant.tiles != ''
         shell: bash
         working-directory: crawl-ref/source
         run: |
-          make TILES=y NO_APPLE_GCC=y \
-               NO_PKGCONFIG= BUILD_SDL2= BUILD_SDL2IMAGE= \
-               BUILD_FREETYPE= BUILD_LIBPNG= mac-app-tiles
+          make TILES=y NO_APPLE_GCC=y mac-app-tiles
+          perl mac/check-min-os.pl 11.0 \
+               "build/app-bundle-stage/Dungeon Crawl Stone Soup - Tiles.app"
 
       - name: Test
         # -test only exists in a FULLDEBUG build, and `debug` has to stay in
