@@ -236,17 +236,15 @@ jobs:
         shell: bash
         working-directory: crawl-ref/source
         run: |
-          # NO_APPLE_GCC=y skips the Apple block, whose SDK version detection
-          # does not understand a versionless MacOSX.sdk.
           # Fall back to 3 rather than letting an empty value turn into a bare
           # -j, which would run unlimited jobs in parallel.
           jobs=$(sysctl -n hw.ncpu 2>/dev/null || echo 3)
           if [[ -n "$TILES" ]]; then
-            make TILES=y NO_APPLE_GCC=y -j"$jobs"
+            make TILES=y -j"$jobs"
           elif [[ -n "$FULLDEBUG" ]]; then
-            make NO_APPLE_GCC=y debug -j"$jobs"
+            make debug -j"$jobs"
           else
-            make NO_APPLE_GCC=y -j"$jobs"
+            make -j"$jobs"
           fi
 
       - name: Check the binary runs
@@ -270,7 +268,7 @@ jobs:
         shell: bash
         working-directory: crawl-ref/source
         run: |
-          make TILES=y NO_APPLE_GCC=y mac-app-tiles
+          make TILES=y mac-app-tiles
           perl mac/check-min-os.pl 11.0 \
                "build/app-bundle-stage/Dungeon Crawl Stone Soup - Tiles.app"
 
@@ -283,7 +281,7 @@ jobs:
         if: matrix.variant.full_debug != ''
         shell: bash
         working-directory: crawl-ref/source
-        run: make NO_APPLE_GCC=y debug test-test
+        run: make debug test-test
 
       - name: Print crash reports
         if: failure()

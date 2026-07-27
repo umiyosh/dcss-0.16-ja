@@ -428,80 +428,52 @@ MARCH := $(uname_M)
 
 ifndef NO_AUTO_SDK
 
-# The SDK locations were moved in 10.8; this snippet tries to find them
-# there first, then reverts to the original location.
-XCODE_SDK_SUFFIX := Platforms/MacOSX.platform/Developer
-# Try to use xcode-select -p to find the current user-configured Xcode.app.
-XCODE_SELECT_PATH := $(shell xcode-select -p 2>/dev/null | sed 's/\/$$//')
-ifeq ($(shell test -e "$(XCODE_SELECT_PATH)/$(XCODE_SDK_SUFFIX)" || echo NOPE),)
-DEVELOPER_PATH := $(XCODE_SELECT_PATH)/$(XCODE_SDK_SUFFIX)
-else
-# Otherwise, try /Applications/Xcode.app.
-XCODE_DEFAULT_PATH := /Applications/Xcode.app/Contents/Developer
-ifeq ($(shell test -e "$(XCODE_DEFAULT_PATH)/$(XCODE_SDK_SUFFIX)" || echo NOPE),)
-DEVELOPER_PATH := $(XCODE_DEFAULT_PATH)/$(XCODE_SDK_SUFFIX)
-else
-# If all else fails, maybe it's in /Developer.
-DEVELOPER_PATH := /Developer
+# Ask the toolchain instead of guessing. This used to list
+# Platforms/MacOSX.platform/Developer/SDKs and take the lowest-sorting entry,
+# on the theory that the oldest SDK gives the most backward-compatible build.
+# A current Xcode ships one unversioned MacOSX.sdk plus symlinks to it, so the
+# sort picked "MacOSX.sdk", SDK_VER came out empty, and every make on macOS
+# died in the $(error) below (#8).
+#
+# SDKROOT is also what clang itself reads from the environment, so a value
+# already set there wins.
+ifndef SDKROOT
+SDKROOT := $(shell xcrun --sdk macosx --show-sdk-path 2>/dev/null)
 endif
-endif
+SDK_VER := $(shell xcrun --sdk macosx --show-sdk-version 2>/dev/null)
 
-# Find the oldest SDK available, in attempt to make this build as
-# backward-compatible as we possibly can.
-SDK_VER := $(shell ls $(DEVELOPER_PATH)/SDKs | sort -n | head -1 | perl -pe 's/^MacOSX//g;s/.sdk$$//g')
-
-ifeq ($(SDK_VER),10.4u)
-SDK_VER := 10.4
-endif
-
-ifndef SDK_VER
-$(error You do not seem to have any Mac OS X SDKs installed! This build is doomed to fail)
+ifeq ($(SDKROOT),)
+$(error No macOS SDK found. Install Xcode or the command line tools, or pass \
+SDKROOT= and NO_AUTO_SDK=y)
 endif
 
 endif
 
-ifndef SDK_VER
-ifeq ($(MARCH),ppc)
-SDK_VER := 10.4
-endif
-ifeq ($(MARCH),i386)
-SDK_VER := 10.4
-endif
-ifeq ($(MARCH),x86_64)
-ifdef TILES
-SDK_VER := 10.6
-else
-SDK_VER := 10.5
-endif
-endif
-endif
-
-# Mac OS X 10.4 adds a 'u' on the end of the SDK name. Everything
-# else is much easier to predict the name of.
-ifeq ($(SDK_VER),10.4)
-GCC_VER := 4.0
-SDKROOT := $(DEVELOPER_PATH)/SDKs/MacOSX$(SDK_VER)u.sdk
-else
-SDKROOT := $(DEVELOPER_PATH)/SDKs/MacOSX$(SDK_VER).sdk
-endif
-
-ifneq ($(shell test -d $(SDKROOT) || echo NOPE),)
-$(error The Mac OS X $(SDK_VER) SDK seems missing)
+# Compatibility is a deployment target, not an SDK choice: build against
+# whatever SDK is installed and state separately how old a macOS the result
+# must run on. The old code passed the SDK version here, which on a current
+# Xcode would demand the macOS of the build machine — the exact bug that
+# shipped a release nobody could open.
+# MACOS_DEPLOYMENT_TARGET comes from the Darwin section above.
+APPLE_SDK_FLAGS := -mmacosx-version-min=$(MACOS_DEPLOYMENT_TARGET)
+ifneq ($(SDKROOT),)
+APPLE_SDK_FLAGS := -isysroot $(SDKROOT) $(APPLE_SDK_FLAGS)
 endif
 
 ifdef BUILD_UNIVERSAL
-# [ds] 10.4 SDK g++-4.0 + x86_64 runs into SDL compile issues.
-CFLAGS_ARCH := -arch i386 -arch ppc -faltivec
-CFLAGS_DEPCC_ARCH := -arch i386
+# Universal 2. The pairing used to be i386 + ppc, neither of which a current
+# Xcode can target. Only arm64 is tested; x86_64 has no runner to try it on.
+CFLAGS_ARCH := -arch arm64 -arch x86_64
+CFLAGS_DEPCC_ARCH := -arch $(MARCH)
 NO_INLINE_DEPGEN := YesPlease
 else
 CFLAGS_ARCH := -arch $(MARCH)
 endif
 
-CC = $(GCC) $(CFLAGS_ARCH) -isysroot $(SDKROOT) -mmacosx-version-min=$(SDK_VER)
-CXX = $(GXX) $(CFLAGS_ARCH) -isysroot $(SDKROOT) -mmacosx-version-min=$(SDK_VER)
-DEPCC = $(GCC) $(or $(CFLAGS_DEPCC_ARCH),$(CFLAGS_ARCH)) -isysroot $(SDKROOT) -mmacosx-version-min=$(SDK_VER)
-DEPCXX = $(GXX) $(or $(CFLAGS_DEPCC_ARCH),$(CFLAGS_ARCH)) -isysroot $(SDKROOT) -mmacosx-version-min=$(SDK_VER)
+CC = $(GCC) $(CFLAGS_ARCH) $(APPLE_SDK_FLAGS)
+CXX = $(GXX) $(CFLAGS_ARCH) $(APPLE_SDK_FLAGS)
+DEPCC = $(GCC) $(or $(CFLAGS_DEPCC_ARCH),$(CFLAGS_ARCH)) $(APPLE_SDK_FLAGS)
+DEPCXX = $(GXX) $(or $(CFLAGS_DEPCC_ARCH),$(CFLAGS_ARCH)) $(APPLE_SDK_FLAGS)
 
 ifdef USE_ICC
 CC += -gcc-name=gcc-$(GCC_VER) -gxx-name=g++-$(GCC_VER)
@@ -1805,12 +1777,7 @@ mac-app-console: all
 # pick up. RELEASE=y only changes the zip names, giving
 # stone_soup-<version>-{console,tiles}-macosx.zip.
 #
-#   make NO_APPLE_GCC=y dist-macos DISTDIR=/somewhere
-#
-# NO_APPLE_GCC=y is not optional and cannot be moved in here: the Apple block
-# calls $(error) while the makefile is being read, so it kills this make
-# before any recipe runs. That applies to every target on a current Xcode,
-# not just this one (#8).
+#   make dist-macos DISTDIR=/somewhere
 #
 
 DISTDIR ?= dist
