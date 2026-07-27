@@ -3,6 +3,8 @@
 [![Build](https://github.com/umiyosh/dcss-0.16-ja/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/umiyosh/dcss-0.16-ja/actions/workflows/ci.yml)
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/license-GPL--2.0--or--later-blue.svg)](crawl-ref/licence.txt)
 
+<img width="1959" height="1239" alt="image" src="https://github.com/user-attachments/assets/472b368d-9aed-4c7c-91e5-8b2740b94ecc" />
+
 Dungeon Crawl Stone Soup (DCSS) 0.16 の日本語版です。
 ゲーム内容は 2015 年の 0.16 のままで、 [本家 DCSS](https://github.com/crawl/crawl) の最新版とは別物です。
 
