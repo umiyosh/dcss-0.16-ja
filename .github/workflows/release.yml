@@ -8,6 +8,12 @@ name: Release
 # workflow_dispatch builds the artifacts without publishing, which is the way
 # to try a change here without spending a tag on it. It needs at least one tag
 # reachable from the branch, or the version step below fails.
+#
+# The signing credentials live in the `macos-signing` environment rather than
+# in repository secrets, because `build` compiles and runs whatever the ref
+# happens to contain — a makefile, a shell script and 300 source files. Any
+# branch can be dispatched, so that job must never be able to reach a key.
+# `sign` runs only trusted refs and only touches already-built bundles.
 on:
   push:
     tags:
@@ -22,13 +28,9 @@ permissions:
   contents: read
 
 jobs:
-  macos:
-    name: macOS (Apple Silicon)
-    # macos-latest is fine again. This used to be pinned because the runner's
-    # own macOS became the minimum the release required, but the build now
-    # sets a deployment target and builds its dependencies from source
-    # instead of taking Homebrew's per-macOS bottles, so the runner version no
-    # longer leaks into the artifacts.
+  # No secrets, no environment: safe to run from any ref.
+  build:
+    name: Build (unsigned)
     runs-on: macos-latest
     timeout-minutes: 90
     env:
@@ -37,15 +39,10 @@ jobs:
       # the default the makefile compiles against. The check below is what
       # proves the artifacts really came out that way.
       MACOS_MIN_TARGET: "11.0"
-      # A step's `if` cannot read the secrets context, and cannot read env set
-      # by that same step either, so the presence check has to be reduced to a
-      # job-level boolean. Keeping it a boolean rather than the secret itself
-      # also avoids putting the certificate in every step's environment.
-      HAVE_SIGNING: ${{ secrets.MACOS_CERTIFICATE != ''
-                        && secrets.NOTARY_PRIVATE_KEY != '' }}
     steps:
       - name: Check out source
-        uses: actions/checkout@v7
+        # actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           # The version baked into the artifacts comes from `git describe
           # --tags`, which needs the history and the tags. fetch-depth: 0 gets
@@ -57,8 +54,14 @@ jobs:
       # from contrib/build-macos-deps.sh, which needs only cmake and curl.
       # Homebrew is deliberately not used — its bottles are built for the
       # runner's exact macOS, which is what tied an earlier release to it.
+      #
+      # Caching is confined to this job. GitHub scopes caches so a run can
+      # only read its own branch's and the default branch's, but keeping the
+      # signing job cache-free means a poisoned entry could at worst produce a
+      # bad bundle, never reach a key.
       - name: Cache the built dependencies
-        uses: actions/cache@v4
+        # actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
         with:
           path: |
             crawl-ref/source/contrib/install
@@ -74,55 +77,6 @@ jobs:
           git submodule update --init \
             crawl-ref/source/contrib/lua \
             crawl-ref/source/contrib/sqlite
-
-      # Everything below degrades to an ad-hoc signed, un-notarized bundle
-      # when the secrets are absent, so forks and manual runs still work.
-      - name: Set up signing and notarization
-        if: env.HAVE_SIGNING == 'true'
-        shell: bash
-        env:
-          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
-          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
-          NOTARY_PRIVATE_KEY: ${{ secrets.NOTARY_PRIVATE_KEY }}
-        run: |
-          # A dedicated keychain, thrown away with the runner. Importing into
-          # the login keychain would need its password and would leave the key
-          # sitting in a shared store.
-          keychain="$RUNNER_TEMP/signing.keychain-db"
-          password=$(uuidgen)
-
-          security create-keychain -p "$password" "$keychain"
-          security set-keychain-settings -lut 21600 "$keychain"
-          security unlock-keychain -p "$password" "$keychain"
-
-          echo "$MACOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.p12"
-          security import "$RUNNER_TEMP/cert.p12" -k "$keychain" \
-            -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-          rm -f "$RUNNER_TEMP/cert.p12"
-
-          # Without this codesign blocks on a GUI prompt for keychain access,
-          # which never gets answered on a runner.
-          security set-key-partition-list -S apple-tool:,apple: \
-            -k "$password" "$keychain" > /dev/null
-
-          # Put it in the search list, or codesign cannot find the identity.
-          security list-keychains -d user -s "$keychain" \
-            $(security list-keychains -d user | tr -d '"')
-
-          identity=$(security find-identity -v -p codesigning "$keychain" \
-                     | grep 'Developer ID Application' \
-                     | head -1 \
-                     | perl -ne 'print $1 if /"([^"]+)"/')
-          if [ -z "$identity" ]; then
-            echo "error: no Developer ID Application identity in the keychain" >&2
-            security find-identity -v -p codesigning "$keychain" >&2
-            exit 1
-          fi
-          echo "identity: $identity"
-          echo "MACOS_SIGN_IDENTITY=$identity" >> "$GITHUB_ENV"
-
-          echo "$NOTARY_PRIVATE_KEY" | base64 --decode > "$RUNNER_TEMP/notary.p8"
-          echo "NOTARY_KEY_PATH=$RUNNER_TEMP/notary.p8" >> "$GITHUB_ENV"
 
       - name: Show the version being built
         shell: bash
@@ -141,26 +95,18 @@ jobs:
       - name: Build release artifacts
         shell: bash
         working-directory: crawl-ref/source
-        # MACOS_SIGN_IDENTITY and NOTARY_KEY_PATH arrive through GITHUB_ENV
-        # from the signing step; these two are plain identifiers with no file
-        # to write, so they come straight from the secrets. All four have to
-        # be present or notarytool rejects the submission.
-        env:
-          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
-          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
         run: |
           # Fall back to 3 rather than letting an empty value turn into a bare
           # -j, which would run unlimited jobs in parallel.
           jobs=$(sysctl -n hw.ncpu 2>/dev/null || echo 3)
           make -j"$jobs" dist-macos DISTDIR="$GITHUB_WORKSPACE/dist"
 
-      - name: Check the zipped bundles still verify
+      - name: Check the bundles
         shell: bash
         run: |
-          # sign-app-bundle already proved the staged .app is self-contained
-          # and signed. What it cannot show is whether zip and unzip preserve
-          # that, which is the form users actually receive, nor which macOS
-          # the result actually demands.
+          # The bundles are ad-hoc signed at this point. What matters here is
+          # that they are self-contained and target the right macOS; the
+          # Developer ID signature comes later.
           cd "$GITHUB_WORKSPACE/dist"
           checker=$GITHUB_WORKSPACE/crawl-ref/source/mac/check-min-os.pl
           for zip in *.zip; do
@@ -170,36 +116,218 @@ jobs:
             echo "--- $zip"
             codesign --verify --deep --strict "$app"
             perl "$checker" "$MACOS_MIN_TARGET" "$app"
-            if [ "$HAVE_SIGNING" = "true" ]; then
-              # The whole point of stapling is that it survives the download,
-              # so check it on the unpacked copy rather than the staged one.
-              # spctl is the same question Gatekeeper asks on first launch.
-              xcrun stapler validate "$app"
-              spctl -a -vv "$app"
-            fi
           done
           rm -rf check
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload unsigned artifacts
+        # actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: macos-unsigned
+          path: dist/*.zip
+          if-no-files-found: error
+
+  # The only job that can reach the signing credentials. `environment` is what
+  # scopes them: environment secrets are not visible to jobs that do not
+  # reference the environment, and the environment's deployment branch policy
+  # is configured to allow only the default branch and release tags. The `if`
+  # below is a second, weaker fence so the job is not even queued elsewhere.
+  sign:
+    name: Sign and notarize
+    needs: build
+    if: >-
+      github.ref == 'refs/heads/develop'
+      || startsWith(github.ref, 'refs/tags/')
+    environment: macos-signing
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      TERM: dumb
+      MACOS_MIN_TARGET: "11.0"
+    steps:
+      # Only the signing scripts are needed; no history, no submodules, and
+      # nothing gets compiled in this job.
+      - name: Check out signing scripts
+        # actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          sparse-checkout: crawl-ref/source/mac
+          sparse-checkout-cone-mode: false
+
+      - name: Download unsigned artifacts
+        # actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: macos-unsigned
+          path: dist
+
+      - name: Load the signing key
+        shell: bash
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          NOTARY_PRIVATE_KEY: ${{ secrets.NOTARY_PRIVATE_KEY }}
+        run: |
+          # 0600 on everything written below. The runner is thrown away, but
+          # the cleanup step should not be the only thing standing between a
+          # key and another process on the box.
+          umask 077
+
+          # A dedicated keychain under RUNNER_TEMP, which is outside the
+          # workspace and so cannot be swept into an artifact or a cache.
+          keychain="$RUNNER_TEMP/signing.keychain-db"
+          password=$(uuidgen)
+
+          security create-keychain -p "$password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$password" "$keychain"
+
+          echo "$MACOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -k "$keychain" \
+            -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          rm -P -f "$RUNNER_TEMP/cert.p12"
+
+          # Without this codesign blocks on a GUI prompt for keychain access,
+          # which never gets answered on a runner.
+          security set-key-partition-list -S apple-tool:,apple: \
+            -k "$password" "$keychain" > /dev/null
+
+          # Put it in the search list, or codesign cannot find the identity.
+          security list-keychains -d user -s "$keychain" \
+            $(security list-keychains -d user | tr -d '"')
+
+          identity=$(security find-identity -v -p codesigning "$keychain" \
+                     | grep 'Developer ID Application' \
+                     | head -1 \
+                     | perl -ne 'print $1 if /"([^"]+)"/')
+          if [ -z "$identity" ]; then
+            echo "error: no Developer ID Application identity in the keychain" >&2
+            exit 1
+          fi
+
+          echo "$NOTARY_PRIVATE_KEY" | base64 --decode > "$RUNNER_TEMP/notary.p8"
+
+          # Only two things cross the step boundary, neither secret: the
+          # signing identity, which is public certificate metadata, and a
+          # path. The key material itself never goes near GITHUB_ENV.
+          echo "MACOS_SIGN_IDENTITY=$identity" >> "$GITHUB_ENV"
+          echo "NOTARY_KEY_PATH=$RUNNER_TEMP/notary.p8" >> "$GITHUB_ENV"
+          echo "identity: $identity"
+
+      - name: Sign, notarize and repack
+        shell: bash
+        env:
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+        run: |
+          cd "$GITHUB_WORKSPACE/dist"
+          scripts=$GITHUB_WORKSPACE/crawl-ref/source/mac
+          for zip in *.zip; do
+            echo "########## $zip"
+            rm -rf app && mkdir app
+            ditto -x -k "$zip" app
+            bundle=$(find app -maxdepth 1 -name '*.app')
+
+            # Replaces the ad-hoc signature from the build job with a
+            # Developer ID one, adding the hardened runtime and timestamp
+            # that notarization requires.
+            "$scripts/sign-app.sh" "$bundle"
+            "$scripts/notarize-app.sh" "$bundle"
+
+            rm -f "$zip"
+            ditto -c -k --keepParent "$bundle" "$zip"
+          done
+          rm -rf app
+
+      - name: Check the zipped bundles still verify
+        shell: bash
+        run: |
+          # Everything above ran on the staged bundle. This checks the form
+          # users actually receive: unpacked from the zip they download.
+          cd "$GITHUB_WORKSPACE/dist"
+          checker=$GITHUB_WORKSPACE/crawl-ref/source/mac/check-min-os.pl
+          for zip in *.zip; do
+            rm -rf check && mkdir check
+            ditto -x -k "$zip" check
+            app=$(find check -maxdepth 1 -name '*.app')
+            echo "--- $zip"
+            codesign --verify --deep --strict "$app"
+            perl "$checker" "$MACOS_MIN_TARGET" "$app"
+            # Stapling is what makes the first launch work offline; spctl is
+            # the same question Gatekeeper asks.
+            xcrun stapler validate "$app"
+            spctl -a -vv "$app"
+          done
+          rm -rf check
+
+      - name: Check no key material is about to be uploaded
+        shell: bash
+        run: |
+          # The upload glob is dist/*.zip, but a stray key in there would ship
+          # to everyone who downloads a release, so this is worth asserting
+          # rather than assuming.
+          cd "$GITHUB_WORKSPACE/dist"
+          found=$(find . -type f \
+                  \( -name '*.p8' -o -name '*.p12' -o -name '*.pem' \
+                     -o -name '*.key' -o -name 'AuthKey*' \
+                     -o -name '*keychain*' \) )
+          if [ -n "$found" ]; then
+            echo "error: key material in the upload directory:" >&2
+            echo "$found" >&2
+            exit 1
+          fi
+          if grep -rlq -- '-----BEGIN .*PRIVATE KEY-----' . 2>/dev/null; then
+            echo "error: a PEM private key header appears under dist/" >&2
+            exit 1
+          fi
+          echo "ok: nothing but the zips"
+
+      - name: Upload signed artifacts
+        # actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: macos
           path: dist/*.zip
           if-no-files-found: error
 
+      # Runs even when something above failed, which is exactly when leftover
+      # key material would otherwise sit on the runner.
+      - name: Destroy signing material
+        if: always()
+        shell: bash
+        run: |
+          security delete-keychain "$RUNNER_TEMP/signing.keychain-db" \
+            2>/dev/null || true
+          security list-keychains -d user -s login.keychain-db 2>/dev/null || true
+          # -P overwrites before unlinking; plain -f in case it is unsupported.
+          rm -P -f "$RUNNER_TEMP/notary.p8" "$RUNNER_TEMP/cert.p12" 2>/dev/null \
+            || rm -f "$RUNNER_TEMP/notary.p8" "$RUNNER_TEMP/cert.p12"
+          remaining=$(find "$RUNNER_TEMP" -maxdepth 1 \
+                      \( -name '*.p8' -o -name '*.p12' -o -name '*keychain*' \) \
+                      2>/dev/null || true)
+          if [ -n "$remaining" ]; then
+            echo "warning: still present under RUNNER_TEMP:" >&2
+            echo "$remaining" >&2
+          else
+            echo "ok: signing material removed"
+          fi
+
   release:
     name: Publish release
-    needs: macos
+    needs: sign
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
+      # By name, not merge-multiple: the run also carries the unsigned
+      # intermediate, and publishing that would undo the whole point.
+      - name: Download signed artifacts
+        # actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
+          name: macos
           path: dist
-          merge-multiple: true
 
       - name: Create release
         shell: bash
@@ -208,26 +336,17 @@ jobs:
           GH_REPO: ${{ github.repository }}
           TAG: ${{ github.ref_name }}
         run: |
-          # The .app is signed ad-hoc, not with a Developer ID, so macOS
-          # quarantines it on download and reports it as damaged. Say so here
-          # rather than letting every downloader hit it.
           cat > notes.md <<'EOF'
           ## ダウンロード
 
           - `*-tiles-macosx.zip` — タイル版（グラフィカル）
           - `*-console-macosx.zip` — コンソール版（文字のみ）
 
-          Apple Silicon (arm64) 専用です。Intel Mac では動きません。
+          Apple Silicon (arm64) 専用で、macOS 11 (Big Sur) 以降で動きます。
+          Intel Mac には対応していません。
 
-          ## 初回起動について
-
-          署名は ad-hoc のため、ダウンロードした `.app` は macOS に隔離され
-          「壊れているため開けません」と表示されます。次のコマンドで隔離属性を
-          外してから起動してください。
-
-          ```
-          xattr -dr com.apple.quarantine "Dungeon Crawl Stone Soup - Tiles.app"
-          ```
+          Apple の公証 (notarization) 済みなので、ダウンロードしてそのまま
+          ダブルクリックで起動します。
 
           ---
           EOF

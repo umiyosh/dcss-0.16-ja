@@ -53,7 +53,7 @@ endif
 
 .PHONY: all clean clean-stage stage-dir copy-executable copy-resources \
 	copy-tiledata assemble-app-bundle create-bundle-directory \
-	bundle-dylibs sign-app-bundle notarize-app-bundle
+	bundle-dylibs sign-app-bundle
 
 all: $(STAGING_DIR) $(ZIPPED_APP_DIR) \
 	clean-stage assemble-app-bundle zip-app-bundle
@@ -72,35 +72,12 @@ $(ZIPPED_APP_DIR):
 clean-stage:
 	rm -rf $(STAGING_DIR)/*
 
+# No notarization here on purpose. That needs the Developer ID credentials,
+# and this target runs on every build including untrusted branches, so it must
+# stay usable without any secret. mac/notarize-app.sh does the notarizing, and
+# only the release workflow's signing job — gated on a trusted ref — calls it.
 assemble-app-bundle: create-bundle-directory copy-executable copy-resources \
-		     copy-info-plist bundle-dylibs sign-app-bundle \
-		     notarize-app-bundle
-
-# Notarization is Apple checking the signed bundle on their side and recording
-# the verdict. Stapling then writes that verdict into the bundle, so the first
-# launch works without asking Apple again. Skipped without credentials, which
-# is what keeps plain local builds and other people's forks working.
-notarize-app-bundle:
-ifdef NOTARY_KEY_PATH
-	@if [ -z "$(NOTARY_KEY_ID)" ] || [ -z "$(NOTARY_ISSUER_ID)" ]; then \
-		echo "error: NOTARY_KEY_PATH is set but NOTARY_KEY_ID or" 1>&2; \
-		echo "NOTARY_ISSUER_ID is empty. All three are required." 1>&2; \
-		exit 1; \
-	fi
-	@echo "  submitting for notarization; this takes a few minutes"
-	ditto -c -k --keepParent $(BUNDLE_DIRNAME) $(STAGING_DIR)/notarize.zip
-	xcrun notarytool submit $(STAGING_DIR)/notarize.zip \
-		--key "$(NOTARY_KEY_PATH)" \
-		--key-id "$(NOTARY_KEY_ID)" \
-		--issuer "$(NOTARY_ISSUER_ID)" \
-		--wait
-	rm -f $(STAGING_DIR)/notarize.zip
-	xcrun stapler staple $(BUNDLE_DIRNAME)
-	xcrun stapler validate $(BUNDLE_DIRNAME)
-	spctl -a -vv $(BUNDLE_DIRNAME)
-else
-	@echo "  no notarization credentials; skipping"
-endif
+		     copy-info-plist bundle-dylibs sign-app-bundle
 
 # ditto rather than zip: it is what Apple documents for notarization
 # submissions, and it round-trips bundle metadata that zip can mangle.
