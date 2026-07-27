@@ -973,7 +973,8 @@ static void _handle_wizard_command()
             mpr_nojoin(MSGCH_WARN, jtrans("If you continue, your game will not be scored!"));
 #endif
 
-        if (!yes_or_no(jtransc("Do you really want to enter wizard mode?")))
+        if (!yes_or_no(
+                "%s", jtransc("Do you really want to enter wizard mode?")))
         {
             canned_msg(MSG_OK);
             return;
@@ -1058,7 +1059,8 @@ static void _enter_explore_mode()
         mprf(MSGCH_WARN, "If you continue, your game will not be scored!");
 #endif
 
-        if (!yes_or_no(jtransc("Do you really want to enter explore mode?")))
+        if (!yes_or_no(
+                "%s", jtransc("Do you really want to enter explore mode?")))
         {
             canned_msg(MSG_OK);
             return;
@@ -2264,7 +2266,10 @@ void process_command(command_type cmd)
 
     case CMD_QUIT:
         if (crawl_state.disables[DIS_CONFIRMATIONS]
-            || yes_or_no(jtransc("Are you sure you want to abandon this character and quit the game?")))
+            || yes_or_no(
+                "%s",
+                jtransc("Are you sure you want to abandon this character "
+                        "and quit the game?")))
         {
             ouch(INSTANT_DEATH, KILLED_BY_QUITTING);
         }

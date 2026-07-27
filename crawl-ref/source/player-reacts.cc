@@ -478,7 +478,7 @@ static void _handle_recitation(int step)
                 speech += closure;
             }
         }
-        mprf(MSGCH_DURATION, speech.c_str());
+        mprf(MSGCH_DURATION, "%s", speech.c_str());
         mpr(jtrans("You feel short of breath."));
         you.increase_duration(DUR_BREATH_WEAPON, random2(10) + random2(30));
     }

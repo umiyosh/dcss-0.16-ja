@@ -106,7 +106,7 @@ include Makefile.obj
 
 CFOTHERS := -pipe $(EXTERNAL_FLAGS)
 CFWARN := 
-CFWARN_L := -Wall -Wformat-security -Wundef
+CFWARN_L := -Wall -Werror=format-security -Wundef
 
 DEFINES := $(EXTERNAL_DEFINES)
 

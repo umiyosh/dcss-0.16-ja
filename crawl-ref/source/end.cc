@@ -167,7 +167,7 @@ NORETURN void end(int exit_code, bool print_error, const char *format, ...)
     if (need_pause && exit_code && !crawl_state.game_is_arena()
         && !crawl_state.seen_hups && !crawl_state.test)
     {
-        fprintf(stderr, jtranslnc("Hit Enter to continue...\n"));
+        fprintf(stderr, "%s", jtranslnc("Hit Enter to continue...\n"));
         getchar();
     }
 #else

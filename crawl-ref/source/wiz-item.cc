@@ -916,7 +916,10 @@ static void _debug_acquirement_stats(FILE *ostat)
         }
     }
     if (naked)
-        fprintf(ostat, jtranslnc("Not wearing or wielding anything.\n"));
+    {
+        fprintf(
+            ostat, "%s", jtranslnc("Not wearing or wielding anything.\n"));
+    }
 
     // Also print the skills, in case they matter.
     string skills = "\n" + jtransln("Skills:\n");
@@ -986,7 +989,7 @@ static void _debug_acquirement_stats(FILE *ostat)
         fprintf(ostat, (jtrans("Average combined pluses: %5.2f\n\n") + "\n\n").c_str(),
                 (float) total_plus / (float) acq_calls);
 
-        fprintf(ostat, jtranslnc("Egos (including artefacts):\n"));
+        fprintf(ostat, "%s", jtranslnc("Egos (including artefacts):\n"));
 
         const char* names[] =
         {
@@ -1045,7 +1048,7 @@ static void _debug_acquirement_stats(FILE *ostat)
         fprintf(ostat, (jtrans("Average plus: %5.2f\n\n") + "\n\n").c_str(),
                 (float) total_plus / (float) acq_calls);
 
-        fprintf(ostat, jtranslnc("Egos (excluding artefacts):\n"));
+        fprintf(ostat, "%s", jtranslnc("Egos (excluding artefacts):\n"));
 
         const char* names[] =
         {
@@ -1095,7 +1098,9 @@ static void _debug_acquirement_stats(FILE *ostat)
         if (subtype_quants[BOOK_RANDART_THEME]
             + subtype_quants[BOOK_RANDART_LEVEL] > 0)
         {
-            fprintf(ostat, jtranslnc("Primary disciplines/levels of randart books:\n"));
+            fprintf(ostat, "%s",
+                    jtranslnc(
+                        "Primary disciplines/levels of randart books:\n"));
 
             const char* names[] =
             {
@@ -1139,7 +1144,8 @@ static void _debug_acquirement_stats(FILE *ostat)
         if (subtype_quants[BOOK_MANUAL] > 0)
         {
             const int mannum = subtype_quants[BOOK_MANUAL];
-            fprintf(ostat, ("\n" + jtransln("Manuals:\n")).c_str());
+            fprintf(
+                ostat, "%s", ("\n" + jtransln("Manuals:\n")).c_str());
             for (skill_type sk = SK_FIRST_SKILL; sk <= SK_LAST_SKILL; ++sk)
             {
                 const int k = 200 + sk;
