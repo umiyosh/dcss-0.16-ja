@@ -52,13 +52,13 @@ xattr -dr com.apple.quarantine "/Applications/Dungeon Crawl Stone Soup - Tiles.a
 ```bash
 git -c url."https://github.com/".insteadOf=git://github.com/ \
     submodule update --init crawl-ref/source/contrib/lua crawl-ref/source/contrib/sqlite
-make -C crawl-ref/source TILES=y NO_APPLE_GCC=y -j6
+make -C crawl-ref/source TILES=y -j6
 ```
 
 配布用のコンソール版とタイル版をまとめて作る場合は、次を実行します。
 
 ```bash
-make -C crawl-ref/source NO_APPLE_GCC=y -j6 dist-macos
+make -C crawl-ref/source -j6 dist-macos
 ```
 
 ビルドした `crawl` は、データファイルを相対パスで探すため

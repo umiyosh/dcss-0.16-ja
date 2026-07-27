@@ -87,14 +87,10 @@ jobs:
         shell: bash
         working-directory: crawl-ref/source
         run: |
-          # NO_APPLE_GCC=y skips the Apple block, whose SDK version detection
-          # does not understand a versionless MacOSX.sdk (#8). It has to be on
-          # this make, not just the sub-makes: the block errors out at parse
-          # time. Fall back to 3 rather than letting an empty value turn into
-          # a bare -j, which would run unlimited jobs in parallel.
+          # Fall back to 3 rather than letting an empty value turn into a bare
+          # -j, which would run unlimited jobs in parallel.
           jobs=$(sysctl -n hw.ncpu 2>/dev/null || echo 3)
-          make NO_APPLE_GCC=y -j"$jobs" dist-macos \
-               DISTDIR="$GITHUB_WORKSPACE/dist"
+          make -j"$jobs" dist-macos DISTDIR="$GITHUB_WORKSPACE/dist"
 
       - name: Check the zipped bundles still verify
         shell: bash

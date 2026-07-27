@@ -24,15 +24,18 @@ make -C crawl-ref/source nondebugtest    # 非debugビルド向け（-test は�
 
 ### macOS でのビルドの罠（2026-07 時点で実測）
 
-1. **SDK 検出が失敗して即停止する** — `Makefile:419` が
-   `ls $DEVELOPER_PATH/SDKs | sort -n | head -1` で最古の SDK 名から版数を取る前提だが、
-   現行 Xcode は `MacOSX.sdk`（版数なし）なので `SDK_VER` が空になり
-   `You do not seem to have any Mac OS X SDKs installed!` で止まる。
-   `NO_APPLE_GCC=y` を渡して Apple 専用ブロックごと飛ばせば通過する（検証済み）:
+1. **Apple ブロックは SDK を `xcrun` に聞く**（#8 で修正済み）。以前は
+   `ls $DEVELOPER_PATH/SDKs | sort -n | head -1` で「最古の SDK」を選んでいたが、現行 Xcode は
+   版数なしの `MacOSX.sdk` を持つためこれが選ばれて `SDK_VER` が空になり、
+   `You do not seem to have any Mac OS X SDKs installed!` で全ターゲットが止まっていた。
+   **`NO_APPLE_GCC=y` はもう不要。**
 
-   ```bash
-   make -C crawl-ref/source NO_APPLE_GCC=y -j4
-   ```
+   ここで渡すのは `-isysroot $(SDKROOT)` と
+   **`-mmacosx-version-min=$(MACOS_DEPLOYMENT_TARGET)`**。以前は後者に SDK 版数を渡していたが、
+   これは SDK と deployment target の混同で、有効化すると成果物がビルドマシンの macOS を
+   要求するようになる。触るときは必ず区別すること。
+
+   `SDKROOT` を自分で指定したいときは環境変数か make 変数で渡せば尊重される。
 
 2. **submodule が要るのは lua と sqlite の 2 つだけ** — この 2 つは今も contrib の
    submodule からビルドする。`.gitmodules` の URL は 11 件すべて `git://github.com/...` で、
@@ -52,7 +55,7 @@ make -C crawl-ref/source nondebugtest    # 非debugビルド向け（-test は�
 **上流から commit 固定・sha256 検証つきで取得し、静的ライブラリとしてビルド**する。
 `contrib/Makefile` が macOS でこの 5 つをスクリプトに回し、成果物は
 `contrib/install/$(ARCH)/` に入る。Makefile 側の `BUILD_SDL2` などは Darwin 既定で有効なので、
-`make TILES=y NO_APPLE_GCC=y` だけで一式が揃う。
+`make TILES=y` だけで一式が揃う。
 
 **Homebrew は使わない。** bottle はビルドマシンの macOS 版数向けに作られているため、
 それを同梱した `.app` はその版数以降でしか起動しない。実際 `macos-latest` が macOS 26 に
@@ -77,8 +80,8 @@ make -C crawl-ref/source nondebugtest    # 非debugビルド向け（-test は�
 ### macOS アプリバンドル
 
 ```bash
-make -C crawl-ref/source TILES=y NO_APPLE_GCC=y -j8 mac-app-tiles
-make -C crawl-ref/source NO_APPLE_GCC=y -j8 mac-app-console
+make -C crawl-ref/source TILES=y -j8 mac-app-tiles
+make -C crawl-ref/source -j8 mac-app-console
 ```
 
 `mac/Makefile.app-bundle` が `-j1` で呼ばれ、`build/app-bundle-stage/` に `.app` を組み立てて
@@ -88,11 +91,9 @@ tiles と console を続けて作ると後者が前者を上書きする（zip �
 配布用に両方まとめて作るなら `dist-macos`。`$(DISTDIR)`（既定 `dist`）に zip が 2 つ揃う。
 
 ```bash
-make -C crawl-ref/source NO_APPLE_GCC=y -j8 dist-macos DISTDIR=/path/to/dist
+make -C crawl-ref/source -j8 dist-macos DISTDIR=/path/to/dist
 ```
 
-`NO_APPLE_GCC=y` は**外側の make に必要**。Apple ブロックの `$(error)` は makefile の
-読み込み時に評価されるため、サブ make にだけ渡しても手遅れになる（#8）。
 console → tiles の順に 2 回フルビルドする（`.cflags` が変わると全再コンパイルになるため）。
 依存ライブラリはスタンプで持ち越されるので焼き直されない。
 
