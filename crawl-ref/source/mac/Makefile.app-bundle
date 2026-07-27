@@ -72,13 +72,18 @@ $(ZIPPED_APP_DIR):
 clean-stage:
 	rm -rf $(STAGING_DIR)/*
 
+# No notarization here on purpose. That needs the Developer ID credentials,
+# and this target runs on every build including untrusted branches, so it must
+# stay usable without any secret. mac/notarize-app.sh does the notarizing, and
+# only the release workflow's signing job — gated on a trusted ref — calls it.
 assemble-app-bundle: create-bundle-directory copy-executable copy-resources \
 		     copy-info-plist bundle-dylibs sign-app-bundle
 
+# ditto rather than zip: it is what Apple documents for notarization
+# submissions, and it round-trips bundle metadata that zip can mangle.
 zip-app-bundle:
 	rm -f $(ZIPPED_APP_DIR)/$(ZIP_NAME)
-	cd $(STAGING_DIR) && \
-		zip -r $(ZIPPED_APP_DIR)/$(ZIP_NAME) $(BUNDLE_NAME).app
+	ditto -c -k --keepParent $(BUNDLE_DIRNAME) $(ZIPPED_APP_DIR)/$(ZIP_NAME)
 
 create-bundle-directory: $(BUNDLE_DIRNAME)
 
@@ -123,13 +128,12 @@ copy-resources:
 bundle-dylibs:
 	perl $(CRAWL_SRC)/mac/bundle-dylibs.pl $(BUNDLED_BINARY) $(FRAMEWORKS)
 
-# Ad-hoc, so the bundle merely runs locally; it is not a Developer ID
-# signature and does not get it past Gatekeeper on a downloaded copy.
-# install_name_tool has invalidated the executable's signature by this point,
-# so this is what makes it loadable again.
+# Ad-hoc unless MACOS_SIGN_IDENTITY names a real one, in which case the
+# bundle also gets the hardened runtime and a secure timestamp so it can be
+# notarized. install_name_tool has invalidated the executable's signature by
+# this point, so this is also what makes it loadable again.
 sign-app-bundle:
-	codesign --force --deep --sign - $(BUNDLE_DIRNAME)
-	codesign --verify --deep --strict $(BUNDLE_DIRNAME)
+	$(CRAWL_SRC)/mac/sign-app.sh $(BUNDLE_DIRNAME)
 	@leaks=`find $(BUNDLE_DIRNAME) -type f \( -perm +111 -o -name '*.dylib' \) \
 	          -exec otool -L {} + 2>/dev/null \
 	        | grep -E '/opt/homebrew|/usr/local/' || true`; \
