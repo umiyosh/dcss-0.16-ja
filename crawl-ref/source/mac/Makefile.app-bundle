@@ -82,6 +82,11 @@ assemble-app-bundle: create-bundle-directory copy-executable copy-resources \
 # is what keeps plain local builds and other people's forks working.
 notarize-app-bundle:
 ifdef NOTARY_KEY_PATH
+	@if [ -z "$(NOTARY_KEY_ID)" ] || [ -z "$(NOTARY_ISSUER_ID)" ]; then \
+		echo "error: NOTARY_KEY_PATH is set but NOTARY_KEY_ID or" 1>&2; \
+		echo "NOTARY_ISSUER_ID is empty. All three are required." 1>&2; \
+		exit 1; \
+	fi
 	@echo "  submitting for notarization; this takes a few minutes"
 	ditto -c -k --keepParent $(BUNDLE_DIRNAME) $(STAGING_DIR)/notarize.zip
 	xcrun notarytool submit $(STAGING_DIR)/notarize.zip \

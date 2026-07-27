@@ -141,6 +141,13 @@ jobs:
       - name: Build release artifacts
         shell: bash
         working-directory: crawl-ref/source
+        # MACOS_SIGN_IDENTITY and NOTARY_KEY_PATH arrive through GITHUB_ENV
+        # from the signing step; these two are plain identifiers with no file
+        # to write, so they come straight from the secrets. All four have to
+        # be present or notarytool rejects the submission.
+        env:
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
         run: |
           # Fall back to 3 rather than letting an empty value turn into a bare
           # -j, which would run unlimited jobs in parallel.
