@@ -923,7 +923,7 @@ void down_stairs(dungeon_feature_type force_stair, bool force_known_shaft,
         mpr(jtrans("To return, you must find a gate leading back."));
         if (you_worship(GOD_CHEIBRIADOS))
         {
-            mprf(MSGCH_GOD, GOD_CHEIBRIADOS,
+            mprf(MSGCH_GOD, GOD_CHEIBRIADOS, "%s",
                  jtransc("You feel Cheibriados slowing down the madness of this place."));
         }
 

@@ -358,7 +358,8 @@ static void _describe_book(const spellbook_contents &book,
     if (source_item)
     {
         description.cprintf("\n ");
-        description.cprintf(jtransc("Spells                             Type                      Level"));
+        description.cprintf("%s",
+            jtransc("Spells                             Type                      Level"));
     }
     description.cprintf("\n");
 
@@ -473,8 +474,12 @@ void list_spellset(const spellset &spells, const monster_info *mon_owner,
     description.textcolour(LIGHTGREY);
 
     if (can_memorize)
-        description.cprintf(jtransc(", to memorize it or to forget it"));
-    description.cprintf(jtransc("Select a spell to read its description"));
+    {
+        description.cprintf(
+            "%s", jtransc(", to memorize it or to forget it"));
+    }
+    description.cprintf(
+        "%s", jtransc("Select a spell to read its description"));
 
     spell_scroller ssc(spells, mon_owner, source_item);
     ssc.wrap_formatted_string(description);

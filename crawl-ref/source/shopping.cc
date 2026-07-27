@@ -2600,7 +2600,7 @@ void ShoppingListMenu::draw_title()
                                    title->quantity, title->text.c_str(),
                                    total_cost);
 
-        fs.cprintf(header_left.c_str());
+        fs.cprintf("%s", header_left.c_str());
         fs.display();
 
 #ifdef USE_TILE_WEB
