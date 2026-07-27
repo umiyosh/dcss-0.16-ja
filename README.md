@@ -4,6 +4,7 @@
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/license-GPL--2.0--or--later-blue.svg)](crawl-ref/licence.txt)
 
 Dungeon Crawl Stone Soup (DCSS) 0.16 の日本語版です。
+ゲーム内容は 2015 年の 0.16 のままで、 [本家 DCSS](https://github.com/crawl/crawl) の最新版とは別物です。
 
 いまは WebTiles でオンラインプレイするのが主流ですが、macOS のタイル版を
 ローカルで遊んでみたくて、現行の macOS でも動くアプリをビルドしました。
@@ -67,8 +68,6 @@ make -C crawl-ref/source -j6 dist-macos
 このリポジトリは
 [dplusplus/dcss-0.16-ja](https://github.com/dplusplus/dcss-0.16-ja) を元にしています。
 [石鍋試験鯖](http://lazy-life.ddo.jp/wiki/index.php?cmd=read&page=DCSS%2F%E6%97%A5%E6%9C%AC%E8%AA%9E%E7%89%88)には日本語版のweb tileがあるので登録してそちらであそぶこともできます。
-ゲーム内容は 2015 年の 0.16 のままで、
-[本家 DCSS](https://github.com/crawl/crawl) の最新版とは別物です。
 
 DCSS 本体と本リポジトリでの変更は GPL v2 以降で配布します。
 詳細は [ライセンス全文](crawl-ref/licence.txt) と
