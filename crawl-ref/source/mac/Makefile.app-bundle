@@ -53,7 +53,7 @@ endif
 
 .PHONY: all clean clean-stage stage-dir copy-executable copy-resources \
 	copy-tiledata assemble-app-bundle create-bundle-directory \
-	bundle-dylibs sign-app-bundle
+	bundle-dylibs sign-app-bundle notarize-app-bundle
 
 all: $(STAGING_DIR) $(ZIPPED_APP_DIR) \
 	clean-stage assemble-app-bundle zip-app-bundle
@@ -73,12 +73,35 @@ clean-stage:
 	rm -rf $(STAGING_DIR)/*
 
 assemble-app-bundle: create-bundle-directory copy-executable copy-resources \
-		     copy-info-plist bundle-dylibs sign-app-bundle
+		     copy-info-plist bundle-dylibs sign-app-bundle \
+		     notarize-app-bundle
 
+# Notarization is Apple checking the signed bundle on their side and recording
+# the verdict. Stapling then writes that verdict into the bundle, so the first
+# launch works without asking Apple again. Skipped without credentials, which
+# is what keeps plain local builds and other people's forks working.
+notarize-app-bundle:
+ifdef NOTARY_KEY_PATH
+	@echo "  submitting for notarization; this takes a few minutes"
+	ditto -c -k --keepParent $(BUNDLE_DIRNAME) $(STAGING_DIR)/notarize.zip
+	xcrun notarytool submit $(STAGING_DIR)/notarize.zip \
+		--key "$(NOTARY_KEY_PATH)" \
+		--key-id "$(NOTARY_KEY_ID)" \
+		--issuer "$(NOTARY_ISSUER_ID)" \
+		--wait
+	rm -f $(STAGING_DIR)/notarize.zip
+	xcrun stapler staple $(BUNDLE_DIRNAME)
+	xcrun stapler validate $(BUNDLE_DIRNAME)
+	spctl -a -vv $(BUNDLE_DIRNAME)
+else
+	@echo "  no notarization credentials; skipping"
+endif
+
+# ditto rather than zip: it is what Apple documents for notarization
+# submissions, and it round-trips bundle metadata that zip can mangle.
 zip-app-bundle:
 	rm -f $(ZIPPED_APP_DIR)/$(ZIP_NAME)
-	cd $(STAGING_DIR) && \
-		zip -r $(ZIPPED_APP_DIR)/$(ZIP_NAME) $(BUNDLE_NAME).app
+	ditto -c -k --keepParent $(BUNDLE_DIRNAME) $(ZIPPED_APP_DIR)/$(ZIP_NAME)
 
 create-bundle-directory: $(BUNDLE_DIRNAME)
 
@@ -123,13 +146,12 @@ copy-resources:
 bundle-dylibs:
 	perl $(CRAWL_SRC)/mac/bundle-dylibs.pl $(BUNDLED_BINARY) $(FRAMEWORKS)
 
-# Ad-hoc, so the bundle merely runs locally; it is not a Developer ID
-# signature and does not get it past Gatekeeper on a downloaded copy.
-# install_name_tool has invalidated the executable's signature by this point,
-# so this is what makes it loadable again.
+# Ad-hoc unless MACOS_SIGN_IDENTITY names a real one, in which case the
+# bundle also gets the hardened runtime and a secure timestamp so it can be
+# notarized. install_name_tool has invalidated the executable's signature by
+# this point, so this is also what makes it loadable again.
 sign-app-bundle:
-	codesign --force --deep --sign - $(BUNDLE_DIRNAME)
-	codesign --verify --deep --strict $(BUNDLE_DIRNAME)
+	$(CRAWL_SRC)/mac/sign-app.sh $(BUNDLE_DIRNAME)
 	@leaks=`find $(BUNDLE_DIRNAME) -type f \( -perm +111 -o -name '*.dylib' \) \
 	          -exec otool -L {} + 2>/dev/null \
 	        | grep -E '/opt/homebrew|/usr/local/' || true`; \

@@ -37,6 +37,12 @@ jobs:
       # the default the makefile compiles against. The check below is what
       # proves the artifacts really came out that way.
       MACOS_MIN_TARGET: "11.0"
+      # A step's `if` cannot read the secrets context, and cannot read env set
+      # by that same step either, so the presence check has to be reduced to a
+      # job-level boolean. Keeping it a boolean rather than the secret itself
+      # also avoids putting the certificate in every step's environment.
+      HAVE_SIGNING: ${{ secrets.MACOS_CERTIFICATE != ''
+                        && secrets.NOTARY_PRIVATE_KEY != '' }}
     steps:
       - name: Check out source
         uses: actions/checkout@v7
@@ -68,6 +74,55 @@ jobs:
           git submodule update --init \
             crawl-ref/source/contrib/lua \
             crawl-ref/source/contrib/sqlite
+
+      # Everything below degrades to an ad-hoc signed, un-notarized bundle
+      # when the secrets are absent, so forks and manual runs still work.
+      - name: Set up signing and notarization
+        if: env.HAVE_SIGNING == 'true'
+        shell: bash
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          NOTARY_PRIVATE_KEY: ${{ secrets.NOTARY_PRIVATE_KEY }}
+        run: |
+          # A dedicated keychain, thrown away with the runner. Importing into
+          # the login keychain would need its password and would leave the key
+          # sitting in a shared store.
+          keychain="$RUNNER_TEMP/signing.keychain-db"
+          password=$(uuidgen)
+
+          security create-keychain -p "$password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$password" "$keychain"
+
+          echo "$MACOS_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -k "$keychain" \
+            -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          rm -f "$RUNNER_TEMP/cert.p12"
+
+          # Without this codesign blocks on a GUI prompt for keychain access,
+          # which never gets answered on a runner.
+          security set-key-partition-list -S apple-tool:,apple: \
+            -k "$password" "$keychain" > /dev/null
+
+          # Put it in the search list, or codesign cannot find the identity.
+          security list-keychains -d user -s "$keychain" \
+            $(security list-keychains -d user | tr -d '"')
+
+          identity=$(security find-identity -v -p codesigning "$keychain" \
+                     | grep 'Developer ID Application' \
+                     | head -1 \
+                     | perl -ne 'print $1 if /"([^"]+)"/')
+          if [ -z "$identity" ]; then
+            echo "error: no Developer ID Application identity in the keychain" >&2
+            security find-identity -v -p codesigning "$keychain" >&2
+            exit 1
+          fi
+          echo "identity: $identity"
+          echo "MACOS_SIGN_IDENTITY=$identity" >> "$GITHUB_ENV"
+
+          echo "$NOTARY_PRIVATE_KEY" | base64 --decode > "$RUNNER_TEMP/notary.p8"
+          echo "NOTARY_KEY_PATH=$RUNNER_TEMP/notary.p8" >> "$GITHUB_ENV"
 
       - name: Show the version being built
         shell: bash
@@ -103,11 +158,18 @@ jobs:
           checker=$GITHUB_WORKSPACE/crawl-ref/source/mac/check-min-os.pl
           for zip in *.zip; do
             rm -rf check && mkdir check
-            unzip -q "$zip" -d check
+            ditto -x -k "$zip" check
             app=$(find check -maxdepth 1 -name '*.app')
             echo "--- $zip"
             codesign --verify --deep --strict "$app"
             perl "$checker" "$MACOS_MIN_TARGET" "$app"
+            if [ "$HAVE_SIGNING" = "true" ]; then
+              # The whole point of stapling is that it survives the download,
+              # so check it on the unpacked copy rather than the staged one.
+              # spctl is the same question Gatekeeper asks on first launch.
+              xcrun stapler validate "$app"
+              spctl -a -vv "$app"
+            fi
           done
           rm -rf check
 
