@@ -576,7 +576,7 @@ static bool _game_defined(const newgame_def& ng)
            && ng.job != JOB_UNKNOWN;
 }
 
-static const int SCROLLER_MARGIN_X  = 18;
+static const int SCROLLER_MARGIN_X  = 25;
 static const int NAME_START_Y       = 5;
 static const int GAME_MODES_START_Y = 7;
 static const int GAME_MODES_WIDTH   = 60;
@@ -633,14 +633,14 @@ again:
     _construct_save_games_menu(save_games, chars);
 
     NoSelectTextItem* tmp = new NoSelectTextItem();
-    tmp->set_text("Enter your name:");
+    tmp->set_text(jtrans("Enter your name:"));
     tmp->set_bounds(coord_def(1, NAME_START_Y),
                     coord_def(SCROLLER_MARGIN_X, NAME_START_Y + 1));
     freeform->attach_item(tmp);
     tmp->set_visible(true);
 
     tmp = new NoSelectTextItem();
-    tmp->set_text("Choices:");
+    tmp->set_text(jtrans("Choices:"));
     tmp->set_bounds(coord_def(1, GAME_MODES_START_Y),
                     coord_def(SCROLLER_MARGIN_X, GAME_MODES_START_Y + 1));
     freeform->attach_item(tmp);
@@ -649,7 +649,7 @@ again:
     if (num_saves)
     {
         tmp = new NoSelectTextItem();
-        tmp->set_text("Saved games:");
+        tmp->set_text(jtrans("Saved games:"));
         tmp->set_bounds(coord_def(1, save_games_start_y),
                         coord_def(SCROLLER_MARGIN_X, save_games_start_y + 1));
         freeform->attach_item(tmp);
@@ -666,12 +666,12 @@ again:
     else
 #endif
         text += "\n";
-    text +=       "You can type your name; if you leave it blank you will be "
-                  "asked later.\n"
-                  "Press Enter to start";
+    text += jtrans("You can type your name; if you leave it blank you will be "
+                   "asked later.\n"
+                   "Press Enter to start");
     // TODO: this should include a description of that character.
     if (_game_defined(defaults))
-        text += ", Tab to repeat the last game's choice";
+        text += jtrans(", Tab to repeat the last game's choice");
     text += "してください。\n";
     tmp->set_text(text);
     tmp->set_bounds(coord_def(1, help_start), coord_def(max_col - 1, help_end));
@@ -887,7 +887,7 @@ again:
                 textcolour(RED);
                 cgotoxy(SCROLLER_MARGIN_X ,GAME_MODES_START_Y - 1);
                 clear_to_end_of_line();
-                cprintf("That's a silly name");
+                cprintf("%s", jtransc("That's a silly name"));
             }
             continue;
 

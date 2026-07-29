@@ -17250,6 +17250,10 @@ Loading complete, press any key to start.
 
 読み込み完了しました。任意のキーを押して開始してください。
 %%%%
+Hello, welcome to %s %s!
+
+%s %sへようこそ！
+%%%%
 Dungeon Crawl
 
 ダンジョンクロウル
@@ -17333,7 +17337,19 @@ Enterを押して開始
 %%%%
 , Tab to repeat the last game's choice
 
-するか、Tabを押して前選んだものと同じにするか選択
+するか、Tabで前回の選択を繰り返すかを選択
+%%%%
+What is your name today?
+
+プレイヤー名を入力してください:
+%%%%
+That's a silly name
+
+その名前は使用できません
+%%%%
+That's a silly name!
+
+その名前は使用できません！
 %%%%
 Enter your choice of teams:
 
