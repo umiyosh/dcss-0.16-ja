@@ -35,6 +35,7 @@
 #include "ng-init.h"
 #include "state.h"
 #include "stringutil.h"
+#include "unicode.h"
 #include "zotdef.h"
 
 static const string test_dir = "test";
@@ -79,11 +80,18 @@ static int crawl_script_args(lua_State *ls)
     return clua_stringtable(ls, crawl_state.script_args);
 }
 
+static int crawl_string_width(lua_State *ls)
+{
+    lua_pushnumber(ls, strwidth(luaL_checkstring(ls, 1)));
+    return 1;
+}
+
 static const struct luaL_reg crawl_test_lib[] =
 {
     { "begin_test", crawl_begin_test },
     { "test_success", crawl_test_success },
     { "script_args", crawl_script_args },
+    { "string_width", crawl_string_width },
     { nullptr, nullptr }
 };
 

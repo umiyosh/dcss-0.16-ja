@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cerrno>
+#include <clocale>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -263,6 +264,17 @@ int main(int argc, char *argv[])
 # else
     setlocale(LC_ALL, "");
 # endif
+#endif
+#ifdef TARGET_OS_MACOSX
+    // Finder-launched apps can lack locale variables, leaving Japanese
+    // characters with no printable width in the macOS C locale.
+    const char *ctype_locale = setlocale(LC_CTYPE, nullptr);
+    if (!ctype_locale || !strcmp(ctype_locale, "C")
+                      || !strcmp(ctype_locale, "POSIX"))
+    {
+        if (!setlocale(LC_CTYPE, "C.UTF-8"))
+            setlocale(LC_CTYPE, "en_US.UTF-8");
+    }
 #endif
 #ifdef USE_TILE_WEB
     if (strcasecmp(nl_langinfo(CODESET), "UTF-8"))
