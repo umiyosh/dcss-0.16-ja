@@ -5,6 +5,7 @@
 #include <cwctype>
 
 #include "cio.h"
+#include "database.h"
 #include "end.h"
 #include "files.h"
 #include "format.h"
@@ -19,12 +20,14 @@ extern string init_file_error; // defined in main.cc
 // Eventually, this should be something more grand. {dlb}
 void opening_screen()
 {
-    string msg =
-    "<yellow>Hello, welcome to " CRAWL " " + string(Version::Long) + "!</yellow>\n"
-    "<brown>(c) Copyright 1997-2002 Linley Henzell, "
-    "2002-2014 Crawl DevTeam\n"
-    "Read the instructions for legal details."
-    "</brown> " ;
+    string msg = "<yellow>"
+        + make_stringf(jtransc("Hello, welcome to %s %s!"),
+                       CRAWL, Version::Long)
+        + "</yellow>\n"
+          "<brown>(c) Copyright 1997-2002 Linley Henzell, "
+          "2002-2014 Crawl DevTeam\n"
+          "Read the instructions for legal details."
+          "</brown> ";
 
     const bool init_found = init_file_error.empty();
 
@@ -62,7 +65,7 @@ static void _show_name_prompt(int where)
     cgotoxy(1, where);
     textcolour(CYAN);
 
-    cprintf("\nWhat is your name today? ");
+    cprintf("\n%s ", jtransc("What is your name today?"));
 
     textcolour(LIGHTGREY);
 }
@@ -76,7 +79,7 @@ bool is_good_name(const string& name, bool blankOK, bool verbose)
             return true;
 
         if (verbose)
-            cprintf("\nThat's a silly name!\n");
+            cprintf("\n%s\n", jtransc("That's a silly name!"));
         return false;
     }
 
