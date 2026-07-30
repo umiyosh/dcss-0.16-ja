@@ -1,3 +1,3 @@
 #!/bin/sh
 
-exec ./mac/mac-app-universal-build "$@" mac-app-console
+exec ./mac/mac-app-universal-build RELEASE=y "$@" mac-app-console

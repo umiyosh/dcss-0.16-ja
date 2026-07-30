@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# [ds] NO_INLINE_DEPGEN because inline depgen behaves badly when specifying
-# multiple -arch flags to the Mac gcc.
-exec make BUILD_UNIVERSAL=y NO_INLINE_DEPGEN=y APPLE_GCC=y \
-          EXTRA_FLAGS='-DWIZARD' "$@"
+# Kept as a compatibility entry point for older tooling. Releases are
+# intentionally built for the host architecture: the supported download is
+# Apple Silicon-only, and the bundled dependencies are built for that target.
+exec make "$@"
