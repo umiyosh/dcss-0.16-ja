@@ -7,6 +7,7 @@
 #include <cerrno>
 #include <sys/stat.h>
 
+#include "database.h"
 #include "files.h"
 #include "format.h"
 #include "initfile.h"
