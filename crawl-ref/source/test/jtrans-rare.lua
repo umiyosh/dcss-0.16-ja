@@ -16,6 +16,23 @@ local cases = {
   { "Stopped running for exclusion.", "除外地点のため移動を中止した。" },
   { "Warning: monster '%s' is not yet fully coded.",
     "警告: モンスター「%s」はまだ完全には実装されていない。" },
+  { "The demon of the infinite void smiles upon you.",
+    "無限の虚空に棲まう悪魔があなたに微笑みかけた。" },
+  { "If you continue, your game will not be scored!",
+    "続行した場合、スコア一覧には載りません！" },
+  { "The %s foams!", "%sは泡立った！" },
+  { "As you try to use %s, it moves away!",
+    "%sを使おうとすると、それは離れていった！" },
+  { "monster lookup", "モンスター" },
+  { "spell lookup", "呪文" },
+  { "skill lookup", "スキル" },
+  { "ability lookup", "能力" },
+  { "card lookup", "カード" },
+  { "item lookup", "アイテム" },
+  { "feature lookup", "地形" },
+  { "god lookup", "神" },
+  { "branch lookup", "ダンジョンの分岐" },
+  { "cloud lookup", "雲" },
 }
 
 for _, case in ipairs(cases) do
