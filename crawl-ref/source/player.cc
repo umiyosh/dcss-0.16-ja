@@ -3474,14 +3474,14 @@ void level_change(bool skip_attribute_increase)
 #if TAG_MAJOR_VERSION == 34
         if (you.species == SP_DJINNI)
             // Djinn don't HP/MP
-            sprintf(buf, "EP: %d/%d",
-                    min(you.hp, note_maxhp + note_maxmp),
-                    note_maxhp + note_maxmp);
+            snprintf(buf, sizeof(buf), "EP: %d/%d",
+                     min(you.hp, note_maxhp + note_maxmp),
+                     note_maxhp + note_maxmp);
         else
 #endif
-            sprintf(buf, "HP: %d/%d MP: %d/%d",
-                    min(you.hp, note_maxhp), note_maxhp,
-                    min(you.magic_points, note_maxmp), note_maxmp);
+            snprintf(buf, sizeof(buf), "HP: %d/%d MP: %d/%d",
+                     min(you.hp, note_maxhp), note_maxhp,
+                     min(you.magic_points, note_maxmp), note_maxmp);
         take_note(Note(NOTE_XP_LEVEL_CHANGE, you.experience_level, 0, buf));
 
         xom_is_stimulated(12);

@@ -860,8 +860,7 @@ void item_check()
 
 void pickup_menu(int item_link)
 {
-    int n_did_pickup   = 0;
-    int n_tried_pickup = 0;
+    int n_did_pickup = 0;
 
     vector<const item_def*> items;
     item_list_on_square(items, item_link);
@@ -907,7 +906,6 @@ void pickup_menu(int item_link)
                 // floor.
                 if (!move_item_to_inv(j, num_to_take))
                 {
-                    n_tried_pickup++;
                     pickup_warning = jtrans("You can't carry that many items.");
                     if (mitm[j].defined())
                         mitm[j].flags = oldflags;

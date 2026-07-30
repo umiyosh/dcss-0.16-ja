@@ -93,7 +93,7 @@ static bool _write_dump(const string &fname, dump_params &,
 static string _multiline_trim(const string &text)
 {
     vector<string> lines = split_string("\n", text, false, true);
-    for(int i = 0, size = lines.size(); i < size; ++i)
+    for (int i = 0, size = lines.size(); i < size; ++i)
     {
         string s = nbsp2sp(lines[i]);
         lines[i] = trim_string_right(s);
@@ -370,39 +370,33 @@ static void _sdump_visits(dump_params &par)
 static void _sdump_gold(dump_params &par)
 {
     string text;
-    int lines = 0;
 
     if (you.attribute[ATTR_GOLD_FOUND] > 0)
     {
-        lines++;
         text += make_stringf(jtranslnc("You %scollected %d gold pieces.\n"),
                              you.attribute[ATTR_GOLD_FOUND]);
     }
 
     if (you.attribute[ATTR_PURCHASES] > 0)
     {
-        lines++;
         text += make_stringf(jtranslnc("You %sspent %d gold pieces at shops.\n"),
                              you.attribute[ATTR_PURCHASES]);
     }
 
     if (you.attribute[ATTR_DONATIONS] > 0)
     {
-        lines++;
         text += make_stringf(jtranslnc("You %sdonated %d gold pieces to Zin.\n"),
                              you.attribute[ATTR_DONATIONS]);
     }
 
     if (you.attribute[ATTR_GOZAG_GOLD_USED] > 0)
     {
-        lines++;
         text += make_stringf(jtranslnc("You %spaid %d gold pieces to Gozag.\n"),
                              you.attribute[ATTR_GOZAG_GOLD_USED]);
     }
 
     if (you.attribute[ATTR_MISC_SPENDING] > 0)
     {
-        lines++;
         text += make_stringf(jtranslnc("You %sused %d gold pieces for miscellaneous "
                                       "purposes.\n"),
                              you.attribute[ATTR_MISC_SPENDING]);

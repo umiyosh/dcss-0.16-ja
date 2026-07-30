@@ -397,8 +397,8 @@ void lose_level()
     _lose_level_abilities();
 
     char buf[200];
-    sprintf(buf, "HP: %d/%d MP: %d/%d",
-            you.hp, you.hp_max, you.magic_points, you.max_magic_points);
+    snprintf(buf, sizeof(buf), "HP: %d/%d MP: %d/%d",
+             you.hp, you.hp_max, you.magic_points, you.max_magic_points);
     take_note(Note(NOTE_XP_LEVEL_CHANGE, you.experience_level, 0, buf));
 
     you.redraw_title = true;

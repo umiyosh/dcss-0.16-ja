@@ -751,7 +751,7 @@ bool Menu::draw_title_suffix(const formatted_string &fs, bool titlefirst)
         if (fs_length < avail_width)
         {
             char fmt[20];
-            sprintf(fmt, "%%%ds", avail_width-fs_length);
+            snprintf(fmt, sizeof(fmt), "%%%ds", avail_width-fs_length);
             cprintf(fmt, " ");
         }
     }

@@ -63,7 +63,8 @@ bool tile_list_processor::load_image(tile &img, const char *filename,
         {
             for (unsigned int d = 0; d < dirs.size(); d++)
             {
-                sprintf(temp, "%s/%s%s", dirs[d], filename, ext[e]);
+                snprintf(temp, sizeof(temp), "%s/%s%s",
+                         dirs[d], filename, ext[e]);
                 if (img.load(temp))
                 {
                     m_depends.push_back(temp);
@@ -75,7 +76,7 @@ bool tile_list_processor::load_image(tile &img, const char *filename,
 
     for (unsigned int e = 0; e < num_ext; e++)
     {
-        sprintf(temp, "%s%s", filename, ext[e]);
+        snprintf(temp, sizeof(temp), "%s%s", filename, ext[e]);
         if (img.load(temp))
         {
             m_depends.push_back(temp);
@@ -482,7 +483,7 @@ bool tile_list_processor::process_line(char *read_line, const char *list_file,
             // filename / prefix pairs.
             m_abstract.push_back(string_pair(m_args[1], m_args[2]));
             char temp[1024];
-            sprintf(temp, "tiledef-%s.h", m_args[1]);
+            snprintf(temp, sizeof(temp), "tiledef-%s.h", m_args[1]);
             m_include.push_back(temp);
         }
         else if (strcmp(arg, "parts_ctg") == 0)
@@ -566,7 +567,7 @@ bool tile_list_processor::process_line(char *read_line, const char *list_file,
             {
                 m_start_value_module = m_args[2];
                 char temp[1024];
-                sprintf(temp, "tiledef-%s.h", m_args[2]);
+                snprintf(temp, sizeof(temp), "tiledef-%s.h", m_args[2]);
                 m_include.push_back(temp);
             }
         }
@@ -905,7 +906,7 @@ bool tile_list_processor::write_data(bool image, bool code)
         if (image)
         {
             char filename[1024];
-            sprintf(filename, "%s.png", lcname.c_str());
+            snprintf(filename, sizeof(filename), "%s.png", lcname.c_str());
             if (m_abstract.empty())
             {
                 if (!m_page.write_image(filename))
@@ -915,7 +916,7 @@ bool tile_list_processor::write_data(bool image, bool code)
             {
                 // Write an empty file.
                 char filename[1024];
-                sprintf(filename, "%s.png", lcname.c_str());
+                snprintf(filename, sizeof(filename), "%s.png", lcname.c_str());
                 FILE *fp = fopen(filename, "w");
                 if (!fp)
                 {
@@ -936,7 +937,8 @@ bool tile_list_processor::write_data(bool image, bool code)
     // Write "tiledef-%name.h"
     {
         char filename[1024];
-        sprintf(filename, "tiledef-%s.h", lcname.c_str());
+        snprintf(filename, sizeof(filename),
+                 "tiledef-%s.h", lcname.c_str());
         FILE *fp = fopen(filename, "w");
 
         if (!fp)
@@ -1094,7 +1096,8 @@ bool tile_list_processor::write_data(bool image, bool code)
     if (m_abstract.empty())
     {
         char filename[1024];
-        sprintf(filename, "tiledef-%s.cc", lcname.c_str());
+        snprintf(filename, sizeof(filename),
+                 "tiledef-%s.cc", lcname.c_str());
         FILE *fp = fopen(filename, "w");
 
         if (!fp)
@@ -1326,7 +1329,8 @@ bool tile_list_processor::write_data(bool image, bool code)
         }
 
         char filename[1024];
-        sprintf(filename, "tiledef-%s.cc", lcname.c_str());
+        snprintf(filename, sizeof(filename),
+                 "tiledef-%s.cc", lcname.c_str());
         FILE *fp = fopen(filename, "w");
 
         if (!fp)
@@ -1411,7 +1415,8 @@ bool tile_list_processor::write_data(bool image, bool code)
     if (!m_page.m_tiles.empty())
     {
         char filename[1024];
-        sprintf(filename, "tile-%s.html", lcname.c_str());
+        snprintf(filename, sizeof(filename),
+                 "tile-%s.html", lcname.c_str());
         FILE *fp = fopen(filename, "w");
 
         if (!fp)
@@ -1491,7 +1496,7 @@ bool tile_list_processor::write_data(bool image, bool code)
     if (m_abstract.empty())
     {
         char filename[1024];
-        sprintf(filename, "%s.d", lcname.c_str());
+        snprintf(filename, sizeof(filename), "%s.d", lcname.c_str());
         FILE *fp = fopen(filename, "w");
 
         if (!fp)
@@ -1520,7 +1525,8 @@ bool tile_list_processor::write_data(bool image, bool code)
     // write "tileinfo-%name.js"
     {
         char filename[1024];
-        sprintf(filename, "tileinfo-%s.js", lcname.c_str());
+        snprintf(filename, sizeof(filename),
+                 "tileinfo-%s.js", lcname.c_str());
         FILE *fp = fopen(filename, "w");
 
         if (!fp)

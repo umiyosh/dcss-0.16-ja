@@ -60,30 +60,6 @@ int random_range(int low, int high, int nrolls)
     return low + roll;
 }
 
-const char* random_choose_weighted(int weight, const char* first, ...)
-{
-    va_list args;
-    va_start(args, first);
-    const char* chosen = first;
-    int cweight = weight, nargs = 100;
-
-    while (nargs-- > 0)
-    {
-        const int nweight = va_arg(args, int);
-        if (!nweight)
-            break;
-
-        const char* choice = va_arg(args, const char*);
-        if (random2(cweight += nweight) < nweight)
-            chosen = choice;
-    }
-
-    va_end(args);
-    ASSERT(nargs > 0);
-
-    return chosen;
-}
-
 #ifndef UINT32_MAX
 #define UINT32_MAX ((uint32_t)(-1))
 #endif

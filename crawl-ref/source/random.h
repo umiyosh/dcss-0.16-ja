@@ -58,31 +58,36 @@ auto random_iterator(C &container) -> decltype(container.begin())
 }
 
 template <typename T>
-T random_choose_weighted(int weight, T first, ...)
+void random_choose_weighted_impl(T &, int &, int terminator)
 {
-    va_list args;
-    va_start(args, first);
-    T chosen = first;
-    int cweight = weight, nargs = 100;
-
-    while (nargs-- > 0)
-    {
-        const int nweight = va_arg(args, int);
-        if (!nweight)
-            break;
-
-        const int choice = va_arg(args, int);
-        if (random2(cweight += nweight) < nweight)
-            chosen = static_cast<T>(choice);
-    }
-
-    va_end(args);
-    ASSERT(nargs > 0);
-
-    return chosen;
+    ASSERT(terminator == 0);
 }
 
-const char* random_choose_weighted(int weight, const char* first, ...);
+template <typename T, typename U, typename... Ts>
+void random_choose_weighted_impl(T &chosen, int &current_weight,
+                                 int weight, U choice, Ts... rest)
+{
+    if (!weight)
+        return;
+
+    current_weight += weight;
+    if (random2(current_weight) < weight)
+        chosen = static_cast<T>(choice);
+
+    random_choose_weighted_impl(chosen, current_weight, rest...);
+}
+
+template <typename T, typename... Ts>
+T random_choose_weighted(int weight, T first, Ts... rest)
+{
+    static_assert(sizeof...(rest) % 2 == 1,
+                  "weighted choices must end with a zero");
+
+    T chosen = first;
+    int current_weight = weight;
+    random_choose_weighted_impl(chosen, current_weight, rest...);
+    return chosen;
+}
 
 struct dice_def
 {
