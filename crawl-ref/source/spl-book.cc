@@ -1284,7 +1284,8 @@ bool make_book_level_randart(item_def &book, int level, string owner)
                     god_name(god).c_str(), level);
         }
         else if (god_discard == 0 && uncastable_discard > 0)
-            sprintf(buf, "No level %d spells can be cast by you", level);
+            snprintf(buf, sizeof(buf),
+                     "No level %d spells can be cast by you", level);
         else if (god_discard > 0 && uncastable_discard > 0)
         {
             snprintf(buf, sizeof(buf),
@@ -1293,7 +1294,7 @@ bool make_book_level_randart(item_def &book, int level, string owner)
                     level, god_name(god).c_str());
         }
         else
-            sprintf(buf, "No level %d spells?!?!?!", level);
+            snprintf(buf, sizeof(buf), "No level %d spells?!?!?!", level);
 
         mprf(MSGCH_ERROR, "Could not create fixed level randart spellbook: %s",
              buf);

@@ -755,7 +755,7 @@ void wizard_list_levels()
         for (int j = 0; j < NUM_DACTION_COUNTERS; j++)
         {
             char num[20];
-            sprintf(num, "%d/", lv->daction_counters[j]);
+            snprintf(num, sizeof(num), "%d/", lv->daction_counters[j]);
             cnts += num;
         }
         mprf(MSGCH_DIAGNOSTICS, i+1, // inhibit merging
@@ -767,7 +767,8 @@ void wizard_list_levels()
     for (int j = 0; j < NUM_DACTION_COUNTERS; j++)
     {
         char num[20];
-        sprintf(num, "%d/", query_daction_counter((daction_type)j));
+        snprintf(num, sizeof(num), "%d/",
+                 query_daction_counter((daction_type)j));
         cnts += num;
     }
     mprf("%-10s : %s", chop_stringc(jtrans("`- total"),

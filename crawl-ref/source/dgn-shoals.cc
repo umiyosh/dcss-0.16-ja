@@ -786,6 +786,8 @@ bool dgn_shoals_connect_point(const coord_def &point,
                 }
             }
 
+            ASSERT(npoints > 0);
+            height /= npoints;
             const int target_height = SHT_FLOOR;
             if (height < target_height)
             {

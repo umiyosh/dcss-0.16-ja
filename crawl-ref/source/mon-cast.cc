@@ -4629,6 +4629,9 @@ static void _blink_allies_encircle(const monster* mon)
 
     for (monster *ally : allies)
     {
+        if (!count)
+            break;
+
         coord_def empty;
         if (find_habitable_spot_near(foepos, mons_base_type(ally), 1, false, empty))
         {

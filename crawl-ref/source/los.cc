@@ -147,8 +147,7 @@ struct los_ray : public ray_def
         los_ray copy = *this;
         coord_def c;
         coord_def old;
-        int cellnum;
-        for (cellnum = 0; true; ++cellnum)
+        while (true)
         {
             old = c;
             if (!copy.advance())

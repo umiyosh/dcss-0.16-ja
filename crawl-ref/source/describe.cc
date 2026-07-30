@@ -80,14 +80,15 @@
 static void _append_value(string & description, int valu, bool plussed)
 {
     char value_str[80];
-    sprintf(value_str, plussed ? "%+d" : "%d", valu);
+    snprintf(value_str, sizeof(value_str), plussed ? "%+d" : "%d", valu);
     description += value_str;
 }
 
 static void _append_value(string & description, float fvalu, bool plussed)
 {
     char value_str[80];
-    sprintf(value_str, plussed ? "%+.1f" : "%.1f", fvalu);
+    snprintf(value_str, sizeof(value_str),
+             plussed ? "%+.1f" : "%.1f", fvalu);
     description += value_str;
 }
 
@@ -1077,7 +1078,7 @@ static string _describe_weapon(const item_def &item, bool verbose)
         string rand_desc = _randart_descrip(item);
         if (!rand_desc.empty())
         {
-            if(!description.empty())
+            if (!description.empty())
                 description += "\n";
             description += rand_desc;
         }
@@ -1414,7 +1415,7 @@ static string _describe_armour(const item_def &item, bool verbose)
         string rand_desc = _randart_descrip(item);
         if (!rand_desc.empty())
         {
-            if(!description.empty())
+            if (!description.empty())
                 description += "\n";
             description += rand_desc;
         }
@@ -1514,7 +1515,7 @@ static string _describe_jewellery(const item_def &item, bool verbose)
         string rand_desc = _randart_descrip(item);
         if (!rand_desc.empty())
         {
-            if(!description.empty())
+            if (!description.empty())
                 description += "\n";
             description += rand_desc;
         }
@@ -2468,7 +2469,7 @@ static bool _actions_prompt(item_def &item, bool allow_inscribe, bool do_prompt)
     prompt += "</cyan>";
     if (do_prompt)
     {
-        if(strwidth(prompt_pre) + strwidth(prompt) - 13 > get_number_of_cols()) // 13 for tags
+        if (strwidth(prompt_pre) + strwidth(prompt) - 13 > get_number_of_cols()) // 13 for tags
             prompt_pre += "\n";
 
         formatted_string::parse_string(prompt_pre + prompt).display();
