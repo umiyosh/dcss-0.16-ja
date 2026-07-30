@@ -1068,7 +1068,8 @@ static void _enter_explore_mode()
         mpr_nojoin(MSGCH_WARN, jtrans("WARNING: ABOUT TO ENTER EXPLORE MODE!"));
 
 #ifndef SCORE_WIZARD_CHARACTERS
-        mprf(MSGCH_WARN, "If you continue, your game will not be scored!");
+        mprf(MSGCH_WARN, "%s",
+             jtransc("If you continue, your game will not be scored!"));
 #endif
 
         if (!yes_or_no(

@@ -1573,7 +1573,7 @@ static spret_type _do_cast(spell_type spell, int powc,
 #if TAG_MAJOR_VERSION == 34
     case SPELL_EVAPORATE:
     case SPELL_CIGOTUVIS_DEGENERATION:
-        mpr("Sorry, this spell is gone!");
+        mpr(jtrans("Sorry, this spell is gone!"));
         return SPRET_ABORT;
 #endif
 
@@ -1662,7 +1662,7 @@ static spret_type _do_cast(spell_type spell, int powc,
 
 #if TAG_MAJOR_VERSION == 34
     case SPELL_SUMMON_SCORPIONS:
-        mpr("Sorry, this spell is gone!");
+        mpr(jtrans("Sorry, this spell is gone!"));
         return SPRET_ABORT;
 #endif
 
@@ -1674,7 +1674,7 @@ static spret_type _do_cast(spell_type spell, int powc,
 
 #if TAG_MAJOR_VERSION == 34
     case SPELL_SUMMON_ELEMENTAL:
-        mpr("Sorry, this spell is gone!");
+        mpr(jtrans("Sorry, this spell is gone!"));
         return SPRET_ABORT;
 #endif
 
@@ -1713,7 +1713,7 @@ static spret_type _do_cast(spell_type spell, int powc,
 
 #if TAG_MAJOR_VERSION == 34
     case SPELL_DEMONIC_HORDE:
-        mpr("Sorry, this spell is gone!");
+        mpr(jtrans("Sorry, this spell is gone!"));
         return SPRET_ABORT;
 #endif
 
@@ -1743,7 +1743,7 @@ static spret_type _do_cast(spell_type spell, int powc,
 
 #if TAG_MAJOR_VERSION == 34
     case SPELL_TWISTED_RESURRECTION:
-        mpr("Sorry, this spell is gone!");
+        mpr(jtrans("Sorry, this spell is gone!"));
         return SPRET_ABORT;
 #endif
 
@@ -1758,7 +1758,7 @@ static spret_type _do_cast(spell_type spell, int powc,
 
 #if TAG_MAJOR_VERSION == 34
     case SPELL_FORCEFUL_DISMISSAL:
-        mpr("Sorry, this spell is gone!");
+        mpr(jtrans("Sorry, this spell is gone!"));
         return SPRET_ABORT;
 #endif
 
@@ -1823,7 +1823,7 @@ static spret_type _do_cast(spell_type spell, int powc,
 #if TAG_MAJOR_VERSION == 34
     case SPELL_INSULATION:
     case SPELL_SEE_INVISIBLE:
-        mpr("Sorry, this spell is gone!");
+        mpr(jtrans("Sorry, this spell is gone!"));
         return SPRET_ABORT;
 #endif
 
@@ -1843,7 +1843,7 @@ static spret_type _do_cast(spell_type spell, int powc,
     case SPELL_FREEZING_AURA:
     case SPELL_POISON_WEAPON:
     case SPELL_LETHAL_INFUSION:
-        mpr("Sorry, this spell is gone!");
+        mpr(jtrans("Sorry, this spell is gone!"));
         return SPRET_ABORT;
 #endif
 
@@ -1920,7 +1920,7 @@ static spret_type _do_cast(spell_type spell, int powc,
 
 #if TAG_MAJOR_VERSION == 34
     case SPELL_SONG_OF_SHIELDING:
-        mpr("Sorry, this spell is gone!");
+        mpr(jtrans("Sorry, this spell is gone!"));
         return SPRET_ABORT;
 #endif
 
@@ -1970,7 +1970,7 @@ static spret_type _do_cast(spell_type spell, int powc,
 
 #if TAG_MAJOR_VERSION == 34
     case SPELL_FULSOME_DISTILLATION:
-        mpr("Sorry, this spell is gone!");
+        mpr(jtrans("Sorry, this spell is gone!"));
         return SPRET_ABORT;
 #endif
 

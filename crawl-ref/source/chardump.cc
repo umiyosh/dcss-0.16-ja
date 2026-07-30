@@ -1469,7 +1469,7 @@ static bool _write_dump(const string &fname, dump_params &par, bool quiet)
 #ifdef DGAMELAUNCH
             mpr(jtrans("Char dumped successfully."));
 #else
-            mprf("Char dumped to '%s'.", file_name.c_str());
+            mprf(jtransc("Char dumped to '%s'."), file_name.c_str());
 #endif
     }
     else

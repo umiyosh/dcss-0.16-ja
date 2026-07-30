@@ -625,8 +625,9 @@ static bool _get_mem_list(spell_list &mem_spells,
     }
     else
     {
-        mprf(MSGCH_PROMPT, "You can't memorise any new spells for an unknown "
-                           "reason; please file a bug report.");
+        mprf(MSGCH_PROMPT, "%s",
+             jtransc("You can't memorise any new spells for an unknown "
+                     "reason; please file a bug report."));
     }
 
     if (num_unreadable)
@@ -1055,7 +1056,8 @@ bool forget_spell_from_book(spell_type spell, const item_def* book)
     else
     {
         // This shouldn't happen.
-        mprf("A bug prevents you from forgetting %s.", spell_title(spell));
+        mprf(jtransc("A bug prevents you from forgetting %s."),
+             jtransc(spell_title(spell)));
         return false;
     }
 }

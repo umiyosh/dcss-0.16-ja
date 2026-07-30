@@ -4182,7 +4182,8 @@ bool runrest::run_should_stop() const
     {
 #ifndef USE_TILE_LOCAL
         // XXX: Remove this once exclusions are visible.
-        mprf(MSGCH_WARN, "Stopped running for exclusion.");
+        mprf(MSGCH_WARN, "%s",
+             jtransc("Stopped running for exclusion."));
 #endif
         return true;
     }

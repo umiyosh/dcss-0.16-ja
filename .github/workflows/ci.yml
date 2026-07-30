@@ -13,6 +13,17 @@ permissions:
   contents: read
 
 jobs:
+  translation-check:
+    name: Japanese message coverage
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Check player-visible messages
+        run: python3 crawl-ref/source/util/check-jtrans
+
   build:
     name: ${{ matrix.compiler.name }} / ${{ matrix.variant.name }}
     runs-on: ubuntu-22.04

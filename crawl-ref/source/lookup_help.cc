@@ -1244,7 +1244,9 @@ static bool _find_description(string &response)
     const string lookup_type_prompts =
         comma_separated_fn(lookup_types.begin(), lookup_types.end(),
                            mem_fn(&LookupType::prompt_string), " or ");
-    mprf(MSGCH_PROMPT, "Describe a %s? ", lookup_type_prompts.c_str());
+    mprf(MSGCH_PROMPT, "%s ",
+         make_stringf(jtransc("Describe a %s?"),
+                      lookup_type_prompts.c_str()).c_str());
 
     int ch;
     {

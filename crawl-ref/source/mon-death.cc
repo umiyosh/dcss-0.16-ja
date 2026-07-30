@@ -345,8 +345,9 @@ static int _calc_player_experience(const monster* mons)
 
     if (!mons->damage_total)
     {
-        mprf(MSGCH_WARN, "Error, exp for monster with no damage: %s",
-             mons->name(DESC_PLAIN, true).c_str());
+        mprf(MSGCH_WARN,
+             jtransc("Error, exp for monster with no damage: %s"),
+             jtransc(mons->name(DESC_PLAIN, true)));
         return 0;
     }
 

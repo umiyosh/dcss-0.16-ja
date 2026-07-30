@@ -532,7 +532,7 @@ static bool _evoke_item_on_target(actor* target)
 
     if (is_known_empty_wand(*item))
     {
-        mpr("That wand is empty.");
+        mpr(jtrans("That wand is empty."));
         return false;
     }
 
@@ -608,14 +608,14 @@ static bool _cast_spell_on_target(actor* target)
 
     if (!_spell_in_range(spell, target))
     {
-        mprf("%s is out of range for that spell.",
-             target->name(DESC_THE).c_str());
+        mprf(jtransc("%s is out of range for that spell."),
+             jtransc(target->name(DESC_THE)));
         return true;
     }
 
     if (spell_mana(spell) > you.magic_points)
     {
-        mpr("You don't have enough magic to cast that spell.");
+        mpr(jtrans("You don't have enough magic to cast that spell."));
         return true;
     }
 

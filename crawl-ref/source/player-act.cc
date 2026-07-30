@@ -836,7 +836,7 @@ bool player::go_berserk(bool intentional, bool potion)
 #if TAG_MAJOR_VERSION == 34
     if (you.species == SP_LAVA_ORC)
     {
-        mpr("You burn with rage!");
+        mpr(jtrans("You burn with rage!"));
         // This will get sqrt'd later, so.
         you.temperature = TEMP_MAX;
     }

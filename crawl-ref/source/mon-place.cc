@@ -1823,8 +1823,9 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
     // A rare case of a debug message NOT showing in the debug mode.
     if (mons_class_flag(mon->type, M_UNFINISHED))
     {
-        mprf(MSGCH_WARN, "Warning: monster '%s' is not yet fully coded.",
-             mon->name(DESC_PLAIN, true).c_str());
+        mprf(MSGCH_WARN,
+             jtransc("Warning: monster '%s' is not yet fully coded."),
+             jtransc(mon->name(DESC_PLAIN, true)));
     }
 #endif
 
@@ -4014,7 +4015,8 @@ bool player_angers_monster(monster* mon)
                 mprf(jtransc("%s can only feel hate for you!"), jtransc(mname));
                 break;
             default:
-                mprf("%s is enraged by a buggy thing about you!", mname.c_str());
+                mprf(jtransc("%s is enraged by a buggy thing about you!"),
+                     jtransc(mname));
                 break;
             }
         }

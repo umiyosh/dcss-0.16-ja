@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+
+from pathlib import Path
+import re
+import sys
+
+
+SOURCE_ROOT = Path(__file__).resolve().parent.parent
+
+# These files only emit developer tooling output from raw mpr calls.
+DEVELOPER_FILES = {
+    "ability.cc",
+    "arena.cc",
+    "ctest.cc",
+    "dbg-maps.cc",
+    "dbg-scan.cc",
+    "dbg-util.cc",
+    "luaterp.cc",
+    "makeitem.cc",
+    "mapdef.cc",
+    "mon-movetarget.cc",
+    "mon-pathfind.cc",
+    "tags.cc",
+    "wiz-dgn.cc",
+    "wiz-dump.cc",
+    "wiz-fsim.cc",
+    "wiz-item.cc",
+    "wiz-you.cc",
+    "xom.cc",
+}
+
+CALL = re.compile(
+    r'\bmprf?(?:_nojoin)?\s*\(\s*'
+    r'(?:(MSGCH_[A-Z_]+)\s*,\s*)?'
+    r'"((?:[^"\\]|\\.)+)"'
+)
+ENGLISH = re.compile(r"[A-Za-z]{3,}")
+
+
+def raw_player_messages(path):
+    debug_stack = []
+    messages = []
+
+    for lineno, line in enumerate(path.read_text(errors="ignore").splitlines(), 1):
+        directive = line.lstrip()
+        if directive.startswith(("#if ", "#ifdef ", "#ifndef ")):
+            compact = directive.replace(" ", "")
+            if "DEBUG" not in directive:
+                debug_stack.append(None)
+            elif directive.startswith("#ifndef") or "!defined(DEBUG" in compact:
+                debug_stack.append(False)
+            else:
+                debug_stack.append(True)
+            continue
+        if directive.startswith("#endif"):
+            if debug_stack:
+                debug_stack.pop()
+            continue
+        if directive.startswith("#else"):
+            if debug_stack and debug_stack[-1] is not None:
+                debug_stack[-1] = not debug_stack[-1]
+            continue
+        if any(state is True for state in debug_stack):
+            continue
+
+        match = CALL.search(line)
+        if (
+            not match
+            or "jtrans" in line
+            or line[: match.start()].lstrip().startswith("//")
+        ):
+            continue
+
+        channel, message = match.groups()
+        visible_message = re.sub(r"<[^>]+>", "", message)
+        if channel in {"MSGCH_ERROR", "MSGCH_DIAGNOSTICS"}:
+            continue
+        if not ENGLISH.search(visible_message):
+            continue
+        messages.append((lineno, message))
+
+    return messages
+
+
+def main():
+    failures = []
+    for path in sorted(SOURCE_ROOT.glob("*.cc")):
+        if path.name in DEVELOPER_FILES or path.name == "zotdef.cc":
+            continue
+        for lineno, message in raw_player_messages(path):
+            if (
+                path.name == "player.cc"
+                and message.startswith("Your Zot abilities now extend")
+            ):
+                continue
+            failures.append(f"{path.name}:{lineno}: {message}")
+
+    if failures:
+        print("Player-visible English messages must use jtrans:", file=sys.stderr)
+        print("\n".join(failures), file=sys.stderr)
+        return 1
+
+    print("No untranslated player-visible mpr calls found.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

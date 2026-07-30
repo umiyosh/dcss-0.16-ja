@@ -1181,7 +1181,7 @@ spret_type cast_golubrias_passage(const coord_def& where, bool fail)
     trap_def *trap2 = find_trap(randomized_here);
     if (!trap || !trap2)
     {
-        mpr("Something buggy happened.");
+        mpr(jtrans("Something buggy happened."));
         return SPRET_ABORT;
     }
 

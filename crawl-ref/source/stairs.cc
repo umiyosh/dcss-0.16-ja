@@ -155,8 +155,8 @@ static bool _stair_moves_pre(dungeon_feature_type stair)
 
     string verb = stair_climb_verb(stair);
 
-    mprf("%s moves away as you attempt to %s it!", stair_str.c_str(),
-         verb.c_str());
+    mprf(jtransc("%s moves away as you attempt to %s it!"),
+         jtransc(stair_str), jtransc(verb));
 
     you.turn_is_over = true;
 

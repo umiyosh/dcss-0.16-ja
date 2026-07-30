@@ -270,7 +270,9 @@ void handle_behaviour(monster* mon)
             const int loss = div_rand_round(10, mon->speed);
             if (loss)
             {
-                mprf(MSGCH_DANGER, "Your flesh rots away as the Orb of Zot is desecrated.");
+                mprf(MSGCH_DANGER, "%s",
+                     jtransc("Your flesh rots away as the Orb of Zot is "
+                             "desecrated."));
 
                 // If the rot would reduce us to <= 0 max HP, attribute the
                 // kill to the monster.

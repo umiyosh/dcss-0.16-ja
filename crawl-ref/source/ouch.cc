@@ -157,7 +157,7 @@ int check_your_resists(int hurted, beam_type flavour, string source,
         {
             hurted = 0;
             if (doEffects)
-                mpr("You resist completely.");
+                mpr(jtrans("You resist completely."));
         }
 #endif
         break;
