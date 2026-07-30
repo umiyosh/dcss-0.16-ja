@@ -51,6 +51,46 @@ Describe a %s?
 
 %sについて調べますか？
 %%%%
+monster lookup
+
+モンスター
+%%%%
+spell lookup
+
+呪文
+%%%%
+skill lookup
+
+スキル
+%%%%
+ability lookup
+
+能力
+%%%%
+card lookup
+
+カード
+%%%%
+item lookup
+
+アイテム
+%%%%
+feature lookup
+
+地形
+%%%%
+god lookup
+
+神
+%%%%
+branch lookup
+
+ダンジョンの分岐
+%%%%
+cloud lookup
+
+雲
+%%%%
 %s is blasted by your radiant heat.
 
 %sはあなたの放つ熱で吹き飛ばされた。
@@ -171,9 +211,9 @@ Something buggy happened.
 
 何かおかしなことが起きた。
 %%%%
-%s moves away as you attempt to %s it!
+As you try to use %s, it moves away!
 
-%sは、あなたがそれを%sしようとすると離れていった！
+%sを使おうとすると、それは離れていった！
 %%%%
 That wand is empty.
 

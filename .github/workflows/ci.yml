@@ -20,9 +20,16 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Test translation checker
+        run: python3 crawl-ref/source/util/test-check-jtrans
 
       - name: Check player-visible messages
-        run: python3 crawl-ref/source/util/check-jtrans
+        run: >-
+          python3 crawl-ref/source/util/check-jtrans
+          --base "${{ github.event.pull_request.base.sha }}"
 
   build:
     name: ${{ matrix.compiler.name }} / ${{ matrix.variant.name }}
