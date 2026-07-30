@@ -1,4 +1,3 @@
 #!/bin/sh
 
-exec ./mac/mac-app-universal-build TILES=y NO_PKGCONFIG=y CONTRIB_SDL=y \
-                                   "$@" mac-app-tiles
+exec ./mac/mac-app-universal-build RELEASE=y TILES=y "$@" mac-app-tiles
