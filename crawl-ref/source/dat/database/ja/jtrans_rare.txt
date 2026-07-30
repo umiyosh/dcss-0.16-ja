@@ -1,0 +1,245 @@
+%%%%
+Software bugs nibble your toes!
+
+ソフトウェアのバグがあなたのつま先をかじった！
+%%%%
+Char dumped to '%s'.
+
+キャラクターダンプを「%s」に出力した。
+%%%%
+This is %s.
+
+これは%sだ。
+%%%%
+Your messages:
+
+あなたへのメッセージ:
+%%%%
+Beep! Your pager goes off! Use _ to check your messages.
+
+ピーッ！ ポケベルが鳴った！ _キーでメッセージを確認できます。
+%%%%
+Whoops, nicked a vault in slime connectivity fixup
+
+おっと、スライムの接続修正中にvaultを削ってしまった
+%%%%
+These balls have not yet been approved for use by djinn. (OOC: they're supposed to work, but need a redesign.)
+
+ジンにはこの水晶玉の使用がまだ認められていない。(注: 機能する想定だが、再設計が必要。)
+%%%%
+Bleh, bug pizza.
+
+うえっ、バグピザだ。
+%%%%
+Read a buggy scroll, please report this.
+
+バグのある巻物を読んだ。報告してください。
+%%%%
+Turn is over
+
+ターンは終了している
+%%%%
+Bad item
+
+不正なアイテム
+%%%%
+Item is not equipped
+
+アイテムは装備されていない
+%%%%
+Describe a %s?
+
+%sについて調べますか？
+%%%%
+monster lookup
+
+モンスター
+%%%%
+spell lookup
+
+呪文
+%%%%
+skill lookup
+
+スキル
+%%%%
+ability lookup
+
+能力
+%%%%
+card lookup
+
+カード
+%%%%
+item lookup
+
+アイテム
+%%%%
+feature lookup
+
+地形
+%%%%
+god lookup
+
+神
+%%%%
+branch lookup
+
+ダンジョンの分岐
+%%%%
+cloud lookup
+
+雲
+%%%%
+%s is blasted by your radiant heat.
+
+%sはあなたの放つ熱で吹き飛ばされた。
+%%%%
+%s is burned by your radiant heat.
+
+%sはあなたの放つ熱で焼かれた。
+%%%%
+Your flesh rots away as the Orb of Zot is desecrated.
+
+ゾットのオーブが汚され、あなたの肉体が腐敗した。
+%%%%
+Error, exp for monster with no damage: %s
+
+エラー: ダメージを受けていないモンスターに経験値が設定された: %s
+%%%%
+%s is enraged by a buggy thing about you!
+
+%sはあなたの何かおかしな点に激怒した！
+%%%%
+Error! failed to place monster in tentacle connect change
+
+エラー！ 触手の接続変更中にモンスターを配置できなかった
+%%%%
+connector placement failed at %d %d
+
+座標%d %dへの接続部の配置に失敗した
+%%%%
+link information corruption!!! tentacle in chain doesn't match mindex
+
+接続情報が破損している！ 触手列の要素とモンスター番号が一致しない
+%%%%
+tentacle connect failed! What the heck!  severed status %d
+
+触手の接続に失敗した！ 切断状態: %d
+%%%%
+pathed to %d %d from %d %d mid %d count %d
+
+%d %dから%d %dへの経路を計算した モンスター番号%d 回数%d
+%%%%
+Buggy note passed: unknown note type
+
+不正なノートが渡された: 未知のノート種別
+%%%%
+You burn with rage!
+
+あなたは怒りで燃え上がった！
+%%%%
+You feel less hot-headed.
+
+頭の熱が冷めてきた。
+%%%%
+The lava instantly superheats you.
+
+溶岩があなたを瞬時に灼熱させた。
+%%%%
+Your stony skin melts.
+
+石の皮膚が溶けた。
+%%%%
+You're getting fired up.
+
+体が熱を帯びてきた。
+%%%%
+You blaze with the fury of an erupting volcano!
+
+あなたは噴火する火山のような怒りで燃え上がった！
+%%%%
+The intensity of your heat diminishes.
+
+体の熱が弱まった。
+%%%%
+You're cooling off.
+
+体が冷えてきた。
+%%%%
+Your skin cools and hardens.
+
+皮膚が冷えて硬くなった。
+%%%%
+This tastes delicious.
+
+おいしい。
+%%%%
+Blech - that potion was really gluggy!
+
+うえっ、この薬は本当にどろっとしている！
+%%%%
+That potion was really gluggy!
+
+この薬は本当にどろっとしている！
+%%%%
+Blech - this tastes like water.
+
+うえっ、水のような味だ。
+%%%%
+This tastes like water.
+
+水のような味だ。
+%%%%
+That potion was far past its expiry date.
+
+この薬はとっくに消費期限が切れていた。
+%%%%
+You can't memorise any new spells for an unknown reason; please file a bug report.
+
+不明な理由で新しい呪文を記憶できない。バグ報告してください。
+%%%%
+A bug prevents you from forgetting %s.
+
+バグのため%sを忘れられない。
+%%%%
+Sorry, this spell is gone!
+
+申し訳ないが、この呪文は削除されている！
+%%%%
+Something buggy happened.
+
+何かおかしなことが起きた。
+%%%%
+As you try to use %s, it moves away!
+
+%sを使おうとすると、それは離れていった！
+%%%%
+That wand is empty.
+
+そのワンドは空だ。
+%%%%
+%s is out of range for that spell.
+
+%sはその呪文の射程外だ。
+%%%%
+You cannot train this skill.
+
+このスキルは訓練できない。
+%%%%
+There's no point to toggling this skill anymore.
+
+このスキルを切り替えても意味がない。
+%%%%
+No unexplored wall grids found!
+
+未探索の壁マスが見つからなかった！
+%%%%
+Stopped running for exclusion.
+
+除外地点のため移動を中止した。
+%%%%
+Warning: monster '%s' is not yet fully coded.
+
+警告: モンスター「%s」はまだ完全には実装されていない。
+%%%%

@@ -444,7 +444,7 @@ void change_labyrinth(bool msg)
     if (targets.empty())
     {
         if (msg)
-            mpr("No unexplored wall grids found!");
+            mpr(jtrans("No unexplored wall grids found!"));
         return;
     }
 

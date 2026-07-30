@@ -172,7 +172,7 @@ static int l_item_do_remove(lua_State *ls)
 {
     if (you.turn_is_over)
     {
-        mpr("Turn is over");
+        mpr(jtrans("Turn is over"));
         return 0;
     }
 
@@ -180,14 +180,14 @@ static int l_item_do_remove(lua_State *ls)
 
     if (!item || !in_inventory(*item))
     {
-        mpr("Bad item");
+        mpr(jtrans("Bad item"));
         return 0;
     }
 
     int eq = get_equip_slot(item);
     if (eq < 0 || eq >= NUM_EQUIP)
     {
-        mpr("Item is not equipped");
+        mpr(jtrans("Item is not equipped"));
         return 0;
     }
 

@@ -5,6 +5,7 @@
 #include "tilereg-skl.h"
 
 #include "cio.h"
+#include "database.h"
 #include "libutil.h"
 #include "options.h"
 #include "output.h"
@@ -70,9 +71,9 @@ int SkillRegion::handle_mouse(MouseEvent &event)
 #endif
         m_last_clicked_item = item_idx;
         if (!you.can_train[skill])
-            mpr("You cannot train this skill.");
+            mpr(jtrans("You cannot train this skill."));
         else if (you.skills[skill] >= 27)
-            mpr("There's no point to toggling this skill anymore.");
+            mpr(jtrans("There's no point to toggling this skill anymore."));
         else
         {
             tiles.set_need_redraw();

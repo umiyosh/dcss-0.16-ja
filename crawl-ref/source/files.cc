@@ -1781,7 +1781,8 @@ bool load_ghost(bool creating_level, bool delete_file)
     if (ghost_filename.empty())
     {
         if (wiz_cmd && !creating_level)
-            mprf(MSGCH_PROMPT, "No ghost files for this level.");
+            mprf(MSGCH_PROMPT, "%s",
+                 jtransc("No ghost files for this level."));
         return false; // no such ghost.
     }
 
@@ -1789,7 +1790,8 @@ bool load_ghost(bool creating_level, bool delete_file)
     if (!inf.valid())
     {
         if (wiz_cmd && !creating_level)
-            mprf(MSGCH_PROMPT, "Ghost file invalidated before read.");
+            mprf(MSGCH_PROMPT, "%s",
+                 jtransc("Ghost file invalidated before read."));
         return false;
     }
 

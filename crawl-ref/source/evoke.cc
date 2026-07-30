@@ -317,8 +317,8 @@ static bool _check_crystal_ball()
 #if TAG_MAJOR_VERSION == 34
     if (you.species == SP_DJINNI)
     {
-        mpr("These balls have not yet been approved for use by djinn. "
-            "(OOC: they're supposed to work, but need a redesign.)");
+        mpr(jtrans("These balls have not yet been approved for use by djinn. "
+                   "(OOC: they're supposed to work, but need a redesign.)"));
         return false;
     }
 #endif

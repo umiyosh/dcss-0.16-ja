@@ -311,9 +311,9 @@ spret_type cast_swiftness(int power, bool fail)
     if (you.in_liquid())
     {
         // Hint that the player won't be faster until they leave the liquid.
-        mprf("The %s foams!", you.in_water() ? "水たまり"
-                            : you.in_lava()  ? "溶岩"
-                                             : "液状化した地面");
+        mprf(jtransc("The %s foams!"), you.in_water() ? "水たまり"
+                                  : you.in_lava()  ? "溶岩"
+                                                   : "液状化した地面");
     }
 
     you.set_duration(DUR_SWIFTNESS, 12 + random2(power)/2, 30,

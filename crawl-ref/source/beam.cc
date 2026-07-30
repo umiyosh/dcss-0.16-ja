@@ -3772,7 +3772,7 @@ void bolt::affect_player_enchantment(bool resistible)
 
     default:
         // _All_ enchantments should be enumerated here!
-        mpr("Software bugs nibble your toes!");
+        mpr(jtrans("Software bugs nibble your toes!"));
         break;
     }
 

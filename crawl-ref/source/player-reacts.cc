@@ -857,7 +857,7 @@ static void _decrement_durations()
 
 #if TAG_MAJOR_VERSION == 34
         if (you.species == SP_LAVA_ORC)
-            mpr("You feel less hot-headed.");
+            mpr(jtrans("You feel less hot-headed."));
 #endif
 
         // This resets from an actual penalty or from NO_BERSERK_PENALTY.

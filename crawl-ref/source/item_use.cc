@@ -171,7 +171,8 @@ bool can_wield(item_def *weapon, bool say_reason,
     {
         if (say_reason)
         {
-            mpr("As you grasp it, you feel your magic disrupted. Quickly, you stop.");
+            mpr(jtrans("As you grasp it, you feel your magic disrupted. "
+                       "Quickly, you stop."));
             id_brand = true;
         }
     }
@@ -2384,7 +2385,7 @@ static void _handle_read_book(int item_slot)
 #if TAG_MAJOR_VERSION == 34
     if (book.sub_type == BOOK_BUGGY_DESTRUCTION)
     {
-        mpr("This item has been removed, sorry!");
+        mpr(jtrans("This item has been removed, sorry!"));
         return;
     }
 #endif
@@ -2903,7 +2904,7 @@ void read_scroll(int item_slot)
         break;
 
     default:
-        mpr("Read a buggy scroll, please report this.");
+        mpr(jtrans("Read a buggy scroll, please report this."));
         break;
     }
 

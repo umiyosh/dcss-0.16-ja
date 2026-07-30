@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+
+from importlib.machinery import SourceFileLoader
+from importlib.util import module_from_spec, spec_from_loader
+from pathlib import Path
+import unittest
+
+
+CHECKER_PATH = Path(__file__).with_name("check-jtrans")
+LOADER = SourceFileLoader("check_jtrans", str(CHECKER_PATH))
+SPEC = spec_from_loader(LOADER.name, LOADER)
+CHECKER = module_from_spec(SPEC)
+LOADER.exec_module(CHECKER)
+
+
+class CheckJtransTest(unittest.TestCase):
+    def issues(self, source, keys=()):
+        return CHECKER.find_issues(source, set(keys))
+
+    def test_detects_single_line_raw_message(self):
+        issues = self.issues('mpr("Untranslated message.");')
+
+        self.assertEqual(
+            [(issue.kind, issue.message) for issue in issues],
+            [("raw", "Untranslated message.")],
+        )
+
+    def test_detects_multiline_channel_message(self):
+        issues = self.issues(
+            """
+mprf(
+    MSGCH_WARN,
+    "This untranslated message remains in English.");
+"""
+        )
+
+        self.assertEqual(
+            [(issue.kind, issue.message) for issue in issues],
+            [("raw", "This untranslated message remains in English.")],
+        )
+
+    def test_detects_concatenated_string_literals(self):
+        issues = self.issues(
+            """
+mprf(MSGCH_WARN,
+     "This untranslated message "
+     "uses adjacent literals.");
+"""
+        )
+
+        self.assertEqual(
+            [(issue.kind, issue.message) for issue in issues],
+            [("raw", "This untranslated message uses adjacent literals.")],
+        )
+
+    def test_accepts_translated_literal_with_dictionary_key(self):
+        source = """
+mpr(jtrans("Translated message."));
+mprf(MSGCH_WARN, "%s", jtransc(
+    "Translated warning."));
+"""
+
+        self.assertEqual(
+            self.issues(
+                source,
+                {"Translated message.", "Translated warning."},
+            ),
+            [],
+        )
+
+    def test_detects_missing_literal_dictionary_key(self):
+        issues = self.issues('mpr(jtrans("Missing translation."));')
+
+        self.assertEqual(
+            [(issue.kind, issue.message) for issue in issues],
+            [("missing-key", "Missing translation.")],
+        )
+
+    def test_ignores_comments_and_diagnostic_channels(self):
+        source = """
+// mpr("Commented out message.");
+/* mprf(MSGCH_WARN,
+        "Block commented message."); */
+mprf(MSGCH_ERROR, "Developer error message.");
+mprf(MSGCH_DIAGNOSTICS, "Developer diagnostic message.");
+"""
+
+        self.assertEqual(self.issues(source), [])
+
+    def test_masks_debug_branches_but_checks_release_branches(self):
+        source = """
+#ifdef DEBUG
+mpr("Debug-only message.");
+#else
+mpr(jtrans("Release message."));
+#endif
+#ifndef DEBUG
+mpr(jtrans("Normal message."));
+#else
+mpr("Alternate debug message.");
+#endif
+"""
+
+        self.assertEqual(
+            self.issues(source, {"Release message.", "Normal message."}),
+            [],
+        )
+
+    def test_checks_not_debug_branch(self):
+        source = """
+#if !defined(DEBUG)
+mpr("Release untranslated message.");
+#endif
+"""
+
+        issues = self.issues(source)
+
+        self.assertEqual(
+            [(issue.kind, issue.message) for issue in issues],
+            [("raw", "Release untranslated message.")],
+        )
+
+    def test_repository_contains_reviewed_existing_keys(self):
+        keys = CHECKER.load_dictionary_keys(
+            CHECKER.SOURCE_ROOT / "dat/database/ja"
+        )
+
+        self.assertTrue(
+            {
+                "The demon of the infinite void smiles upon you.",
+                "If you continue, your game will not be scored!",
+                "The %s foams!",
+            }.issubset(keys)
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

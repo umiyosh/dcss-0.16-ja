@@ -76,13 +76,14 @@ DEF_BITFIELD(lookup_type_flags, lookup_type_flag);
 class LookupType
 {
 public:
-    LookupType(char _symbol, string _type, db_keys_recap _recap,
+    LookupType(char _symbol, string _type, string _display_label,
+               db_keys_recap _recap,
                db_find_filter _filter_forbid, keys_by_glyph _glyph_fetch,
                simple_key_list _simple_key_fetch,
                menu_entry_generator _menu_gen, key_describer _describer,
                lookup_type_flags _flags)
-    : symbol(_symbol), type(_type), filter_forbid(_filter_forbid),
-      flags(_flags),
+    : symbol(_symbol), type(_type), display_label(_display_label),
+      filter_forbid(_filter_forbid), flags(_flags),
       simple_key_fetch(_simple_key_fetch), glyph_fetch(_glyph_fetch),
       recap(_recap), menu_gen(_menu_gen), describer(_describer)
     {
@@ -116,6 +117,8 @@ public:
     char symbol;
     /// A description of the lookup type (e.g. "monster"). case insensitive
     string type;
+    /// A translation key for the label displayed in the lookup prompt.
+    string display_label;
     /// a function returning 'true' if the search result corresponding to
     /// the corresponding search should be filtered out of the results
     db_find_filter filter_forbid;
@@ -710,18 +713,13 @@ static MenuEntry* _cloud_menu_gen(char letter, const string &str, string &key)
 /**
  * How should this type be expressed in the prompt string?
  *
- * @return The 'type', with the first instance of the 'symbol' found &
- *          replaced with an uppercase version surrounded by parens
- *          e.g. "monster", 'm' -> "(M)onster"
+ * @return The translated display label prefixed with its selection key.
+ *          e.g. "monster lookup", 'M' -> "(M)モンスター"
  */
 string LookupType::prompt_string() const
 {
-    string prompt_str = lowercase_string(type);
-    const size_t symbol_pos = prompt_str.find(tolower(symbol));
-    ASSERT(symbol_pos != string::npos);
-
-    prompt_str.replace(symbol_pos, 1, make_stringf("(%c)", toupper(symbol)));
-    return prompt_str;
+    return make_stringf("(%c)%s", toupper(symbol),
+                        jtransc(display_label));
 }
 
 /**
@@ -1089,43 +1087,46 @@ static int _describe_god(const string &key, const string &/*suffix*/,
 
 /// All types of ?/ queries the player can enter.
 static const vector<LookupType> lookup_types = {
-    LookupType('M', "monster", _recap_mon_keys, _monster_filter,
+    LookupType('M', "monster", "monster lookup",
+               _recap_mon_keys, _monster_filter,
                _get_monster_keys, nullptr, nullptr,
                _describe_monster,
                LTYPF_SUPPORT_TILES | LTYPF_TOGGLEABLE_SORT),
-    LookupType('S', "spell", nullptr, _spell_filter,
+    LookupType('S', "spell", "spell lookup", nullptr, _spell_filter,
                nullptr, nullptr, _spell_menu_gen,
                _describe_spell,
                LTYPF_DB_SUFFIX | LTYPF_SUPPORT_TILES),
-    LookupType('K', "skill", nullptr, nullptr,
+    LookupType('K', "skill", "skill lookup", nullptr, nullptr,
                nullptr, _get_skill_keys, _skill_menu_gen,
                _describe_generic,
                LTYPF_SUPPORT_TILES),
-    LookupType('A', "ability", nullptr, _ability_filter,
+    LookupType('A', "ability", "ability lookup", nullptr, _ability_filter,
                nullptr, nullptr, _ability_menu_gen,
                _describe_generic,
                LTYPF_DB_SUFFIX | LTYPF_SUPPORT_TILES),
-    LookupType('C', "card", _recap_card_keys, _card_filter,
+    LookupType('C', "card", "card lookup",
+               _recap_card_keys, _card_filter,
                nullptr, nullptr, _simple_menu_gen,
                _describe_card,
                LTYPF_DB_SUFFIX),
-    LookupType('I', "item", nullptr, _item_filter,
+    LookupType('I', "item", "item lookup", nullptr, _item_filter,
                item_name_list_for_glyph, nullptr, _simple_menu_gen,
                _describe_item,
                LTYPF_NONE),
-    LookupType('F', "feature", _recap_feat_keys, _feature_filter,
+    LookupType('F', "feature", "feature lookup",
+               _recap_feat_keys, _feature_filter,
                nullptr, nullptr, _feature_menu_gen,
                _describe_generic,
                LTYPF_SUPPORT_TILES),
-    LookupType('G', "god", nullptr, nullptr,
+    LookupType('G', "god", "god lookup", nullptr, nullptr,
                nullptr, _get_god_keys, _god_menu_gen,
                _describe_god,
                LTYPF_SUPPORT_TILES),
-    LookupType('B', "branch", nullptr, nullptr,
+    LookupType('B', "branch", "branch lookup", nullptr, nullptr,
                nullptr, _get_branch_keys, _simple_menu_gen,
                _describe_generic,
                LTYPF_DISABLE_SORT),
-    LookupType('L', "cloud", nullptr, nullptr,
+    LookupType('L', "cloud", "cloud lookup", nullptr, nullptr,
                nullptr, _get_cloud_keys, _cloud_menu_gen,
                _describe_cloud,
                LTYPF_DB_SUFFIX | LTYPF_SUPPORT_TILES),
@@ -1243,8 +1244,10 @@ static bool _find_description(string &response)
 
     const string lookup_type_prompts =
         comma_separated_fn(lookup_types.begin(), lookup_types.end(),
-                           mem_fn(&LookupType::prompt_string), " or ");
-    mprf(MSGCH_PROMPT, "Describe a %s? ", lookup_type_prompts.c_str());
+                           mem_fn(&LookupType::prompt_string), " / ", " / ");
+    mprf(MSGCH_PROMPT, "%s ",
+         make_stringf(jtransc("Describe a %s?"),
+                      lookup_type_prompts.c_str()).c_str());
 
     int ch;
     {

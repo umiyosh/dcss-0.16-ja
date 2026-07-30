@@ -1086,7 +1086,7 @@ static bool _do_book_acquirement(item_def &book, int agent)
 static int _failed_acquirement(bool quiet)
 {
     if (!quiet)
-        mpr("The demon of the infinite void smiles upon you.");
+        mpr(jtrans("The demon of the infinite void smiles upon you."));
     return NON_ITEM;
 }
 

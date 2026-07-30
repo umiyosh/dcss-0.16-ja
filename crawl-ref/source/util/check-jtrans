@@ -1,0 +1,308 @@
+#!/usr/bin/env python3
+
+import argparse
+import ast
+from dataclasses import dataclass
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+
+SOURCE_ROOT = Path(__file__).resolve().parent.parent
+REPOSITORY_ROOT = SOURCE_ROOT.parents[1]
+
+# These files only emit developer tooling output from raw mpr calls.
+DEVELOPER_FILES = {
+    "ability.cc",
+    "arena.cc",
+    "ctest.cc",
+    "dbg-maps.cc",
+    "dbg-scan.cc",
+    "dbg-util.cc",
+    "luaterp.cc",
+    "makeitem.cc",
+    "mapdef.cc",
+    "mon-movetarget.cc",
+    "mon-pathfind.cc",
+    "tags.cc",
+    "wiz-dgn.cc",
+    "wiz-dump.cc",
+    "wiz-fsim.cc",
+    "wiz-item.cc",
+    "wiz-you.cc",
+    "xom.cc",
+}
+
+# These messages are only reachable from wizard tooling or internal
+# consistency checks, despite living in files that also contain player output.
+DEVELOPER_MESSAGES = {
+    ("dgn-shoals.cc", "Tide inertia:"),
+    ("rot.cc", "ERROR: stack quantity"),
+}
+
+STRING_LITERAL = r'"(?:\\.|[^"\\])*"'
+ADJACENT_LITERALS = (
+    rf"(?:{STRING_LITERAL})(?:\s*(?:{STRING_LITERAL}))*"
+)
+RAW_CALL = re.compile(
+    r'\bmprf?(?:_nojoin)?\s*\(\s*'
+    r'(?:(?P<channel>MSGCH_[A-Z_]+)\s*,\s*)?'
+    rf'(?P<literals>{ADJACENT_LITERALS})',
+    re.DOTALL,
+)
+JTRANS_CALL = re.compile(
+    rf'\bjtransc?\s*\(\s*(?P<literals>{ADJACENT_LITERALS})\s*\)',
+    re.DOTALL,
+)
+ENGLISH = re.compile(r"[A-Za-z]{3,}")
+
+
+@dataclass(frozen=True)
+class Issue:
+    line: int
+    message: str
+    kind: str
+
+
+def _masked_line(line):
+    return re.sub(r"[^\r\n]", " ", line)
+
+
+def _debug_branch(directive):
+    compact = directive.replace(" ", "")
+    if "DEBUG" not in directive:
+        return None
+    if directive.startswith("#ifndef") or "!defined(DEBUG" in compact:
+        return False
+    return True
+
+
+def _mask_debug_branches(source):
+    debug_stack = []
+    result = []
+    for line in source.splitlines(keepends=True):
+        directive = line.lstrip()
+        if directive.startswith(("#if ", "#ifdef ", "#ifndef ")):
+            debug_stack.append(_debug_branch(directive))
+            result.append(_masked_line(line))
+        elif directive.startswith("#elif"):
+            if debug_stack:
+                debug_stack[-1] = _debug_branch(directive)
+            result.append(_masked_line(line))
+        elif directive.startswith("#else"):
+            if debug_stack and debug_stack[-1] is not None:
+                debug_stack[-1] = not debug_stack[-1]
+            result.append(_masked_line(line))
+        elif directive.startswith("#endif"):
+            if debug_stack:
+                debug_stack.pop()
+            result.append(_masked_line(line))
+        elif any(state is True for state in debug_stack):
+            result.append(_masked_line(line))
+        else:
+            result.append(line)
+    return "".join(result)
+
+
+def _mask_comments(source):
+    result = list(source)
+    state = "code"
+    index = 0
+    while index < len(source):
+        pair = source[index:index + 2]
+        char = source[index]
+        if state == "code":
+            if pair == "//":
+                result[index:index + 2] = "  "
+                state = "line-comment"
+                index += 2
+                continue
+            if pair == "/*":
+                result[index:index + 2] = "  "
+                state = "block-comment"
+                index += 2
+                continue
+            if char == '"':
+                state = "string"
+            elif char == "'":
+                state = "character"
+        elif state == "line-comment":
+            if char in "\r\n":
+                state = "code"
+            else:
+                result[index] = " "
+        elif state == "block-comment":
+            if pair == "*/":
+                result[index:index + 2] = "  "
+                state = "code"
+                index += 2
+                continue
+            if char not in "\r\n":
+                result[index] = " "
+        elif state in {"string", "character"}:
+            if char == "\\":
+                index += 2
+                continue
+            if (
+                state == "string" and char == '"'
+                or state == "character" and char == "'"
+            ):
+                state = "code"
+        index += 1
+    return "".join(result)
+
+
+def _literal_value(literals):
+    return "".join(
+        ast.literal_eval(literal.replace(r"\?", "?"))
+        for literal in re.findall(STRING_LITERAL, literals, re.DOTALL)
+    )
+
+
+def _line_number(source, offset):
+    return source.count("\n", 0, offset) + 1
+
+
+def find_issues(source, dictionary_keys):
+    masked = _mask_comments(_mask_debug_branches(source))
+    issues = []
+
+    for match in RAW_CALL.finditer(masked):
+        channel = match.group("channel")
+        message = _literal_value(match.group("literals"))
+        visible_message = re.sub(r"<[^>]+>", "", message)
+        if channel in {"MSGCH_ERROR", "MSGCH_DIAGNOSTICS"}:
+            continue
+        if not ENGLISH.search(visible_message):
+            continue
+        issues.append(
+            Issue(_line_number(masked, match.start()), message, "raw")
+        )
+
+    for match in JTRANS_CALL.finditer(masked):
+        message = _literal_value(match.group("literals"))
+        if ENGLISH.search(message) and message not in dictionary_keys:
+            issues.append(
+                Issue(
+                    _line_number(masked, match.start()),
+                    message,
+                    "missing-key",
+                )
+            )
+
+    return sorted(issues, key=lambda issue: (issue.line, issue.kind))
+
+
+def load_dictionary_keys(database_root):
+    keys = set()
+    for path in sorted(database_root.glob("jtrans*.txt")):
+        for block in path.read_text(errors="ignore").split("%%%%"):
+            lines = [
+                line
+                for line in block.splitlines()
+                if line.strip() and not line.lstrip().startswith("#")
+            ]
+            if lines:
+                keys.add(lines[0])
+    return keys
+
+
+def changed_lines(path, base):
+    relative_path = path.relative_to(REPOSITORY_ROOT)
+    result = subprocess.run(
+        [
+            "git",
+            "diff",
+            "--unified=0",
+            "--no-ext-diff",
+            f"{base}...HEAD",
+            "--",
+            str(relative_path),
+        ],
+        cwd=REPOSITORY_ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    lines = set()
+    for match in re.finditer(
+        r"^@@ -\d+(?:,\d+)? \+(?P<start>\d+)"
+        r"(?:,(?P<count>\d+))? @@",
+        result.stdout,
+        re.MULTILINE,
+    ):
+        start = int(match.group("start"))
+        count = int(match.group("count") or 1)
+        lines.update(range(start, start + count))
+    return lines
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Check Japanese translation coverage."
+    )
+    parser.add_argument(
+        "--base",
+        help=(
+            "Git base revision used to check dictionary keys on changed "
+            "lines. Existing untranslated jtrans fallbacks are ignored."
+        ),
+    )
+    args = parser.parse_args()
+
+    dictionary_keys = load_dictionary_keys(
+        SOURCE_ROOT / "dat/database/ja"
+    )
+    failures = []
+    for path in sorted(SOURCE_ROOT.glob("*.cc")):
+        changed = changed_lines(path, args.base) if args.base else set()
+        issues = find_issues(
+            path.read_text(errors="ignore"),
+            dictionary_keys,
+        )
+        for issue in issues:
+            if (
+                issue.kind == "raw"
+                and (
+                    path.name in DEVELOPER_FILES
+                    or path.name == "zotdef.cc"
+                )
+            ):
+                continue
+            if (
+                issue.kind == "raw"
+                and any(
+                    path.name == developer_path
+                    and issue.message.startswith(prefix)
+                    for developer_path, prefix in DEVELOPER_MESSAGES
+                )
+            ):
+                continue
+            if (
+                issue.kind == "raw"
+                and
+                path.name == "player.cc"
+                and issue.message.startswith(
+                    "Your Zot abilities now extend"
+                )
+            ):
+                continue
+            if issue.kind == "missing-key" and issue.line not in changed:
+                continue
+            failures.append(
+                f"{path.name}:{issue.line}:"
+                f" {issue.kind}: {issue.message}"
+            )
+
+    if failures:
+        print("Japanese translation coverage failures:", file=sys.stderr)
+        print("\n".join(failures), file=sys.stderr)
+        return 1
+
+    print("No untranslated messages or missing literal jtrans keys found.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

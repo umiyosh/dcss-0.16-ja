@@ -416,7 +416,7 @@ void moveto_location_effects(dungeon_feature_type old_feat,
                 // This gets called here because otherwise you wouldn't heat
                 // until your second turn in lava.
                 if (temperature() < TEMP_FIRE)
-                    mpr("The lava instantly superheats you.");
+                    mpr(jtrans("The lava instantly superheats you."));
                 you.temperature = TEMP_MAX;
 #endif
             }
@@ -8487,7 +8487,7 @@ void temperature_check()
         // but otherwise it lets you know you're being
         // brought up to max temp.
         if (temperature() <= TEMP_FIRE)
-            mpr("The lava instantly superheats you.");
+            mpr(jtrans("The lava instantly superheats you."));
         you.temperature = TEMP_MAX;
         ignore_cap = true;
         // Otherwise, your temperature naturally decays.
@@ -8576,32 +8576,35 @@ void temperature_changed(float change)
     // Just reached the temp that kills off stoneskin.
     if (change > pos_threshold && temperature_tier(TEMP_WARM))
     {
-        mprf(MSGCH_DURATION, "Your stony skin melts.");
+        mprf(MSGCH_DURATION, "%s", jtransc("Your stony skin melts."));
         you.redraw_armour_class = true;
     }
 
     // Passive heat stuff.
     if (change > pos_threshold && temperature_tier(TEMP_FIRE))
-        mprf(MSGCH_DURATION, "You're getting fired up.");
+        mprf(MSGCH_DURATION, "%s", jtransc("You're getting fired up."));
 
     // Heat aura stuff.
     if (change > pos_threshold && temperature_tier(TEMP_MAX))
     {
-        mprf(MSGCH_DURATION, "You blaze with the fury of an erupting volcano!");
+        mprf(MSGCH_DURATION, "%s",
+             jtransc("You blaze with the fury of an erupting volcano!"));
         invalidate_agrid(true);
     }
 
     // For DECREMENTS (reverse order):
     if (change < neg_threshold && temperature_tier(TEMP_MAX))
-        mprf(MSGCH_DURATION, "The intensity of your heat diminishes.");
+        mprf(MSGCH_DURATION, "%s",
+             jtransc("The intensity of your heat diminishes."));
 
     if (change < neg_threshold && temperature_tier(TEMP_FIRE))
-        mprf(MSGCH_DURATION, "You're cooling off.");
+        mprf(MSGCH_DURATION, "%s", jtransc("You're cooling off."));
 
     // Cooled down enough for stoneskin to kick in again.
     if (change < neg_threshold && temperature_tier(TEMP_WARM))
     {
-        mprf(MSGCH_DURATION, "Your skin cools and hardens.");
+        mprf(MSGCH_DURATION, "%s",
+             jtransc("Your skin cools and hardens."));
         you.redraw_armour_class = true;
     }
 

@@ -775,7 +775,8 @@ static void _deck_ident(item_def& deck)
     if (in_inventory(deck) && !item_ident(deck, ISFLAG_KNOW_TYPE))
     {
         set_ident_flags(deck, ISFLAG_KNOW_TYPE);
-        mprf("This is %s.", deck.name(DESC_A).c_str());
+        mprf(jtransc("This is %s."),
+             jtransc(deck.name(DESC_A)));
         you.wield_change = true;
     }
 }
@@ -3109,7 +3110,7 @@ void card_effect(card_type which_card, deck_rarity_type rarity,
 
     case NUM_CARDS:
         // The compiler will complain if any card remains unhandled.
-        mprf("You have %s a buggy card!", participle);
+        mprf(jtransc("You have %s a buggy card!"), jtransc(participle));
         break;
     }
 }

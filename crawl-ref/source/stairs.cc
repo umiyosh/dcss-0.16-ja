@@ -153,10 +153,8 @@ static bool _stair_moves_pre(dungeon_feature_type stair)
     if (!slide_feature_over(you.pos()))
         return false;
 
-    string verb = stair_climb_verb(stair);
-
-    mprf("%s moves away as you attempt to %s it!", stair_str.c_str(),
-         verb.c_str());
+    mprf(jtransc("As you try to use %s, it moves away!"),
+         jtransc(stair_str));
 
     you.turn_is_over = true;
 

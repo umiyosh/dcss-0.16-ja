@@ -1105,7 +1105,7 @@ void finished_eating_message(int food_type)
         const string taste = getMiscString("eating_pizza");
         if (taste.empty())
         {
-            mpr("Bleh, bug pizza.");
+            mpr(jtrans("Bleh, bug pizza."));
             break;
         }
 

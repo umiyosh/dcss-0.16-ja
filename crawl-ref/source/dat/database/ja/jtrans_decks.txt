@@ -632,7 +632,7 @@ This type of card no longer exists!
 %%%%
 You have %s a buggy card!
 
-# message for bug
+あなたはバグのあるカードを%s！
 %%%%
 You hear Nemelex Xobeh chuckle.
 

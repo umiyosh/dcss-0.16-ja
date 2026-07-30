@@ -346,11 +346,11 @@ See you soon, %s!
 %%%%
 No ghost files for this level.
 
-# for wizard
+この階層にはゴーストファイルがない。
 %%%%
 Ghost file invalidated before read.
 
-# for wizard
+読み込み前にゴーストファイルが無効になった。
 %%%%
 Broken bones file: %s
 
@@ -1520,7 +1520,7 @@ This weapon is vampiric, and you must be Full or above to equip it.
 %%%%
 As you grasp it, you feel your magic disrupted. Quickly, you stop.
 
-# obsolete
+それを手に取ると、魔力が乱されるのを感じた。あなたはすぐに手を止めた。
 %%%%
 Wield which item (- for none, * to show all)?
 
@@ -1992,7 +1992,7 @@ Reading books requires mental cohesion, which you lack.
 %%%%
 This item has been removed, sorry!
 
-# obsolete
+このアイテムは削除されています。
 %%%%
 Magic quickly surges around you.
 
@@ -8747,7 +8747,7 @@ The fire burns you terribly!
 %%%%
 You resist completely.
 
-# obsolete
+あなたは完全に耐えた。
 %%%%
 You feel a terrible chill!
 
@@ -18995,7 +18995,7 @@ The shaft disappears in a puff of logic!
 %%%%
 The gas trap seems to be inoperative.
 
-# obsolete
+ガスの罠は作動しないようだ。
 %%%%
 You found %s!
 

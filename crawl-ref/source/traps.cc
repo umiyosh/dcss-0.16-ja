@@ -1123,7 +1123,7 @@ void trap_def::trigger(actor& triggerer, bool flat_footed)
 #if TAG_MAJOR_VERSION == 34
     case TRAP_GAS:
         if (in_sight && you_know)
-            mpr("The gas trap seems to be inoperative.");
+            mpr(jtrans("The gas trap seems to be inoperative."));
         trap_destroyed = true;
         break;
 #endif

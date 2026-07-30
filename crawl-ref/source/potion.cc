@@ -979,7 +979,7 @@ public:
     {
         if (you.species == SP_VAMPIRE)
         {
-            mpr("This tastes delicious.");
+            mpr(jtrans("This tastes delicious."));
             lessen_hunger(pow, true);
         }
         else
@@ -1082,11 +1082,11 @@ public:
         if (you.species == SP_VAMPIRE
             || player_mutation_level(MUT_CARNIVOROUS) == 3)
         {
-            mpr("Blech - that potion was really gluggy!");
+            mpr(jtrans("Blech - that potion was really gluggy!"));
         }
         else
         {
-            mpr("That potion was really gluggy!");
+            mpr(jtrans("That potion was really gluggy!"));
             lessen_hunger(6000, true);
         }
         return true;
@@ -1106,9 +1106,9 @@ public:
     bool effect(bool=true, int=40) const
     {
         if (you.species == SP_VAMPIRE)
-            mpr("Blech - this tastes like water.");
+            mpr(jtrans("Blech - this tastes like water."));
         else
-            mpr("This tastes like water.");
+            mpr(jtrans("This tastes like water."));
         return true;
     }
 };
@@ -1149,7 +1149,7 @@ public:
     }
     bool effect(bool=true, int=40) const
     {
-        mpr("That potion was far past its expiry date.");
+        mpr(jtrans("That potion was far past its expiry date."));
         return true;
     }
 };
