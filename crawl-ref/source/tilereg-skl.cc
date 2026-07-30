@@ -5,6 +5,7 @@
 #include "tilereg-skl.h"
 
 #include "cio.h"
+#include "database.h"
 #include "libutil.h"
 #include "options.h"
 #include "output.h"
