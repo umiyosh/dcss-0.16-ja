@@ -2724,7 +2724,8 @@ static const map_def *_dgn_random_map_for_place(bool minivault)
     if (you.props.exists("force_map"))
         vault = find_map_by_name(you.props["force_map"].get_string());
     else if (lid.branch == root_branch && lid.depth == 1
-        && (crawl_state.game_is_sprint()
+        && (!crawl_state.map.empty()
+            || crawl_state.game_is_sprint()
             || crawl_state.game_is_zotdef()
             || crawl_state.game_is_tutorial()))
     {
