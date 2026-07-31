@@ -9,6 +9,19 @@ local function contains(lines, expected)
     return false
 end
 
+local function eq(actual, expected)
+    assert(actual == expected,
+           "Expected '" .. tostring(expected) .. "', but got '" ..
+           tostring(actual) .. "'")
+end
+
+local function run(name, body)
+    local ok, err = pcall(body)
+    if not ok then
+        error(name .. ": " .. err)
+    end
+end
+
 local function with_globals(replacements, body)
     local saved = { }
     for name, value in pairs(replacements) do
@@ -47,7 +60,7 @@ local function test_builtins_loaded()
         c_kill_list,
     }
     for _, fn in ipairs(functions) do
-        test.eq(type(fn), "function")
+        eq(type(fn), "function")
     end
 end
 
@@ -69,7 +82,7 @@ local function test_stash_annotation()
 
     with_globals({ food = { isfruit = function () return false end } },
         function ()
-            test.eq(ch_stash_search_annotate_item(item),
+            eq(ch_stash_search_annotate_item(item),
                 "{dropped} {throwable} {ego} {branded} " ..
                 "{Short Blades} {flame} {melee weapon}")
         end)
@@ -78,11 +91,11 @@ end
 local function test_runrest_message_rules()
     g_rr_ignored = { }
     rr_message_adder(true)("runrest_stop_message", "danger", 0)
-    rr_message_adder(nil)("runrest_ignore_message", "noise", 0)
+    rr_message_adder(nil)("runrest_ignore_message", "noise", 1)
 
-    test.eq(rr_handle_message("danger"), true)
-    test.eq(rr_handle_message("noise"), nil)
-    test.eq(rr_handle_message("other"), false)
+    eq(rr_handle_message("danger"), true)
+    eq(rr_handle_message("noise"), nil)
+    eq(rr_handle_message("other"), false)
 end
 
 local function combat_globals(processed_keys, spellcasting)
@@ -136,7 +149,7 @@ local function test_autofight_melee()
         AUTOFIGHT_THROW = false
         AUTOFIGHT_THROW_NOMOVE = false
         attack(false)
-        test.eq(processed_keys.value, "l")
+        eq(processed_keys.value, "l")
     end)
 end
 
@@ -148,7 +161,7 @@ local function test_automagic_cast()
         AUTOMAGIC_SPELL_SLOT = "a"
         AUTOMAGIC_STOP = 0
         mag_attack(false)
-        test.eq(processed_keys.value, "zarlf")
+        eq(processed_keys.value, "zarlf")
     end)
 end
 
@@ -174,21 +187,21 @@ local function test_kill_list_output()
 
     with_globals({ kills = kill_api }, function ()
         DUMP_KILL_BREAKDOWNS = true
-        test.eq(c_kill_list(entries, nil, false), true)
+        eq(c_kill_list(entries, nil, false), true)
         assert(contains(written, "倒したモンスター:"))
         assert(contains(written, "    すべての'r'シンボル"))
 
         written = { }
         count_list(entries, false)
-        test.eq(written[1], "  降順リスト")
-        test.eq(written[2], "    rat x3")
-        test.eq(written[3], "    bat x1")
+        eq(written[1], "  降順リスト")
+        eq(written[2], "    rat x3")
+        eq(written[3], "    bat x1")
     end)
 end
 
-test_builtins_loaded()
-test_stash_annotation()
-test_runrest_message_rules()
-test_autofight_melee()
-test_automagic_cast()
-test_kill_list_output()
+run("builtins loaded", test_builtins_loaded)
+run("stash annotation", test_stash_annotation)
+run("runrest message rules", test_runrest_message_rules)
+run("autofight melee", test_autofight_melee)
+run("automagic cast", test_automagic_cast)
+run("kill list output", test_kill_list_output)

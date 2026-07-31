@@ -27,6 +27,7 @@
 #include "end.h"
 #include "errors.h"
 #include "files.h"
+#include "initfile.h"
 #include "libutil.h"
 #include "maps.h"
 #include "message.h"
@@ -104,12 +105,22 @@ static void _init_test_bindings()
     initialise_item_descriptions();
 }
 
+static const char *_test_extension(const string &testname)
+{
+    if (ends_with(testname, ".clua"))
+        return ".clua";
+    ASSERT(ends_with(testname, ".lua"));
+    return ".lua";
+}
+
 static bool _is_test_selected(const string &testname)
 {
+    const char *extension = _test_extension(testname);
     if (crawl_state.test_list)
     {
-        ASSERT(ends_with(testname, ".lua"));
-        printf("%s\n", testname.substr(0, testname.length() - 4).c_str());
+        printf("%s\n",
+               testname.substr(0, testname.length() - strlen(extension))
+                       .c_str());
         return false;
     }
 
@@ -119,7 +130,7 @@ static bool _is_test_selected(const string &testname)
          i < size; ++i)
     {
         const string &phrase(crawl_state.tests_selected[i]);
-        if (testname == phrase || testname == phrase + ".lua")
+        if (testname == phrase || testname == phrase + extension)
             return true;
     }
     return false;
@@ -136,11 +147,15 @@ static void run_test(const string &file)
     flush_prev_message();
 
     const string path(catpath(crawl_state.script? script_dir : test_dir, file));
-    dlua.execfile(path.c_str(), true, false);
-    if (dlua.error.empty())
+    const bool client_test = ends_with(file, ".clua");
+    CLua &lua = client_test ? clua : dlua;
+    if (client_test)
+        load_lua_builtins();
+    lua.execfile(path.c_str(), true, false, true);
+    if (lua.error.empty())
         ++nsuccess;
     else
-        failures.emplace_back(file, dlua.error);
+        failures.emplace_back(file, lua.error);
 }
 
 static bool _has_test(const string& test)
@@ -194,9 +209,15 @@ void run_tests()
     // Get a list of Lua files in test. Order of execution of
     // tests should be irrelevant.
     {
-        const vector<string> tests(
+        vector<string> tests(
             get_dir_files_recursive(crawl_state.script? script_dir : test_dir,
                               ".lua"));
+        if (!crawl_state.script)
+        {
+            const vector<string> client_tests(
+                get_dir_files_recursive(test_dir, ".clua"));
+            tests.insert(tests.end(), client_tests.begin(), client_tests.end());
+        }
 
         for_each(tests.begin(), tests.end(), run_test);
 

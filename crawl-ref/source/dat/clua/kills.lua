@@ -84,7 +84,7 @@ function holiness_list(a)
 end
 
 function count_list(a, ascending)
-    kills.rawwrite("  昇順リスト")
+    kills.rawwrite(ascending and "  昇順リスト" or "  降順リスト")
     show_sorted_list(a,
         "  ",
         function (x, y)
@@ -93,7 +93,7 @@ function count_list(a, ascending)
                     or (kills.nkills(x) == kills.nkills(y) and
                         kills.exp(x) > kills.exp(y))
             else
-                return kills.nkill(x) > kills.nkills(y)
+                return kills.nkills(x) > kills.nkills(y)
                     or (kills.nkills(x) == kills.nkills(y) and
                         kills.exp(x) > kills.exp(y))
             end
