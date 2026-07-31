@@ -54,6 +54,18 @@ run_one()
         echo "rc: test/stress/abyss_short_run.rc" 1>&2
         $CRAWL -rc test/stress/abyss_short_run.rc
     ;;
+    11|shop_bazaar_stash)
+        echo "e2e: shop, Bazaar, and stash" 1>&2
+        E2E_LOG=$(mktemp "${TMPDIR:-/tmp}/crawl-shop-bazaar-stash.XXXXXX")
+        $CRAWL -sprint -sprint-map shop_bazaar_stash_e2e \
+            > "$E2E_LOG" 2>&1
+        if ! grep -a -q "E2E PASS: shop, Bazaar, and stash" "$E2E_LOG"
+        then
+            echo "E2E did not reach its completion marker: $E2E_LOG" 1>&2
+            tail -n 40 "$E2E_LOG" 1>&2
+            exit 1
+        fi
+    ;;
     10|qw)
         echo "rc: test/stress/qw.rc" 1>&2
         $CRAWL -rc test/stress/qw.rc
