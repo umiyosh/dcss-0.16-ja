@@ -54,6 +54,69 @@ run_one()
         echo "rc: test/stress/abyss_short_run.rc" 1>&2
         $CRAWL -rc test/stress/abyss_short_run.rc
     ;;
+    11|shop_bazaar_stash)
+        echo "e2e: shop, Bazaar, and stash" 1>&2
+        E2E_DIR=$(mktemp -d \
+            "${TMPDIR:-/tmp}/crawl-shop-bazaar-stash.XXXXXX")
+        E2E_LOG="$E2E_DIR/e2e.log"
+        E2E_RELOAD_LOG="$E2E_DIR/reload.log"
+        E2E_RC_SOURCE="$PWD/test/stress/shop_bazaar_stash.rc"
+        E2E_SETUP_SOURCE="$PWD/test/stress/shop_bazaar_stash_setup.rc"
+        E2E_RELOAD_SOURCE="$PWD/test/stress/shop_bazaar_stash_reload.rc"
+        E2E_RC="$E2E_DIR/shop_bazaar_stash.rc"
+        E2E_PHASE_RC="$E2E_DIR/shop_bazaar_stash_phase.rc"
+        E2E_CRAWL=${E2E_CRAWL:-$TIMELIMIT ./crawl -seed 1 \
+            -name shop_bazaar_stash_e2e -no-throttle}
+
+        cp "$E2E_RC_SOURCE" "$E2E_RC"
+        cp "$E2E_SETUP_SOURCE" "$E2E_PHASE_RC"
+
+        if ! $E2E_CRAWL \
+            -rc "$E2E_RC" \
+            -rcdir "$E2E_DIR" \
+            -extra-opt-first "save_dir=$E2E_DIR" \
+            > "$E2E_LOG" 2>&1
+        then
+            echo "E2E setup failed: $E2E_LOG" 1>&2
+            tail -n 40 "$E2E_LOG" 1>&2
+            exit 1
+        fi
+        if ! grep -a -q "E2E STAGE1 SAVED" "$E2E_LOG"
+        then
+            echo "E2E did not save after the Bazaar flow: $E2E_LOG" 1>&2
+            tail -n 40 "$E2E_LOG" 1>&2
+            exit 1
+        fi
+
+        cp "$E2E_RELOAD_SOURCE" "$E2E_PHASE_RC"
+        if ! $E2E_CRAWL \
+            -rc "$E2E_RC" \
+            -rcdir "$E2E_DIR" \
+            -extra-opt-first "save_dir=$E2E_DIR" \
+            > "$E2E_RELOAD_LOG" 2>&1
+        then
+            echo "E2E reload failed: $E2E_RELOAD_LOG" 1>&2
+            tail -n 40 "$E2E_RELOAD_LOG" 1>&2
+            exit 1
+        fi
+        if ! grep -a -q "E2E PASS: shop, Bazaar, and stash" \
+            "$E2E_RELOAD_LOG"
+        then
+            echo "E2E did not reach its completion marker: $E2E_RELOAD_LOG" \
+                1>&2
+            tail -n 40 "$E2E_RELOAD_LOG" 1>&2
+            exit 1
+        fi
+        if ! grep -a -F -q "E2E STAGE [stash_search_complete]" \
+            "$E2E_RELOAD_LOG"
+        then
+            echo "stash search did not reach its result list: $E2E_RELOAD_LOG" \
+                1>&2
+            tail -n 40 "$E2E_RELOAD_LOG" 1>&2
+            exit 1
+        fi
+        echo "E2E passed; logs: $E2E_LOG $E2E_RELOAD_LOG" 1>&2
+    ;;
     10|qw)
         echo "rc: test/stress/qw.rc" 1>&2
         $CRAWL -rc test/stress/qw.rc
@@ -70,7 +133,7 @@ run_one()
 
 if [ "$*" = "all" ]
   then
-    for x in 1 2 3 4 5 6 7 8 9; do run_one "$x";done
+    for x in 1 2 3 4 5 6 7 8 9 11; do run_one "$x";done
     exit $?
 elif [ "$*" = "nonwiz" ]
   then

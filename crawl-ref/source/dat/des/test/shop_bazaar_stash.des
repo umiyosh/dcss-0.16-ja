@@ -1,0 +1,36 @@
+# Deterministic maps for test/stress/shop_bazaar_stash.rc.
+
+NAME:   shop_bazaar_stash_e2e
+DEPTH:  D:1
+WEIGHT: 0
+ORIENT: float
+TAGS:   arrival no_item_gen no_monster_gen no_trap_gen no_pool_fixup
+TAGS:   no_rotate no_hmirror no_vmirror
+veto {{ return you.name() ~= "shop_bazaar_stash_e2e" }}
+KITEM:  g = gold q:5000
+KFEAT:  S = general shop name:E2E type:Regression suffix:Shop count:1 \
+              use_all greed:1 ; potion of curing
+KFEAT:  O = enter_bazaar
+MARKER: O = lua:one_way_stair { floor = "stone_arch" }
+MAP
+xxxxxxxx
+x.O.Sg{x
+xxxxx.xx
+ENDMAP
+
+NAME:   bazaar_shop_bazaar_stash_e2e
+DEPTH:  Bazaar
+WEIGHT: 100000
+ORIENT: encompass
+TAGS:   no_item_gen no_monster_gen no_trap_gen no_pool_fixup
+TAGS:   no_rotate no_hmirror no_vmirror
+veto {{ return you.name() ~= "shop_bazaar_stash_e2e" }}
+KFEAT:  S = general shop name:E2E type:Bazaar suffix:Shop count:1 \
+              use_all greed:1 ; scroll of teleportation
+KFEAT:  < = stone_arch
+KFEAT:  > = exit_bazaar
+MAP
+xxxxxx
+x<S>xx
+xxxxxx
+ENDMAP

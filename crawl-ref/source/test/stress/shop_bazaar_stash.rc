@@ -1,0 +1,186 @@
+# Automated commerce E2E for test/stress/run shop_bazaar_stash.
+
+name = shop_bazaar_stash_e2e
+map = shop_bazaar_stash_e2e
+species = hu
+background = ar
+restart_after_game = false
+show_more = false
+autopickup = $?!
+include = shop_bazaar_stash_phase.rc
+
+{
+local eol = string.char(13)
+local esc = string.char(27)
+local ctrl_f = string.char(6)
+local ctrl_q = string.char(17)
+local ctrl_s = string.char(19)
+local e2e_trace = ""
+
+local function quit_game()
+    crawl.sendkeys(ctrl_q .. "yes" .. eol .. esc .. esc)
+end
+
+local function fail(stage, message)
+    crawl.stderr("E2E FAIL [" .. stage .. "]: " .. message
+        .. "; trace: " .. e2e_trace)
+    quit_game()
+end
+
+local function advance(state, next_stage, keys)
+    e2e_trace = e2e_trace .. next_stage .. "@"
+        .. view.feature_at(0, 0) .. ";"
+    state.stage = next_stage
+    crawl.stderr("E2E STAGE [" .. next_stage .. "] on "
+        .. view.feature_at(0, 0))
+    crawl.sendkeys(keys)
+end
+
+local function messages_contain(expected)
+    return string.find(crawl.messages(50), expected, 1, true) ~= nil
+end
+
+local function find_inventory_item(class_name, subtype)
+    for _, item in ipairs(items.inventory()) do
+        if item.class(true) == class_name and item.subtype() == subtype then
+            return item
+        end
+    end
+    return nil
+end
+
+local function floor_has(class_name, subtype)
+    for _, item in ipairs(you.floor_items()) do
+        if item.class(true) == class_name and item.subtype() == subtype then
+            return true
+        end
+    end
+    return false
+end
+
+function ready()
+    crawl.enable_more(false)
+
+    if you.turns() == 0 and not e2e_reload_phase then
+        c_persist.shop_bazaar_stash = { stage = "start" }
+    elseif not c_persist.shop_bazaar_stash then
+        c_persist.shop_bazaar_stash = { stage = "start" }
+    end
+    local state = c_persist.shop_bazaar_stash
+    local stage = state.stage
+
+    if stage == "start" then
+        state.initial_gold = you.gold()
+        advance(state, "gold_collected", "h")
+    elseif stage == "gold_collected" then
+        if you.gold() <= state.initial_gold then
+            return fail(stage, "map gold was not collected")
+        end
+
+        advance(state, "shop_reached", "h")
+    elseif stage == "shop_reached" then
+        advance(state, "shopping_list_added", ">Ax")
+    elseif stage == "shopping_list_added" then
+        advance(state, "shopping_list_deleted", "$!!a")
+    elseif stage == "shopping_list_deleted" then
+        if not messages_contain("購入リストにはもう何も載っていない。") then
+            return fail(stage, "shopping-list deletion message was absent")
+        end
+
+        state.gold_before_shop = you.gold()
+        local curing = find_inventory_item("potion", "curing")
+        state.curing_before_shop = curing and curing.quantity or 0
+        advance(state, "shop_purchase_complete", ">a" .. eol .. "yx")
+    elseif stage == "shop_purchase_complete" then
+        if you.gold() >= state.gold_before_shop then
+            return fail(stage, "shop purchase did not reduce gold")
+        end
+        local curing = find_inventory_item("potion", "curing")
+        if not curing or curing.quantity <= state.curing_before_shop then
+            return fail(stage, "purchased potion is not in inventory")
+        end
+        if not messages_contain("店主『") then
+            return fail(stage, "Japanese shop completion message was absent")
+        end
+
+        advance(state, "stash_item_collected", "h")
+    elseif stage == "stash_item_collected" then
+        local item = find_inventory_item("potion", "curing")
+        if not item then
+            return fail(stage, "stash fixture was not collected")
+        end
+
+        advance(state, "stash_item_dropped",
+                "d" .. items.index_to_letter(item.slot) .. eol)
+    elseif stage == "stash_item_dropped" then
+        if not floor_has("potion", "curing") then
+            return fail(stage, "stash fixture was not dropped")
+        end
+
+        advance(state, "bazaar_portal_reached", "h")
+    elseif stage == "bazaar_portal_reached" then
+        if view.feature_at(0, 0) == "enter_bazaar" then
+            advance(state, "bazaar_entered", ">")
+        elseif view.feature_at(-1, 0) ~= "wall" then
+            crawl.sendkeys("h")
+        else
+            return fail(stage, "could not reach enter_bazaar from "
+                .. view.feature_at(0, 0))
+        end
+    elseif stage == "bazaar_entered" then
+        if not you.where():find("Bazaar") then
+            return fail(stage, "normal portal entry did not reach Bazaar")
+        end
+
+        state.gold_before_bazaar = you.gold()
+        advance(state, "bazaar_purchase_complete",
+                "l>a" .. eol .. "yx")
+    elseif stage == "bazaar_purchase_complete" then
+        if not you.where():find("Bazaar") then
+            return fail(stage, "left Bazaar before using its shop")
+        end
+        if you.gold() >= state.gold_before_bazaar then
+            return fail(stage, "Bazaar purchase did not reduce gold")
+        end
+        if not find_inventory_item("scroll", "teleportation") then
+            return fail(stage, "Bazaar purchase is not in inventory")
+        end
+        if not messages_contain("店主『") then
+            return fail(stage, "Japanese Bazaar shop message was absent")
+        end
+
+        advance(state, "bazaar_exit_reached", "l")
+    elseif stage == "bazaar_exit_reached" then
+        if view.feature_at(0, 0) ~= "exit_bazaar" then
+            return fail(stage, "expected exit_bazaar, found "
+                .. view.feature_at(0, 0))
+        end
+        advance(state, "bazaar_exited", ">")
+    elseif stage == "bazaar_exited" then
+        if you.where():find("Bazaar") then
+            return fail(stage, "normal portal exit did not leave Bazaar")
+        end
+
+        advance(state, "reloaded", ".")
+    elseif stage == "reloaded" then
+        if not e2e_reload_phase then
+            crawl.stderr("E2E STAGE1 SAVED")
+            crawl.sendkeys(ctrl_s)
+            return
+        end
+
+        advance(state, "stash_reloaded", "l")
+    elseif stage == "stash_reloaded" then
+        if not floor_has("potion", "curing") then
+            return fail(stage, "dropped stash item did not survive reload")
+        end
+        advance(state, "stash_search_complete",
+                ctrl_f .. "." .. eol .. esc)
+    elseif stage == "stash_search_complete" then
+        crawl.stderr("E2E PASS: shop, Bazaar, and stash")
+        quit_game()
+    else
+        fail("unknown", tostring(stage))
+    end
+end
+}
