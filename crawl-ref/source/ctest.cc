@@ -33,6 +33,7 @@
 #include "mon-pick.h"
 #include "mon-util.h"
 #include "ng-init.h"
+#include "output.h"
 #include "state.h"
 #include "stringutil.h"
 #include "unicode.h"
@@ -170,6 +171,32 @@ static void _run_test(const string &name, void (*func)())
     }
 }
 
+static void _equip_slot_name_tests()
+{
+    static const char *api_names[] =
+    {
+        "Weapon", "Cloak",  "Helmet", "Gloves", "Boots",
+        "Shield", "Armour", "Left Ring", "Right Ring", "Amulet",
+        "First Ring", "Second Ring", "Third Ring", "Fourth Ring",
+        "Fifth Ring", "Sixth Ring", "Seventh Ring", "Eighth Ring",
+        "Amulet Ring"
+    };
+
+    COMPILE_CHECK(ARRAYSZ(api_names) == NUM_EQUIP);
+    for (int i = 0; i < NUM_EQUIP; ++i)
+    {
+        if (equip_name_to_slot(api_names[i]) != i)
+            fail("Could not resolve equipment slot '%s'.", api_names[i]);
+    }
+
+    if (equip_name_to_slot("weapon") != EQ_WEAPON)
+        fail("Equipment slot names should be case-insensitive.");
+    if (equip_name_to_slot("武器") != EQ_WEAPON)
+        fail("Translated equipment slot names should remain supported.");
+    if (equip_name_to_slot("not an equipment slot") != -1)
+        fail("Invalid equipment slot name was accepted.");
+}
+
 // Assumes curses has already been initialized.
 void run_tests()
 {
@@ -190,6 +217,7 @@ void run_tests()
     _run_test("mon-data", debug_mondata);
     _run_test("mon-spell", debug_monspells);
     _run_test("coordit", coordit_tests);
+    _run_test("equip-slot-name", _equip_slot_name_tests);
 
     // Get a list of Lua files in test. Order of execution of
     // tests should be irrelevant.

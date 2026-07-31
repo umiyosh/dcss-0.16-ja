@@ -1810,6 +1810,17 @@ static const char *s_equip_slot_names[] =
     "護符に付けた指輪"
 };
 
+// Keep the names accepted by the Lua API independent of translated UI text.
+// Bundled scripts, including qw.rc, use these names with items.equipped_at().
+static const char *s_equip_slot_api_names[] =
+{
+    "Weapon", "Cloak",  "Helmet", "Gloves", "Boots",
+    "Shield", "Armour", "Left Ring", "Right Ring", "Amulet",
+    "First Ring", "Second Ring", "Third Ring", "Fourth Ring",
+    "Fifth Ring", "Sixth Ring", "Seventh Ring", "Eighth Ring",
+    "Amulet Ring"
+};
+
 const char *equip_slot_to_name(int equip)
 {
     COMPILE_CHECK(ARRAYSZ(s_equip_slot_names) == NUM_EQUIP);
@@ -1826,7 +1837,7 @@ const char *equip_slot_to_name(int equip)
     {
         if (you.species == SP_CENTAUR)
             return "馬甲";
-        else if(you.species == SP_NAGA)
+        else if (you.species == SP_NAGA)
             return "具装";
     }
 
@@ -1838,9 +1849,14 @@ const char *equip_slot_to_name(int equip)
 
 int equip_name_to_slot(const char *s)
 {
+    COMPILE_CHECK(ARRAYSZ(s_equip_slot_api_names) == NUM_EQUIP);
+
     for (int i = 0; i < NUM_EQUIP; ++i)
-        if (!strcasecmp(s_equip_slot_names[i], s))
+        if (!strcasecmp(s_equip_slot_names[i], s)
+            || !strcasecmp(s_equip_slot_api_names[i], s))
+        {
             return i;
+        }
 
     return -1;
 }
