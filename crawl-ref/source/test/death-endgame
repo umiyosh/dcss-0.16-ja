@@ -1,0 +1,69 @@
+#!/bin/sh
+set -eu
+
+fail()
+{
+    echo "death end-game test failed: $*" >&2
+    echo "artifacts: $test_root" >&2
+    exit 1
+}
+
+if [ -n "${DEATH_TEST_ROOT:-}" ]; then
+    test_root=$DEATH_TEST_ROOT
+else
+    test_root=$(mktemp -d "${TMPDIR:-/tmp}/dcss-death-endgame.XXXXXX")
+fi
+
+platform=$(uname -s)
+if [ "$platform" = Darwin ] && [ -z "${DEATH_TEST_SHARED_DIR:-}" ]; then
+    fail "macOS requires DEATH_TEST_SHARED_DIR and a matching SHAREDDIR build"
+fi
+
+save_dir=$test_root/saves
+morgue_dir=$test_root/morgue
+shared_dir=${DEATH_TEST_SHARED_DIR:-$save_dir}
+score_file=$shared_dir/scores
+
+mkdir -p "$save_dir" "$morgue_dir" "$shared_dir"
+[ ! -e "$score_file" ] || fail "score file already exists"
+
+if command -v timeout >/dev/null 2>&1; then
+    timelimit="timeout 60"
+elif command -v gtimeout >/dev/null 2>&1; then
+    timelimit="gtimeout 60"
+else
+    timelimit=""
+fi
+
+if ! $timelimit ./util/fake_pty ./crawl \
+        -seed 1 \
+        -no-throttle \
+        -dir "$test_root" \
+        -morgue "$morgue_dir" \
+        -extra-opt-last "save_dir=$save_dir" \
+        -rc test/death-endgame.rc; then
+    fail "Crawl did not exit normally"
+fi
+
+[ -f "$score_file" ] || fail "score file was not generated"
+grep -Eq 'name=qw:.*:turn=[1-9][0-9]*:.*:ktyp=[^:]+' "$score_file" \
+    || fail "death was not recorded in the score file"
+
+morgue_file=""
+for candidate in "$morgue_dir"/morgue-qw-*.txt; do
+    if [ -f "$candidate" ]; then
+        [ -z "$morgue_file" ] || fail "multiple final morgue files found"
+        morgue_file=$candidate
+    fi
+done
+[ -n "$morgue_file" ] || fail "final morgue file was not generated"
+grep -q '死んだ' "$morgue_file" || fail "morgue has no death cause"
+grep -Eq 'HP -[0-9]+/[0-9]+' "$morgue_file" \
+    || fail "morgue has no final HP state"
+
+for save_file in "$save_dir"/*.cs; do
+    [ ! -e "$save_file" ] || fail "resumable save remains: $save_file"
+done
+
+echo "death end-game test passed"
+echo "artifacts: $test_root"
