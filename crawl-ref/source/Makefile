@@ -79,7 +79,7 @@ GAME = crawl
 MAKEFLAGS += -rR # This only works for recursive makes, i.e. contribs ...
 .SUFFIXES:       # ... so zap the suffix list to neutralize most predifined rules, too
 
-.PHONY: all test install clean clean-contrib clean-rltiles clean-android \
+.PHONY: all help test test-death-endgame install clean clean-contrib clean-rltiles clean-android \
         distclean debug debug-lite profile package-source source \
         build-windows package-windows rest docs greet api android FORCE \
         dist-macos
@@ -1816,9 +1816,18 @@ endif
 # Canned tests
 #
 
-test: test-test test-all
-nonwiztest: test-test test-nonwiz
-nondebugtest: test-all
+##@ Tests
+
+help: ## Show documented targets
+	@perl -ne 'if (/^\#\#@[[:space:]]*(.*)/) { print "\n$$1\n" } elsif (/^([A-Za-z0-9_.\/%-]+):.*\#\#[[:space:]]*(.*)/) { printf "  %-24s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+
+test: test-test test-all ## Run debug and stress tests
+nonwiztest: test-test test-nonwiz ## Run tests that do not require wizard mode
+nondebugtest: test-all ## Run stress tests against a release build
+
+test-death-endgame: $(GAME) util/fake_pty builddb ## Verify normal-game death artifacts
+	test/death-endgame
+	@echo "Finished: death-endgame"
 
 test-%: $(GAME) util/fake_pty builddb
 	util/fake_pty test/stress/run $*

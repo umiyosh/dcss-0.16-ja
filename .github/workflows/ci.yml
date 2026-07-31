@@ -181,6 +181,12 @@ jobs:
             make nondebugtest
           fi
 
+      - name: Test normal-game death
+        if: matrix.variant.name == 'Console'
+        shell: bash
+        working-directory: crawl-ref/source
+        run: make test-death-endgame
+
       - name: Print crash reports
         if: failure()
         shell: bash
@@ -262,13 +268,25 @@ jobs:
           elif [[ -n "$FULLDEBUG" ]]; then
             make debug -j"$jobs"
           else
-            make -j"$jobs"
+            make SHAREDDIR="$RUNNER_TEMP/dcss-death-endgame/shared" -j"$jobs"
           fi
 
       - name: Check the binary runs
         shell: bash
         working-directory: crawl-ref/source
         run: ./crawl --version
+
+      - name: Test normal-game death
+        if: matrix.variant.name == 'Console'
+        shell: bash
+        working-directory: crawl-ref/source
+        env:
+          DEATH_TEST_ROOT: ${{ runner.temp }}/dcss-death-endgame/run
+          DEATH_TEST_SHARED_DIR: ${{ runner.temp }}/dcss-death-endgame/shared
+        run: >-
+          make
+          SHAREDDIR="$RUNNER_TEMP/dcss-death-endgame/shared"
+          test-death-endgame
 
       - name: Assemble the app bundle
         # Only the release workflow ships a .app, and it only runs on tags,

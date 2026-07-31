@@ -1,0 +1,3 @@
+# Run the bundled qw bot as an ordinary scored game. With seed 1 it reaches a
+# deterministic death on D:1, exercising the real end-game path.
+include = stress/qw.rc
