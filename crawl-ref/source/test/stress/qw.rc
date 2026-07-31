@@ -3108,7 +3108,7 @@ function plan_wield_weapon()
     return false
   end
   for it in inventory() do
-    if it and it.class(true) == "weapon" then
+    if it and it.class(true) == "weapon" and not it.equipped then
       if equip_value(it, it:name()) >= 0 and not it:name():find("vamp") then
         l = items.index_to_letter(it.slot)
         say("Wielding weapon " .. it:name() .. ".")
