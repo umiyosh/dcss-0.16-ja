@@ -19,6 +19,7 @@ string gametype_to_str(game_type type);
 job_type str_to_job(const string &str);
 
 string read_init_file(bool runscript = false);
+void load_lua_builtins();
 
 struct newgame_def;
 newgame_def read_startup_prefs();

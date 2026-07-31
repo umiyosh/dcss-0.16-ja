@@ -1538,6 +1538,20 @@ static const char* config_defaults[] =
     "defaults/misc.txt",
 };
 
+void load_lua_builtins()
+{
+#ifdef CLUA_BINDINGS
+    for (const char *builtin : lua_builtins)
+    {
+        clua.execfile(builtin, false, false);
+        if (!clua.error.empty())
+            mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+    }
+#else
+    UNUSED(lua_builtins);
+#endif
+}
+
 // Returns an error message if the init.txt was not found.
 string read_init_file(bool runscript)
 {
@@ -1546,20 +1560,12 @@ string read_init_file(bool runscript)
     // Load Lua builtins.
 #ifdef CLUA_BINDINGS
     if (runscript)
-    {
-        for (const char *builtin : lua_builtins)
-        {
-            clua.execfile(builtin, false, false);
-            if (!clua.error.empty())
-                mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
-        }
-    }
+        load_lua_builtins();
 
     // Load default options.
     for (const char *def_file : config_defaults)
         Options.include(datafile_path(def_file), false, runscript);
 #else
-    UNUSED(lua_builtins);
     UNUSED(config_defaults);
 #endif
 
