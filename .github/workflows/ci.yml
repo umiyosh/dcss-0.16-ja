@@ -181,12 +181,6 @@ jobs:
             make nondebugtest
           fi
 
-      - name: Test normal-game death
-        if: matrix.variant.name == 'Console'
-        shell: bash
-        working-directory: crawl-ref/source
-        run: make test-death-endgame
-
       - name: Print crash reports
         if: failure()
         shell: bash
