@@ -89,13 +89,14 @@ local function test_stash_annotation()
 end
 
 local function test_runrest_message_rules()
-    g_rr_ignored = { }
-    rr_message_adder(true)("runrest_stop_message", "danger", 0)
-    rr_message_adder(nil)("runrest_ignore_message", "noise", 1)
+    with_globals({ g_rr_ignored = { } }, function ()
+        rr_message_adder(true)("runrest_stop_message", "danger", 0)
+        rr_message_adder(nil)("runrest_ignore_message", "noise", 1)
 
-    eq(rr_handle_message("danger"), true)
-    eq(rr_handle_message("noise"), nil)
-    eq(rr_handle_message("other"), false)
+        eq(rr_handle_message("danger"), true)
+        eq(rr_handle_message("noise"), nil)
+        eq(rr_handle_message("other"), false)
+    end)
 end
 
 local function combat_globals(processed_keys, spellcasting)
@@ -107,6 +108,8 @@ local function combat_globals(processed_keys, spellcasting)
                 processed_keys.value = keys
             end,
         },
+        flag_order = false,
+        info = false,
         items = {
             equipped_at = function () return nil end,
             fired_item = function () return nil end,
@@ -119,6 +122,9 @@ local function combat_globals(processed_keys, spellcasting)
                 return nil
             end,
         },
+        m = false,
+        move = false,
+        name = false,
         you = {
             caught = function () return nil end,
             confused = function () return false end,
@@ -144,10 +150,11 @@ end
 
 local function test_autofight_melee()
     local processed_keys = { }
-    with_globals(combat_globals(processed_keys, false), function ()
-        AUTOFIGHT_STOP = 30
-        AUTOFIGHT_THROW = false
-        AUTOFIGHT_THROW_NOMOVE = false
+    local globals = combat_globals(processed_keys, false)
+    globals.AUTOFIGHT_STOP = 30
+    globals.AUTOFIGHT_THROW = false
+    globals.AUTOFIGHT_THROW_NOMOVE = false
+    with_globals(globals, function ()
         attack(false)
         eq(processed_keys.value, "l")
     end)
@@ -155,11 +162,12 @@ end
 
 local function test_automagic_cast()
     local processed_keys = { }
-    with_globals(combat_globals(processed_keys, true), function ()
-        AUTOFIGHT_STOP = 30
-        AUTOMAGIC_FIGHT = false
-        AUTOMAGIC_SPELL_SLOT = "a"
-        AUTOMAGIC_STOP = 0
+    local globals = combat_globals(processed_keys, true)
+    globals.AUTOFIGHT_STOP = 30
+    globals.AUTOMAGIC_FIGHT = false
+    globals.AUTOMAGIC_SPELL_SLOT = "a"
+    globals.AUTOMAGIC_STOP = 0
+    with_globals(globals, function ()
         mag_attack(false)
         eq(processed_keys.value, "zarlf")
     end)
@@ -185,18 +193,18 @@ local function test_kill_list_output()
         symbol = function (entry) return entry.symbol end,
     }
 
-    with_globals({ kills = kill_api }, function ()
-        DUMP_KILL_BREAKDOWNS = true
-        eq(c_kill_list(entries, nil, false), true)
-        assert(contains(written, "倒したモンスター:"))
-        assert(contains(written, "    すべての'r'シンボル"))
+    with_globals({ DUMP_KILL_BREAKDOWNS = true, kills = kill_api },
+        function ()
+            eq(c_kill_list(entries, nil, false), true)
+            assert(contains(written, "倒したモンスター:"))
+            assert(contains(written, "    すべての'r'シンボル"))
 
-        written = { }
-        count_list(entries, false)
-        eq(written[1], "  降順リスト")
-        eq(written[2], "    rat x3")
-        eq(written[3], "    bat x1")
-    end)
+            written = { }
+            count_list(entries, false)
+            eq(written[1], "  降順リスト")
+            eq(written[2], "    rat x3")
+            eq(written[3], "    bat x1")
+        end)
 end
 
 run("builtins loaded", test_builtins_loaded)
