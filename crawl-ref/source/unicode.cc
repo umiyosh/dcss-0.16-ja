@@ -118,7 +118,7 @@ ucs_t pop_utf8_char(string &text)
 
     ucs_t result;
     const int byte_length = utf8towc(&result, text.c_str());
-    text.erase(0, byte_length);
+    text.erase(0, byte_length ? byte_length : 1);
     return result;
 }
 

@@ -242,12 +242,16 @@ static void _utf8_input_queue_tests()
     }
     if (!text.empty())
         fail("UTF-8 input retained bytes after every character was read.");
+
+    string nul_text("\0A", 2);
+    if (pop_utf8_char(nul_text) != 0 || nul_text != "A")
+        fail("UTF-8 input did not consume a leading NUL byte.");
 }
 
 #if defined(USE_TILE_LOCAL) && defined(USE_SDL)
 static void _sdl_textinput_tests()
 {
-    SDL_FlushEvents(SDL_TEXTEDITING, SDL_TEXTINPUT);
+    SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
 
     SDL_Event editing = {};
     editing.type = SDL_TEXTEDITING;
