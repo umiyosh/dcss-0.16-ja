@@ -320,7 +320,8 @@ bool builder(bool enable_random_maps, dungeon_feature_type dest_stairs_type)
         }
         catch (map_load_exception &mload)
         {
-            mprf(MSGCH_ERROR, "Failed to load map %s, reloading all maps",
+            mprf(MSGCH_ERROR,
+                 "Failed to load map cache; rebuilding maps (%s).",
                  mload.what());
             reread_maps();
         }
@@ -4120,8 +4121,8 @@ const vault_placement *dgn_safe_place_map(const map_def *mdef,
             if (retries-- > 0)
             {
                 mprf(MSGCH_ERROR,
-                     "Failed to load map %s in dgn_safe_place_map, "
-                     "reloading all maps",
+                     "Failed to load map cache in dgn_safe_place_map; "
+                     "rebuilding maps (%s).",
                      mload.what());
                 reread_maps();
 

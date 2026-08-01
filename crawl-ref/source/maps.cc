@@ -66,6 +66,9 @@ point_vector map_anchor_points;
 // New style vault definitions
 
 static map_vector vdefs;
+// Lazy load failures are consumed once by _parse_maps to force rebuilding
+// only the cache that was found to be stale or truncated.
+static set<string> invalid_map_caches;
 
 // Parameter array that vault code can use.
 string_vector map_parameters;
@@ -1229,6 +1232,7 @@ static bool verify_file_version(const string &file, time_t mtime)
     try
     {
         reader inf(fp);
+        inf.set_safe_read(true);
         const uint8_t major = unmarshallUByte(inf);
         const uint8_t minor = unmarshallUByte(inf);
         const int8_t word = unmarshallByte(inf);
@@ -1257,12 +1261,48 @@ static bool _verify_map_full(const string &base, time_t mtime)
 }
 
 static bool _load_map_index(const string& cache, const string &base,
-                            time_t mtime)
+                            time_t mtime, long dsc_size)
 {
+    bool has_global_prelude = false;
     // If there's a global prelude, load that first.
     if (FILE *fp = fopen_u((base + ".lux").c_str(), "rb"))
     {
         reader inf(fp, TAG_MINOR_VERSION);
+        inf.set_safe_read(true);
+        try
+        {
+            uint8_t major = unmarshallUByte(inf);
+            uint8_t minor = unmarshallUByte(inf);
+            int8_t word = unmarshallByte(inf);
+            int64_t t = unmarshallSigned(inf);
+            if (major != TAG_MAJOR_VERSION || minor > TAG_MINOR_VERSION
+                || word != WORD_LEN || t != mtime)
+            {
+                fclose(fp);
+                return false;
+            }
+
+            lc_global_prelude.read(inf);
+            has_global_prelude = true;
+        }
+        catch (const short_read_exception &)
+        {
+            fclose(fp);
+            return false;
+        }
+        fclose(fp);
+    }
+
+    FILE* fp = fopen_u((base + ".idx").c_str(), "rb");
+    if (!fp)
+        return false;
+
+    reader inf(fp, TAG_MINOR_VERSION);
+    inf.set_safe_read(true);
+    const int nexist = vdefs.size();
+    try
+    {
+        // Re-check version, might have been modified in the meantime.
         uint8_t major = unmarshallUByte(inf);
         uint8_t minor = unmarshallUByte(inf);
         int8_t word = unmarshallByte(inf);
@@ -1270,52 +1310,58 @@ static bool _load_map_index(const string& cache, const string &base,
         if (major != TAG_MAJOR_VERSION || minor > TAG_MINOR_VERSION
             || word != WORD_LEN || t != mtime)
         {
+            fclose(fp);
             return false;
         }
 
-        lc_global_prelude.read(inf);
-        fclose(fp);
-
-        global_preludes.push_back(lc_global_prelude);
-    }
-
-    FILE* fp = fopen_u((base + ".idx").c_str(), "rb");
-    if (!fp)
-        end(1, true, "Unable to read %s", (base + ".idx").c_str());
-
-    reader inf(fp, TAG_MINOR_VERSION);
-    // Re-check version, might have been modified in the meantime.
-    uint8_t major = unmarshallUByte(inf);
-    uint8_t minor = unmarshallUByte(inf);
-    int8_t word = unmarshallByte(inf);
-    int64_t t = unmarshallSigned(inf);
-    if (major != TAG_MAJOR_VERSION || minor > TAG_MINOR_VERSION
-        || word != WORD_LEN || t != mtime)
-    {
-        return false;
-    }
-
 #if TAG_MAJOR_VERSION == 34
-    // Throw out pre-ORDER: indices entirely.
-    if (minor < TAG_MINOR_MAP_ORDER)
-        return false;
+        // Throw out pre-ORDER: indices entirely.
+        if (minor < TAG_MINOR_MAP_ORDER)
+        {
+            fclose(fp);
+            return false;
+        }
 #endif
 
-    const int nmaps = unmarshallShort(inf);
-    const int nexist = vdefs.size();
-    vdefs.resize(nexist + nmaps, map_def());
-    for (int i = 0; i < nmaps; ++i)
+        const int nmaps = unmarshallShort(inf);
+        if (nmaps < 0)
+        {
+            fclose(fp);
+            return false;
+        }
+        vdefs.resize(nexist + nmaps, map_def());
+        for (int i = 0; i < nmaps; ++i)
+        {
+            map_def &vdef(vdefs[nexist + i]);
+            vdef.read_index(inf);
+            if (!vdef.cache_offset_is_valid(dsc_size))
+            {
+                vdefs.resize(nexist);
+                fclose(fp);
+                return false;
+            }
+            vdef.description = unmarshallString(inf);
+            vdef.order = unmarshallInt(inf);
+        }
+    }
+    catch (const short_read_exception &)
     {
-        map_def &vdef(vdefs[nexist + i]);
-        vdef.read_index(inf);
-        vdef.description = unmarshallString(inf);
-        vdef.order = unmarshallInt(inf);
+        vdefs.resize(nexist);
+        fclose(fp);
+        return false;
+    }
+    fclose(fp);
 
+    if (has_global_prelude)
+        global_preludes.push_back(lc_global_prelude);
+
+    for (int i = nexist, size = vdefs.size(); i < size; ++i)
+    {
+        map_def &vdef(vdefs[i]);
         vdef.set_file(cache);
         lc_loaded_maps[vdef.name] = vdef.place_loaded_from;
         vdef.place_loaded_from.clear();
     }
-    fclose(fp);
 
     return true;
 }
@@ -1328,9 +1374,6 @@ static bool _load_map_cache(const string &filename, const string &cachename)
     file_lock deslock(descache_base + ".lk", "rb", false);
 
     time_t mtime = file_modtime(filename);
-    string file_idx = descache_base + ".idx";
-    string file_dsc = descache_base + ".dsc";
-
     // What's the point in checking these twice (here and in load_ma_index)?
     if (!_verify_map_index(descache_base, mtime)
         || !_verify_map_full(descache_base, mtime))
@@ -1338,26 +1381,54 @@ static bool _load_map_cache(const string &filename, const string &cachename)
         return false;
     }
 
-    return _load_map_index(cachename, descache_base, mtime);
+    const string file_dsc = descache_base + ".dsc";
+    FILE *fp = fopen_u(file_dsc.c_str(), "rb");
+    if (!fp)
+        return false;
+    const long dsc_size = file_size(fp);
+    fclose(fp);
+    if (dsc_size <= 0)
+        return false;
+
+    return _load_map_index(cachename, descache_base, mtime, dsc_size);
 }
 
-static void _write_map_prelude(const string &filebase, time_t mtime)
+static void _close_map_cache_file(FILE *fp, const string &file)
+{
+    if (fclose(fp))
+        end(1, true, "Unable to finish writing %s", file.c_str());
+}
+
+static void _replace_map_cache_file(const string &source,
+                                    const string &destination)
+{
+    if (rename_u(source.c_str(), destination.c_str()))
+    {
+        end(1, true, "Unable to replace map cache %s",
+            destination.c_str());
+    }
+}
+
+static bool _write_map_prelude(const string &filebase, time_t mtime)
 {
     const string luafile = filebase + ".lux";
     if (lc_global_prelude.empty())
     {
         unlink_u(luafile.c_str());
-        return;
+        return false;
     }
 
     FILE *fp = fopen_u(luafile.c_str(), "wb");
+    if (!fp)
+        end(1, true, "Unable to open %s for writing", luafile.c_str());
     writer outf(luafile, fp);
     marshallUByte(outf, TAG_MAJOR_VERSION);
     marshallUByte(outf, TAG_MINOR_VERSION);
     marshallByte(outf, WORD_LEN);
     marshallSigned(outf, mtime);
     lc_global_prelude.write(outf);
-    fclose(fp);
+    _close_map_cache_file(fp, luafile);
+    return true;
 }
 
 static void _write_map_full(const string &filebase, size_t vs, size_t ve,
@@ -1375,7 +1446,7 @@ static void _write_map_full(const string &filebase, size_t vs, size_t ve,
     marshallSigned(outf, mtime);
     for (size_t i = vs; i < ve; ++i)
         vdefs[i].write_full(outf);
-    fclose(fp);
+    _close_map_cache_file(fp, cfile);
 }
 
 static void _write_map_index(const string &filebase, size_t vs, size_t ve,
@@ -1400,7 +1471,7 @@ static void _write_map_index(const string &filebase, size_t vs, size_t ve,
         vdefs[i].place_loaded_from.clear();
         vdefs[i].strip();
     }
-    fclose(fp);
+    _close_map_cache_file(fp, cfile);
 }
 
 static void _write_map_cache(const string &filename, size_t vs, size_t ve,
@@ -1409,12 +1480,25 @@ static void _write_map_cache(const string &filename, size_t vs, size_t ve,
     _check_des_index_dir();
 
     const string descache_base = get_descache_path(filename, "");
+    const string temporary_base = descache_base + ".tmp";
 
     file_lock deslock(descache_base + ".lk", "wb");
 
-    _write_map_prelude(descache_base, mtime);
-    _write_map_full(descache_base, vs, ve, mtime);
-    _write_map_index(descache_base, vs, ve, mtime);
+    const bool has_prelude = _write_map_prelude(temporary_base, mtime);
+    _write_map_full(temporary_base, vs, ve, mtime);
+    _write_map_index(temporary_base, vs, ve, mtime);
+
+    _replace_map_cache_file(temporary_base + ".dsc",
+                            descache_base + ".dsc");
+    _replace_map_cache_file(temporary_base + ".idx",
+                            descache_base + ".idx");
+    if (has_prelude)
+    {
+        _replace_map_cache_file(temporary_base + ".lux",
+                                descache_base + ".lux");
+    }
+    else
+        unlink_u((descache_base + ".lux").c_str());
 }
 
 static void _parse_maps(const string &s)
@@ -1425,7 +1509,8 @@ static void _parse_maps(const string &s)
 
     map_files_read.insert(cache_name);
 
-    if (_load_map_cache(s, cache_name))
+    const bool rebuild_cache = invalid_map_caches.erase(cache_name);
+    if (!rebuild_cache && _load_map_cache(s, cache_name))
         return;
 
     FILE *dat = fopen_u(s.c_str(), "r");
@@ -1490,6 +1575,11 @@ void reread_maps()
     vdefs.clear();
     map_files_read.clear();
     read_maps();
+}
+
+void invalidate_map_cache(const string &cache_name)
+{
+    invalid_map_caches.insert(cache_name);
 }
 
 void dump_map(const map_def &map)
