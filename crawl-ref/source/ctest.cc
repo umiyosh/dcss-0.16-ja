@@ -40,6 +40,19 @@
 #include "unicode.h"
 #include "zotdef.h"
 
+#if defined(USE_TILE_LOCAL) && defined(USE_SDL)
+# ifdef __ANDROID__
+#  include <SDL.h>
+# else
+#  ifdef TARGET_COMPILER_VC
+#   include <SDL.h>
+#  else
+#   include <SDL2/SDL.h>
+#  endif
+# endif
+# include "windowmanager.h"
+#endif
+
 static const string test_dir = "test";
 static const string script_dir = "scripts";
 static const char *activity = "test";
@@ -212,6 +225,67 @@ static void _equip_slot_name_tests()
         fail("Invalid equipment slot name was accepted.");
 }
 
+static void _utf8_input_queue_tests()
+{
+    string text = "あA漢";
+    const ucs_t expected[] = { 0x3042, 'A', 0x6F22 };
+    for (unsigned int i = 0; i < ARRAYSZ(expected); ++i)
+    {
+        if (text.empty())
+            fail("UTF-8 input ended before every character was read.");
+        const ucs_t actual = pop_utf8_char(text);
+        if (actual != expected[i])
+        {
+            fail("UTF-8 input character %u was %u, expected %u.",
+                 i, actual, expected[i]);
+        }
+    }
+    if (!text.empty())
+        fail("UTF-8 input retained bytes after every character was read.");
+}
+
+#if defined(USE_TILE_LOCAL) && defined(USE_SDL)
+static void _sdl_textinput_tests()
+{
+    SDL_FlushEvents(SDL_TEXTEDITING, SDL_TEXTINPUT);
+
+    SDL_Event editing = {};
+    editing.type = SDL_TEXTEDITING;
+    strncpy(editing.edit.text, "に", sizeof(editing.edit.text) - 1);
+    if (SDL_PushEvent(&editing) != 1)
+        fail("Could not enqueue an SDL text editing event.");
+
+    wm_event event = {};
+    if (wm->wait_event(&event))
+        fail("SDL composition text became a key event.");
+
+    SDL_Event input = {};
+    input.type = SDL_TEXTINPUT;
+    strncpy(input.text.text, "あA漢", sizeof(input.text.text) - 1);
+    if (SDL_PushEvent(&input) != 1)
+        fail("Could not enqueue an SDL text input event.");
+
+    const ucs_t expected[] = { 0x3042, 'A', 0x6F22 };
+    for (unsigned int i = 0; i < ARRAYSZ(expected); ++i)
+    {
+        if (!wm->wait_event(&event))
+            fail("SDL text input stopped before every character was read.");
+        if (event.type != WME_KEYPRESS)
+            fail("SDL text input produced a non-keypress event.");
+        if (event.key.keysym.sym != static_cast<int>(expected[i]))
+        {
+            fail("SDL text input character %u was %d, expected %u.",
+                 i, event.key.keysym.sym, expected[i]);
+        }
+        if (i + 1 < ARRAYSZ(expected)
+            && !wm->get_event_count(WME_KEYPRESS))
+        {
+            fail("Queued SDL text input was not reported as pending.");
+        }
+    }
+}
+#endif
+
 // Assumes curses has already been initialized.
 void run_tests()
 {
@@ -233,6 +307,10 @@ void run_tests()
     _run_test("mon-spell", debug_monspells);
     _run_test("coordit", coordit_tests);
     _run_test("equip-slot-name", _equip_slot_name_tests);
+    _run_test("utf8-input-queue", _utf8_input_queue_tests);
+#if defined(USE_TILE_LOCAL) && defined(USE_SDL)
+    _run_test("sdl-textinput", _sdl_textinput_tests);
+#endif
     _run_test("map-cache-recovery", mapdef_tests);
 
     // Get a list of Lua files in test. Order of execution of
