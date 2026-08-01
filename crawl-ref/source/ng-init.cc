@@ -178,7 +178,20 @@ void initialise_temples()
 
         // Without all this find_glyph() returns 0.
         string err;
-        main_temple->load();
+        try
+        {
+            main_temple->load();
+        }
+        catch (const map_load_exception &error)
+        {
+            mprf(MSGCH_ERROR,
+                 "Failed to load temple map cache; rebuilding maps (%s).",
+                 error.what());
+            reread_maps();
+            main_temple = nullptr;
+            you.props.erase(TEMPLE_SIZE_KEY);
+            continue;
+        }
         main_temple->reinit();
         err = main_temple->run_lua(true);
 

@@ -52,6 +52,10 @@ private:
     string mapname;
 };
 
+#ifdef DEBUG_TESTS
+void mapdef_tests();
+#endif
+
 // [dshaligram] Maps can be mirrored; for every orientation, there must be
 // a suitable mirror.
 enum map_section_type                  // see maps.cc and dungeon.cc {dlb}
@@ -1178,6 +1182,7 @@ public:
 
     void load();
     void strip();
+    bool cache_offset_is_valid(long cache_size) const;
 
     int weight(const level_id &lid) const;
     map_chance chance(const level_id &lid) const;

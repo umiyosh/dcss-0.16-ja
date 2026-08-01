@@ -57,6 +57,7 @@ mapref_vector find_maps_for_tag (const string tag,
 
 void read_maps();
 void reread_maps();
+void invalidate_map_cache(const string &cache_name);
 void read_map(const string &file);
 void run_map_global_preludes();
 void run_map_local_preludes();

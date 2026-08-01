@@ -26,6 +26,7 @@
 #include "dungeon.h"
 #include "end.h"
 #include "english.h"
+#include "errors.h"
 #include "files.h"
 #include "initfile.h"
 #include "invent.h"
@@ -2356,13 +2357,9 @@ void map_def::write_full(writer& outf) const
 
 void map_def::read_full(reader& inf, bool check_cache_version)
 {
-    // There's a potential race-condition here:
-    // - If someone modifies a .des file while there are games in progress,
-    // - a new Crawl process will overwrite the .dsc.
-    // - older Crawl processes trying to reading the new .dsc will be hosed.
-    // We could try to recover from the condition (by locking and
-    // reloading the index), but it's easier to save the game at this
-    // point and let the player reload.
+    // Another process can replace the .dsc after this process loaded its
+    // index. Version/name mismatches and short reads are converted into a
+    // map_load_exception by load(), so the caller can rebuild the cache.
 
     const uint8_t major = unmarshallUByte(inf);
     const uint8_t minor = unmarshallUByte(inf);
@@ -2425,6 +2422,60 @@ void map_def::strip()
     feat_renames.clear();
 }
 
+static void _read_map_cache(map_def &map, reader &inf, long cache_offset,
+                            const string &loadfile)
+{
+    inf.set_safe_read(true);
+    try
+    {
+        inf.advance(cache_offset);
+        map.read_full(inf, true);
+    }
+    catch (const map_load_exception &error)
+    {
+        throw map_load_exception(make_stringf(
+            "Map cache %s is inconsistent while loading %s (%s)",
+            loadfile.c_str(), map.name.c_str(), error.what()));
+    }
+    catch (const short_read_exception &)
+    {
+        throw map_load_exception(make_stringf(
+            "Map cache %s is truncated while loading %s",
+            loadfile.c_str(), map.name.c_str()));
+    }
+}
+
+#ifdef DEBUG_TESTS
+void mapdef_tests()
+{
+    const vector<unsigned char> truncated_cache(1, TAG_MAJOR_VERSION);
+    reader inf(truncated_cache, TAG_MINOR_VERSION);
+    map_def map;
+    map.name = "truncated_test_map";
+
+    try
+    {
+        _read_map_cache(map, inf, 0, "/tmp/truncated-map-cache.dsc");
+    }
+    catch (const map_load_exception &error)
+    {
+        if (string(error.what()).find("/tmp/truncated-map-cache.dsc")
+            == string::npos)
+        {
+            fail("Map cache error did not identify the broken cache: %s",
+                 error.what());
+        }
+        return;
+    }
+    catch (const short_read_exception &)
+    {
+        fail("Truncated map cache escaped as short_read_exception");
+    }
+
+    fail("Truncated map cache did not raise map_load_exception");
+}
+#endif
+
 void map_def::load()
 {
     if (!index_only)
@@ -2435,12 +2486,28 @@ void map_def::load()
     const string loadfile = descache_base + ".dsc";
 
     reader inf(loadfile, TAG_MINOR_VERSION);
-    if (!inf.valid())
-        throw map_load_exception(name);
-    inf.advance(cache_offset);
-    read_full(inf, true);
+    try
+    {
+        if (!inf.valid())
+        {
+            throw map_load_exception(make_stringf(
+                "Map cache %s is unavailable while loading %s",
+                loadfile.c_str(), name.c_str()));
+        }
+        _read_map_cache(*this, inf, cache_offset, loadfile);
+    }
+    catch (const map_load_exception &)
+    {
+        invalidate_map_cache(cache_name);
+        throw;
+    }
 
     index_only = false;
+}
+
+bool map_def::cache_offset_is_valid(long cache_size) const
+{
+    return cache_offset > 0 && cache_offset < cache_size;
 }
 
 vector<coord_def> map_def::find_glyph(int glyph) const

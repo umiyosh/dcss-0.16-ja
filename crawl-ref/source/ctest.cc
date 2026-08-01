@@ -233,6 +233,7 @@ void run_tests()
     _run_test("mon-spell", debug_monspells);
     _run_test("coordit", coordit_tests);
     _run_test("equip-slot-name", _equip_slot_name_tests);
+    _run_test("map-cache-recovery", mapdef_tests);
 
     // Get a list of Lua files in test. Order of execution of
     // tests should be irrelevant.
