@@ -1106,9 +1106,7 @@ static bool _dgn_ensure_vault_placed(bool vault_success,
                                      bool disable_further_vaults)
 {
     if (!vault_success)
-    {
         throw dgn_veto_exception("Vault placement failure.");
-    }
     else if (disable_further_vaults)
         use_random_maps = false;
     return vault_success;
@@ -2371,9 +2369,6 @@ static void _build_dungeon_level(dungeon_feature_type dest_stairs_type)
     _check_doors();
 
     const unsigned nvaults = env.level_vaults.size();
-    const bool no_random_vaults =
-        !env.level_vaults.empty()
-        && env.level_vaults[0]->map.has_tag("no_random_vaults");
 
     // Any further vaults must make sure not to disrupt level layout.
     dgn_check_connectivity = true;
@@ -2388,25 +2383,22 @@ static void _build_dungeon_level(dungeon_feature_type dest_stairs_type)
     // no guarantees, seeing this is a minivault.
     if (crawl_state.game_standard_levelgen())
     {
-        if (place_vaults && !no_random_vaults)
+        if (place_vaults)
         {
             // Moved branch entries to place first so there's a good
             // chance of having room for a vault
             _place_branch_entrances(true);
-            if (!no_random_vaults)
-                _place_chance_vaults();
+            _place_chance_vaults();
             _place_minivaults();
             _place_extra_vaults();
         }
         else
         {
             // Place any branch entries vaultlessly
-            if (!no_random_vaults)
-                _place_branch_entrances(false);
+            _place_branch_entrances(false);
             // Still place chance vaults - important things like Abyss,
             // Hell, Pan entries are placed this way
-            if (!no_random_vaults)
-                _place_chance_vaults();
+            _place_chance_vaults();
         }
 
         // Ruination and plant clumps.
@@ -2414,8 +2406,7 @@ static void _build_dungeon_level(dungeon_feature_type dest_stairs_type)
 
         // XXX: Moved this here from builder_monsters so that
         //      connectivity can be ensured
-        if (!no_random_vaults)
-            _place_uniques();
+        _place_uniques();
 
         if (_mimic_at_level())
             _place_feature_mimics(dest_stairs_type);
@@ -3374,7 +3365,7 @@ static void _dgn_place_feature_at_random_floor_square(dungeon_feature_type feat,
             place.reset();
     }
     if (place.origin())
-        throw dgn_veto_exception("Cannot place specific feature.");
+        throw dgn_veto_exception("Cannot place feature at random floor square.");
     else
         _set_grd(place, feat);
 }
@@ -3520,7 +3511,7 @@ static coord_def _place_specific_feature(dungeon_feature_type feat)
     if (in_bounds(c))
         env.grid(c) = feat;
     else
-        throw dgn_veto_exception("Cannot place feature at random floor square.");
+        throw dgn_veto_exception("Cannot place specific feature.");
 
     return c;
 }

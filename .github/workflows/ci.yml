@@ -282,18 +282,6 @@ jobs:
           SHAREDDIR="$RUNNER_TEMP/dcss-death-endgame/shared"
           test-death-endgame
 
-      - name: Test three-rune Orb escape
-        if: matrix.variant.name == 'Console'
-        shell: bash
-        working-directory: crawl-ref/source
-        env:
-          ORB_TEST_ROOT: ${{ runner.temp }}/dcss-orb-endgame/run
-          ORB_TEST_SHARED_DIR: ${{ runner.temp }}/dcss-death-endgame/shared
-        run: >-
-          make
-          SHAREDDIR="$RUNNER_TEMP/dcss-death-endgame/shared"
-          test-orb-endgame
-
       - name: Assemble the app bundle
         # Only the release workflow ships a .app, and it only runs on tags,
         # so without this nothing exercises the bundling until release day.

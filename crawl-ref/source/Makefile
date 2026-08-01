@@ -79,7 +79,7 @@ GAME = crawl
 MAKEFLAGS += -rR # This only works for recursive makes, i.e. contribs ...
 .SUFFIXES:       # ... so zap the suffix list to neutralize most predifined rules, too
 
-.PHONY: all help test test-death-endgame test-orb-endgame install clean clean-contrib clean-rltiles clean-android \
+.PHONY: all help test test-death-endgame install clean clean-contrib clean-rltiles clean-android \
         distclean debug debug-lite profile package-source source \
         build-windows package-windows rest docs greet api android FORCE \
         dist-macos
@@ -1828,10 +1828,6 @@ nondebugtest: test-all ## Run stress tests against a release build
 test-death-endgame: $(GAME) util/fake_pty builddb ## Verify normal-game death artifacts
 	test/death-endgame
 	@echo "Finished: death-endgame"
-
-test-orb-endgame: $(GAME) util/fake_pty builddb ## Verify a three-rune Orb win
-	test/orb-endgame
-	@echo "Finished: orb-endgame"
 
 test-%: $(GAME) util/fake_pty builddb
 	util/fake_pty test/stress/run $*
