@@ -112,6 +112,16 @@ int utf8towc(ucs_t *d, const char *s)
     return cnt;
 }
 
+ucs_t pop_utf8_char(string &text)
+{
+    ASSERT(!text.empty());
+
+    ucs_t result;
+    const int byte_length = utf8towc(&result, text.c_str());
+    text.erase(0, byte_length ? byte_length : 1);
+    return result;
+}
+
 #ifdef TARGET_OS_WINDOWS
 // don't pull in wstring templates on other systems
 wstring utf8_to_16(const char *s)

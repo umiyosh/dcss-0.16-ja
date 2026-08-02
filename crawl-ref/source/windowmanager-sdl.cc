@@ -30,6 +30,7 @@
 #include "libutil.h"
 #include "options.h"
 #include "syscalls.h"
+#include "unicode.h"
 #include "version.h"
 #include "windowmanager.h"
 
@@ -653,9 +654,22 @@ void SDLWrapper::set_mod_state(key_mod mod)
     SDL_SetModState(set_to);
 }
 
+int SDLWrapper::send_textinput(wm_event *event)
+{
+    ASSERT(!m_textinput_queue.empty());
+
+    event->type = WME_KEYPRESS;
+    event->key.keysym.sym = pop_utf8_char(m_textinput_queue);
+    return 1;
+}
+
 int SDLWrapper::wait_event(wm_event *event)
 {
     SDL_Event sdlevent;
+
+    if (!m_textinput_queue.empty())
+        return send_textinput(event);
+
     if (!SDL_WaitEvent(&sdlevent))
         return 0;
 
@@ -698,10 +712,9 @@ int SDLWrapper::wait_event(wm_event *event)
 
         break;
     case SDL_TEXTINPUT:
-        event->type = WME_KEYPRESS;
-        // XXX: handle multiple keys?
-        event->key.keysym.sym = sdlevent.text.text[0];
-        break;
+        ASSERT(m_textinput_queue.empty());
+        m_textinput_queue = string(sdlevent.text.text);
+        return send_textinput(event);
     case SDL_MOUSEMOTION:
         event->type = WME_MOUSEMOTION;
         _translate_event(sdlevent.motion, event->mouse_event);
@@ -767,6 +780,9 @@ void SDLWrapper::delay(unsigned int ms)
 
 unsigned int SDLWrapper::get_event_count(wm_event_type type)
 {
+    if (type == WME_KEYPRESS && !m_textinput_queue.empty())
+        return 1;
+
     // Look for the presence of any keyboard events in the queue.
     Uint32 event;
     switch (type)
