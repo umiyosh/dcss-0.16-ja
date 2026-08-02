@@ -34,10 +34,13 @@
 #include "mon-pick.h"
 #include "mon-util.h"
 #include "ng-init.h"
+#include "options.h"
 #include "output.h"
 #include "state.h"
 #include "stringutil.h"
 #include "unicode.h"
+#include "unwind.h"
+#include "version.h"
 #include "zotdef.h"
 
 #if defined(USE_TILE_LOCAL) && defined(USE_SDL)
@@ -225,6 +228,53 @@ static void _equip_slot_name_tests()
         fail("Invalid equipment slot name was accepted.");
 }
 
+#if defined(TARGET_OS_MACOSX)
+static string _macos_default_data_dir()
+{
+    const char *home = getenv("HOME");
+    const string home_dir = home && *home ? mb_to_utf8(home) : "./";
+    return catpath(home_dir, "Library/Application Support/" CRAWL);
+}
+
+static void _macos_crawl_dir_tests()
+{
+    unwind_var<string> crawl_dir(SysEnv.crawl_dir);
+
+    const string startup_base = SysEnv.crawl_dir.empty()
+                              ? _macos_default_data_dir()
+                              : SysEnv.crawl_dir;
+    if (Options.save_dir != catpath(startup_base, "saves/"))
+        fail("macOS startup save_dir did not follow crawl_dir.");
+    if (Options.morgue_dir != catpath(startup_base, "morgue/"))
+        fail("macOS startup morgue_dir did not follow crawl_dir.");
+
+    const string custom_base = "/crawl/test-data";
+    SysEnv.crawl_dir = custom_base;
+    game_options options;
+    if (options.save_dir != catpath(custom_base, "saves/"))
+        fail("macOS save_dir did not follow an explicit crawl_dir.");
+    if (options.morgue_dir != catpath(custom_base, "morgue/"))
+        fail("macOS morgue_dir did not follow an explicit crawl_dir.");
+
+    const string explicit_save = "/crawl/explicit-saves";
+    const string explicit_morgue = "/crawl/explicit-morgue";
+    options.read_option_line("save_dir = " + explicit_save);
+    options.read_option_line("morgue_dir = " + explicit_morgue);
+    if (options.save_dir != explicit_save)
+        fail("An explicit macOS save_dir did not override crawl_dir.");
+    if (options.morgue_dir != explicit_morgue)
+        fail("An explicit macOS morgue_dir did not override crawl_dir.");
+
+    SysEnv.crawl_dir.clear();
+    options.reset_options();
+    const string default_base = _macos_default_data_dir();
+    if (options.save_dir != catpath(default_base, "saves/"))
+        fail("macOS default save_dir changed without crawl_dir.");
+    if (options.morgue_dir != catpath(default_base, "morgue/"))
+        fail("macOS default morgue_dir changed without crawl_dir.");
+}
+#endif
+
 static void _utf8_input_queue_tests()
 {
     string text = "あA漢";
@@ -311,6 +361,9 @@ void run_tests()
     _run_test("mon-spell", debug_monspells);
     _run_test("coordit", coordit_tests);
     _run_test("equip-slot-name", _equip_slot_name_tests);
+#if defined(TARGET_OS_MACOSX)
+    _run_test("macos-crawl-dir", _macos_crawl_dir_tests);
+#endif
     _run_test("utf8-input-queue", _utf8_input_queue_tests);
 #if defined(USE_TILE_LOCAL) && defined(USE_SDL)
     _run_test("sdl-textinput", _sdl_textinput_tests);

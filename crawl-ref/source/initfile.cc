@@ -724,11 +724,18 @@ void game_options::reset_options()
 #endif
 
 #if defined(TARGET_OS_MACOSX)
-    UNUSED(_resolve_dir);
     const string tmp_path_base =
         _user_home_subpath("Library/Application Support/" CRAWL);
-    save_dir   = tmp_path_base + "/saves/";
-    morgue_dir = tmp_path_base + "/morgue/";
+    if (SysEnv.crawl_dir.empty())
+    {
+        save_dir   = tmp_path_base + "/saves/";
+        morgue_dir = tmp_path_base + "/morgue/";
+    }
+    else
+    {
+        save_dir   = _resolve_dir(SysEnv.crawl_dir.c_str(), "saves/");
+        morgue_dir = _resolve_dir(SysEnv.crawl_dir.c_str(), "morgue/");
+    }
     if (SysEnv.macro_dir.empty())
         macro_dir  = tmp_path_base;
 #else
