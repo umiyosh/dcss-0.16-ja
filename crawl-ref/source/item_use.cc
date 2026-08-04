@@ -1623,8 +1623,9 @@ bool dont_use_invis()
         return true;
     }
     else if (get_contamination_level() > 1
-             && !yesno("Invisibility will do you no good right now; "
-                       "use anyway?", false, 'n'))
+             && !yesno(jtransc(
+                            "Invisibility will do you no good right now; "
+                            "use anyway?"), false, 'n'))
     {
         canned_msg(MSG_OK);
         return true;
@@ -2003,7 +2004,8 @@ static item_def* _scroll_choose_weapon(bool alreadyknown, const string &pre_msg,
         {
             if (alreadyknown
                 || crawl_state.seen_hups
-                || yesno("Really abort (and waste the scroll)?", false, 0))
+                || yesno(jtransc("Really abort (and waste the scroll)?"),
+                         false, 0))
             {
                 canned_msg(MSG_OK);
                 return nullptr;
@@ -2101,7 +2103,8 @@ static bool _identify(bool alreadyknown, const string &pre_msg)
         {
             if (alreadyknown
                 || crawl_state.seen_hups
-                || yesno("Really abort (and waste the scroll)?", false, 0))
+                || yesno(jtransc("Really abort (and waste the scroll)?"),
+                         false, 0))
             {
                 canned_msg(MSG_OK);
                 return !alreadyknown;
@@ -2253,7 +2256,8 @@ static int _handle_enchant_armour(bool alreadyknown, const string &pre_msg)
         {
             if (alreadyknown
                 || crawl_state.seen_hups
-                || yesno("Really abort (and waste the scroll)?", false, 0))
+                || yesno(jtransc("Really abort (and waste the scroll)?"),
+                         false, 0))
             {
                 canned_msg(MSG_OK);
                 return alreadyknown ? -1 : 0;

@@ -4535,7 +4535,7 @@ bool get_item_by_name(item_def *item, const char* specs,
         {
             const char* prompt;
             prompt = "腐敗するまで何ターンを指定しますか？ "
-                     "[Enterで最大ターンになります] ";
+                     "[入力せず確定すると最大ターンになります] ";
             int age = prompt_for_int(prompt, false);
 
             if (age <= 0)

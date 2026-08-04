@@ -3124,7 +3124,7 @@ int fedhas_check_corpse_spores(bool quiet)
 #endif
     }
 
-    if (yesnoquit("Will you create these spores?", true, 'y') <= 0)
+    if (yesnoquit(jtransc("Will you create these spores?"), true, 'y') <= 0)
     {
         viewwindow(false);
         return -1;
@@ -3614,7 +3614,8 @@ bool cheibriados_slouch(int pow)
 {
     int count = apply_area_visible(_slouchable, pow, &you);
     if (!count)
-        if (!yesno("There's no one hasty visible. Invoke Slouch anyway?",
+        if (!yesno(jtransc(
+                       "There's no one hasty visible. Invoke Slouch anyway?"),
                    true, 'n'))
         {
             return false;
@@ -3753,7 +3754,9 @@ bool ashenzari_end_transfer(bool finished, bool force)
         mprf(jtransc("You are currently transferring knowledge from %s to %s."),
              tagged_jtransc("[skill]", skill_name(you.transfer_from_skill)),
              tagged_jtransc("[skill]", skill_name(you.transfer_to_skill)));
-        if (!yesno("Are you sure you want to cancel the transfer?", false, 'n'))
+        if (!yesno(jtransc(
+                       "Are you sure you want to cancel the transfer?"),
+                   false, 'n'))
         {
             canned_msg(MSG_OK);
             return false;
@@ -5352,8 +5355,9 @@ bool qazlal_disaster_area()
     }
 
     if (friendlies
-        && !yesno("There are friendlies around; are you sure you want to hurt "
-                  "them?", true, 'n'))
+        && !yesno(jtransc(
+                      "There are friendlies around; are you sure you want to "
+                      "hurt them?"), true, 'n'))
     {
         canned_msg(MSG_OK);
         return false;
@@ -5983,7 +5987,7 @@ static bool _execute_sacrifice(int piety_gain, const char* message)
     mprf(jtransc("Ru asks you to %s."), jtransc(message));
     mprf(jtransc("This is %s sacrifice."),
          jtransc(_describe_sacrifice_piety_gain(piety_gain)));
-    if (!yesno("Do you really want to make this sacrifice?",
+    if (!yesno(jtransc("Do you really want to make this sacrifice?"),
                false, 'n'))
     {
         canned_msg(MSG_OK);
@@ -6291,7 +6295,9 @@ bool ru_do_sacrifice(ability_type sac)
 bool ru_reject_sacrifices(bool skip_prompt)
 {
     if (!skip_prompt &&
-        !yesno("Do you really want to reject the sacrifices Ru is offering?",
+        !yesno(jtransc(
+                   "Do you really want to reject the sacrifices Ru is "
+                   "offering?"),
                false, 'n'))
     {
         canned_msg(MSG_OK);
@@ -6632,7 +6638,9 @@ bool ru_apocalypse()
     int count = apply_area_visible(_apocalypseable, you.piety, &you);
     if (!count)
     {
-        if (!yesno("There are no visible enemies. Unleash your apocalypse anyway?",
+        if (!yesno(jtransc(
+                       "There are no visible enemies. Unleash your apocalypse "
+                       "anyway?"),
             true, 'n'))
         {
             return false;

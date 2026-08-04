@@ -336,7 +336,8 @@ bool swap_check(monster* mons, coord_def &loc, bool quiet)
     // prompt when swapping into known zot traps
     if (!quiet && find_trap(loc) && find_trap(loc)->type == TRAP_ZOT
         && env.grid(loc) != DNGN_UNDISCOVERED_TRAP
-        && !yes_or_no("Do you really want to swap %s into the Zot trap?",
+        && !yes_or_no(jtransc(
+                          "Do you really want to swap %s into the Zot trap?"),
                       mons->name(DESC_YOUR).c_str()))
     {
         return false;
@@ -8744,7 +8745,7 @@ void player_open_door(coord_def doorpos)
                     canned_msg(MSG_OK);
                 else
                 {
-                    if (yesno("Put travel exclusion on door? (Y/n)",
+                    if (yesno(jtransc("Put travel exclusion on door? (Y/n)"),
                               true, 'y'))
                     {
                         // Zero radius exclusion right on top of door.

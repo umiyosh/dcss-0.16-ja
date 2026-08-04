@@ -3,6 +3,7 @@
 from importlib.machinery import SourceFileLoader
 from importlib.util import module_from_spec, spec_from_loader
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
 
 
@@ -15,7 +16,8 @@ LOADER.exec_module(CHECKER)
 
 class CheckJtransTest(unittest.TestCase):
     def issues(self, source, keys=()):
-        return CHECKER.find_issues(source, set(keys))
+        normalized_keys = {CHECKER.normalize_key(key) for key in keys}
+        return CHECKER.find_issues(source, normalized_keys)
 
     def test_detects_single_line_raw_message(self):
         issues = self.issues('mpr("Untranslated message.");')
@@ -76,6 +78,57 @@ mprf(MSGCH_WARN, "%s", jtransc(
             [("missing-key", "Missing translation.")],
         )
 
+    def test_normalizes_keys_like_runtime_jtrans(self):
+        source = 'mpr(jtrans("\\n  Translated message.  "));'
+
+        self.assertEqual(self.issues(source, {"translated message."}), [])
+
+    def test_dictionary_keys_are_case_insensitive(self):
+        source = 'mpr(jtrans("Translated Message."));'
+
+        self.assertEqual(self.issues(source, {"translated message."}), [])
+
+    def test_dictionary_keys_require_a_nonempty_translation(self):
+        with TemporaryDirectory() as directory:
+            database = Path(directory) / "jtrans_test.txt"
+            database.write_text(
+                "%%%%\nEmpty translation.\n\n"
+                "%%%%\nTranslated message.\n\n翻訳済み。\n",
+                encoding="utf-8",
+            )
+
+            keys = CHECKER.load_dictionary_keys(Path(directory))
+
+        self.assertNotIn("empty translation.", keys)
+        self.assertIn("translated message.", keys)
+
+    def test_detects_raw_yesno_prompt(self):
+        issues = self.issues('yesno("Translate this prompt?", false, \'n\');')
+
+        self.assertEqual(
+            [(issue.kind, issue.message) for issue in issues],
+            [("raw-ui", "Translate this prompt?")],
+        )
+
+    def test_detects_raw_menu_entry(self):
+        issues = self.issues(
+            'menu.push_entry(new MenuEntry("Translate this title", '
+            'MEL_TITLE));'
+        )
+
+        self.assertEqual(
+            [(issue.kind, issue.message) for issue in issues],
+            [("raw-ui", "Translate this title")],
+        )
+
+    def test_detects_raw_prompt_assignment(self):
+        issues = self.issues('args.top_prompt = "Translate this prompt";')
+
+        self.assertEqual(
+            [(issue.kind, issue.message) for issue in issues],
+            [("raw-ui", "Translate this prompt")],
+        )
+
     def test_ignores_comments_and_diagnostic_channels(self):
         source = """
 // mpr("Commented out message.");
@@ -127,9 +180,9 @@ mpr("Release untranslated message.");
 
         self.assertTrue(
             {
-                "The demon of the infinite void smiles upon you.",
-                "If you continue, your game will not be scored!",
-                "The %s foams!",
+                "the demon of the infinite void smiles upon you.",
+                "if you continue, your game will not be scored!",
+                "the %s foams!",
             }.issubset(keys)
         )
 

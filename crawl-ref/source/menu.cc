@@ -263,9 +263,10 @@ void Menu::set_more()
 {
     set_more(formatted_string::parse_string(
 #ifdef USE_TILE_LOCAL
-        "<cyan>[ <w>+</w>, <w>></w>, <w>Space</w> or <w>L-click</w>: Page down."
-        "   <w>-</w> or <w><<</w>: Page up."
-        "   <w>Esc</w> or <w>R-click</w> exits.]"
+        jtrans(
+            "<cyan>[ <w>+</w>, <w>></w>, <w>Space</w> or <w>L-click</w>: "
+            "Page down.   <w>-</w> or <w><<</w>: Page up.   <w>Esc</w> or "
+            "<w>R-click</w> exits.]")
 #else
         jtrans(
         "<cyan>[ <w>+</w>, <w>></w> or <w>Space</w>: Page down."

@@ -30,15 +30,40 @@ DEVELOPER_FILES = {
     "wiz-dump.cc",
     "wiz-fsim.cc",
     "wiz-item.cc",
+    "wiz-mon.cc",
     "wiz-you.cc",
     "xom.cc",
+}
+
+# Every player-facing call in these files belongs to wizard or developer
+# tooling. Keep them visible in source while excluding them from release i18n.
+DEVELOPER_ONLY_FILES = {
+    "arena.cc",
+    "ctest.cc",
+    "dbg-maps.cc",
+    "dbg-scan.cc",
+    "dbg-util.cc",
+    "makeitem.cc",
+    "wiz-dgn.cc",
+    "wiz-dump.cc",
+    "wiz-fsim.cc",
+    "wiz-item.cc",
+    "wiz-mon.cc",
+    "wiz-you.cc",
 }
 
 # These messages are only reachable from wizard tooling or internal
 # consistency checks, despite living in files that also contain player output.
 DEVELOPER_MESSAGES = {
     ("dgn-shoals.cc", "Tide inertia:"),
+    ("directn.cc", "Got result:"),
+    ("directn.cc", "Trying to run portal debug"),
+    ("ouch.cc", "Die?"),
     ("rot.cc", "ERROR: stack quantity"),
+    ("spl-cast.cc", "Couldn't try casting monster spell"),
+    ("spl-cast.cc", "Invalid player spell"),
+    ("xom.cc", "Couldn't find ray between player and stairs."),
+    ("xom.cc", "Ray didn't cross stairs."),
 }
 
 STRING_LITERAL = r'"(?:\\.|[^"\\])*"'
@@ -53,6 +78,17 @@ RAW_CALL = re.compile(
 )
 JTRANS_CALL = re.compile(
     rf'\bjtransc?\s*\(\s*(?P<literals>{ADJACENT_LITERALS})\s*\)',
+    re.DOTALL,
+)
+RAW_UI_CALL = re.compile(
+    r'\b(?:yesno|yesnoquit|yes_or_no|MenuEntry|Popup|set_title|set_more|'
+    r'formatted_string::parse_string)\s*\(\s*'
+    rf'(?P<literals>{ADJACENT_LITERALS})',
+    re.DOTALL,
+)
+RAW_UI_ASSIGNMENT = re.compile(
+    r'\b(?:top_prompt|title|prompt)\s*=\s*'
+    rf'(?P<literals>{ADJACENT_LITERALS})',
     re.DOTALL,
 )
 ENGLISH = re.compile(r"[A-Za-z]{3,}")
@@ -164,6 +200,11 @@ def _line_number(source, offset):
     return source.count("\n", 0, offset) + 1
 
 
+def normalize_key(key):
+    """Apply the same key normalization as database.cc:jtrans()."""
+    return key.strip().replace("\n", r"\n").lower()
+
+
 def find_issues(source, dictionary_keys):
     masked = _mask_comments(_mask_debug_branches(source))
     issues = []
@@ -182,12 +223,39 @@ def find_issues(source, dictionary_keys):
 
     for match in JTRANS_CALL.finditer(masked):
         message = _literal_value(match.group("literals"))
-        if ENGLISH.search(message) and message not in dictionary_keys:
+        if (
+            ENGLISH.search(message)
+            and normalize_key(message) not in dictionary_keys
+        ):
             issues.append(
                 Issue(
                     _line_number(masked, match.start()),
                     message,
                     "missing-key",
+                )
+            )
+
+    for match in RAW_UI_CALL.finditer(masked):
+        message = _literal_value(match.group("literals"))
+        visible_message = re.sub(r"<[^>]+>", "", message)
+        if ENGLISH.search(visible_message):
+            issues.append(
+                Issue(
+                    _line_number(masked, match.start()),
+                    message,
+                    "raw-ui",
+                )
+            )
+
+    for match in RAW_UI_ASSIGNMENT.finditer(masked):
+        message = _literal_value(match.group("literals"))
+        visible_message = re.sub(r"<[^>]+>", "", message)
+        if ENGLISH.search(visible_message):
+            issues.append(
+                Issue(
+                    _line_number(masked, match.start()),
+                    message,
+                    "raw-ui",
                 )
             )
 
@@ -203,8 +271,8 @@ def load_dictionary_keys(database_root):
                 for line in block.splitlines()
                 if line.strip() and not line.lstrip().startswith("#")
             ]
-            if lines:
-                keys.add(lines[0])
+            if len(lines) >= 2:
+                keys.add(normalize_key(lines[0]))
     return keys
 
 
@@ -249,6 +317,11 @@ def main():
             "lines. Existing untranslated jtrans fallbacks are ignored."
         ),
     )
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Check all existing literal jtrans keys, not only changed lines.",
+    )
     args = parser.parse_args()
 
     dictionary_keys = load_dictionary_keys(
@@ -262,8 +335,10 @@ def main():
             dictionary_keys,
         )
         for issue in issues:
+            if path.name in DEVELOPER_ONLY_FILES:
+                continue
             if (
-                issue.kind == "raw"
+                issue.kind in {"raw", "raw-ui"}
                 and (
                     path.name in DEVELOPER_FILES
                     or path.name == "zotdef.cc"
@@ -271,7 +346,7 @@ def main():
             ):
                 continue
             if (
-                issue.kind == "raw"
+                issue.kind in {"raw", "raw-ui", "missing-key"}
                 and any(
                     path.name == developer_path
                     and issue.message.startswith(prefix)
@@ -288,7 +363,11 @@ def main():
                 )
             ):
                 continue
-            if issue.kind == "missing-key" and issue.line not in changed:
+            if (
+                issue.kind == "missing-key"
+                and not args.all
+                and issue.line not in changed
+            ):
                 continue
             failures.append(
                 f"{path.name}:{issue.line}:"

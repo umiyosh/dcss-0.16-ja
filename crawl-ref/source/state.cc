@@ -75,10 +75,11 @@ void game_state::show_startup_errors()
                          | MF_EASY_EXIT);
     error_menu.set_more(
         formatted_string::parse_string(
-                           "<cyan>[ + : Page down.   - : Page up."
-                           "                    Esc or Enter to continue.]"));
+            jtrans("<cyan>[ + : Page down.   - : Page up."
+                   "                    Esc or Enter to continue.]")));
     error_menu.set_title(
-        new MenuEntry("Warning: Crawl encountered errors during startup:",
+        new MenuEntry(jtransc(
+                          "Warning: Crawl encountered errors during startup:"),
                       MEL_TITLE));
     for (int i = 0, size = startup_errors.size(); i < size; ++i)
         error_menu.add_entry(new MenuEntry(startup_errors[i]));

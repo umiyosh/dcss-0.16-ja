@@ -608,12 +608,12 @@ bool InventoryRegion::update_alt_text(string &alt)
     if (_is_next_button(item_idx))
     {
         // alt text for next page button
-        inf.title = "Next page";
+        inf.title = jtrans("Next page");
     }
     else if (_is_prev_button(item_idx))
     {
         // alt text for prev page button
-        inf.title = "Previous page";
+        inf.title = jtrans("Previous page");
     }
     else
         get_item_desc(*item, inf);

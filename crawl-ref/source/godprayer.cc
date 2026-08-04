@@ -45,8 +45,7 @@ static bool _confirm_pray_sacrifice(god_type god)
         if (god_likes_item(god, *si)
             && needs_handle_warning(*si, OPER_PRAY, penance))
         {
-            string prompt = "Really sacrifice stack with ";
-            prompt += jtrans(si->name(DESC_PLAIN));
+            string prompt = jtrans(si->name(DESC_PLAIN));
             prompt += "に積まれたアイテムを捧げますか？";
             if (penance)
                 prompt += " " + jtrans("This could place you under penance!");

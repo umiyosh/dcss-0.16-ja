@@ -545,7 +545,8 @@ bool Stash::show_menu(const level_pos &prefix, bool can_travel,
                                                        : &items;
     StashMenu menu;
 
-    MenuEntry *mtitle = new MenuEntry("Stash (" + prefix_str, MEL_TITLE);
+    MenuEntry *mtitle = new MenuEntry(
+        jtrans("Stash (") + prefix_str, MEL_TITLE);
     menu.can_travel   = can_travel;
     mtitle->quantity  = item_list->size();
     menu.set_title(mtitle);

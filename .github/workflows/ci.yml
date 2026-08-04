@@ -27,9 +27,7 @@ jobs:
         run: python3 crawl-ref/source/util/test-check-jtrans
 
       - name: Check player-visible messages
-        run: >-
-          python3 crawl-ref/source/util/check-jtrans
-          --base "${{ github.event.pull_request.base.sha }}"
+        run: python3 crawl-ref/source/util/check-jtrans --all
 
   build:
     name: ${{ matrix.compiler.name }} / ${{ matrix.variant.name }}

@@ -62,10 +62,11 @@ bool yesno(const char *str, bool safe, int safeanswer, bool clear_after,
     MenuEntry *status = new MenuEntry("", MEL_SUBTITLE);
     pop->push_entry(new MenuEntry(prompt, MEL_TITLE));
     pop->push_entry(status);
-    MenuEntry *me = new MenuEntry("Yes", MEL_ITEM, 0, 'Y', false);
+    MenuEntry *me = new MenuEntry(
+        jtransc("Yes"), MEL_ITEM, 0, 'Y', false);
     me->add_tile(tile_def(TILEG_PROMPT_YES, TEX_GUI));
     pop->push_entry(me);
-    me = new MenuEntry("No", MEL_ITEM, 0, 'N', false);
+    me = new MenuEntry(jtransc("No"), MEL_ITEM, 0, 'N', false);
     me->add_tile(tile_def(TILEG_PROMPT_NO, TEX_GUI));
     pop->push_entry(me);
 #endif

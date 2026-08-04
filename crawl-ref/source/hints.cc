@@ -167,10 +167,8 @@ again:
 
     cgotoxy(1,1);
     formatted_string::parse_string(
-        "<white>You must be new here indeed!</white>"
-        "\n\n"
-        "<cyan>You can be:</cyan>"
-        "\n").display();
+        jtrans("<white>You must be new here indeed!</white>\n\n"
+               "<cyan>You can be:</cyan>\n")).display();
 
     textcolour(LIGHTGREY);
 
@@ -178,9 +176,8 @@ again:
         _print_hints_menu((hints_types)i);
 
     formatted_string::parse_string(
-        "<brown>\nEsc - Quit"
-        "\n* - Random hints mode character"
-        "</brown>\n").display();
+        jtrans("<brown>\nEsc - Quit\n"
+               "* - Random hints mode character</brown>\n")).display();
 
     while (true)
     {
