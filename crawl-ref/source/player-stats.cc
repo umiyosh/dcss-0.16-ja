@@ -99,18 +99,20 @@ bool attribute_increase()
     crawl_state.stat_gain_prompt = true;
 #ifdef TOUCH_UI
     learned_something_new(HINT_CHOOSE_STAT);
-    Popup *pop = new Popup("Increase Attributes");
+    Popup *pop = new Popup(jtransc("Increase Attributes"));
     MenuEntry *status = new MenuEntry("", MEL_SUBTITLE);
-    pop->push_entry(new MenuEntry("Your experience leads to an increase in "
-                                  "your attributes! Increase:", MEL_TITLE));
+    pop->push_entry(new MenuEntry(
+        jtransc("Your experience leads to an increase in your attributes! "
+                "Increase:"), MEL_TITLE));
     pop->push_entry(status);
-    MenuEntry *me = new MenuEntry("Strength", MEL_ITEM, 0, 'S', false);
+    MenuEntry *me = new MenuEntry(
+        jtransc("Strength"), MEL_ITEM, 0, 'S', false);
     me->add_tile(tile_def(TILEG_FIGHTING_ON, TEX_GUI));
     pop->push_entry(me);
-    me = new MenuEntry("Intelligence", MEL_ITEM, 0, 'I', false);
+    me = new MenuEntry(jtransc("Intelligence"), MEL_ITEM, 0, 'I', false);
     me->add_tile(tile_def(TILEG_SPELLCASTING_ON, TEX_GUI));
     pop->push_entry(me);
-    me = new MenuEntry("Dexterity", MEL_ITEM, 0, 'D', false);
+    me = new MenuEntry(jtransc("Dexterity"), MEL_ITEM, 0, 'D', false);
     me->add_tile(tile_def(TILEG_DODGING_ON, TEX_GUI));
     pop->push_entry(me);
 #else

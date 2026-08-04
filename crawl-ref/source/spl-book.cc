@@ -728,17 +728,20 @@ static spell_type _choose_mem_spell(spell_list &spells,
 #ifdef USE_TILE_LOCAL
     // [enne] Hack.  Use a separate title, so the column headers are aligned.
     spell_menu.set_title(
-        new MenuEntry(" Your Spells - Memorisation  (toggle to descriptions with '!')",
+        new MenuEntry(jtransc(
+            "Your Spells - Memorisation  (toggle to descriptions with '!')"),
             MEL_TITLE));
 
     spell_menu.set_title(
-        new MenuEntry(" Your Spells - Descriptions  (toggle to memorisation with '!')",
+        new MenuEntry(jtransc(
+            "Your Spells - Descriptions  (toggle to memorisation with '!')"),
             MEL_TITLE), false);
 
     {
         MenuEntry* me =
-            new MenuEntry("     Spells                        Type          "
-                          "                Failure  Level",
+            new MenuEntry(jtransc(
+                          "Spells                        Type          "
+                          "                Failure  Level"),
                 MEL_ITEM);
         me->colour = BLUE;
         spell_menu.add_entry(me);

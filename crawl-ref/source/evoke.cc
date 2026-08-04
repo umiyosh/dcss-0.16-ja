@@ -814,7 +814,8 @@ int recharge_wand(bool known, const string &pre_msg)
         {
             if (known
                 || crawl_state.seen_hups
-                || yesno("Really abort (and waste the scroll)?", false, 0))
+                || yesno(jtransc("Really abort (and waste the scroll)?"),
+                         false, 0))
             {
                 canned_msg(MSG_OK);
                 return known ? -1 : 0;

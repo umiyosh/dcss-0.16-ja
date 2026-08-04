@@ -55,7 +55,8 @@ bool check_annotation_exclusion_warning()
     {
         mpr(jtrans("Within the labyrinth you'll only be able to teleport away from "
                    "the exit!"));
-        if (!yesno("Continue anyway?", false, 'N', true, false))
+        if (!yesno(jtransc("Continue anyway?"),
+                   false, 'N', true, false))
         {
             canned_msg(MSG_OK);
             interrupt_activity(AI_FORCE_INTERRUPT);
@@ -87,7 +88,8 @@ bool check_annotation_exclusion_warning()
     }
 
     if (might_be_dangerous
-        && !yesno("Enter next level anyway?", true, 'n', true, false))
+        && !yesno(jtransc("Enter next level anyway?"),
+                  true, 'n', true, false))
     {
         canned_msg(MSG_OK);
         interrupt_activity(AI_FORCE_INTERRUPT);

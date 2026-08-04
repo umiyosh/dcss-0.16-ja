@@ -741,8 +741,8 @@ static bool _check_buggy_deck(item_def& deck)
 
     you.wield_change = true;
 
-    if (!yesno("Problems might not have been completely fixed; "
-               "still use deck?", true, 'n'))
+    if (!yesno(jtransc("Problems might not have been completely fixed; "
+                       "still use deck?"), true, 'n'))
     {
         crawl_state.zero_turns_taken();
         return true;

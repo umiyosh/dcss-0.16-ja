@@ -414,8 +414,10 @@ static void _choose_char(newgame_def* ng, newgame_def* choice,
     // Apologies to non-public servers.
     if (ng->type == GAME_TYPE_NORMAL)
     {
-        if (!yesno("Trunk games don't count for the tournament, you want "
-                   TOURNEY ". Play trunk anyway? (Y/N)", false, 'n'))
+        const string prompt = make_stringf(
+            jtransc("Trunk games don't count for the %s tournament. "
+                    "Play trunk anyway? (Y/N)"), TOURNEY);
+        if (!yesno(prompt.c_str(), false, 'n'))
         {
 #ifdef USE_TILE_WEB
             tiles.send_exit_reason("cancel");

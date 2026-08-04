@@ -184,6 +184,7 @@ static TextDB AllDBs[] =
            "jtrans_mutations.txt",
            "jtrans_output.txt",
            "jtrans_rare.txt",
+           "jtrans_core_fallback.txt",
            "jtrans_skill_title.txt",
 
            "jtrans_weapon.txt",

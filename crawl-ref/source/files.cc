@@ -1924,8 +1924,10 @@ static bool _restore_game(const string& filename)
     if (numcmp(you.prev_save_version.c_str(), Version::Long, 2) == -1
         && version_is_stable(you.prev_save_version.c_str()))
     {
-        if (!yesno("This game comes from a previous release of Crawl.  If you "
-                   "load it now, you won't be able to go back. Continue?",
+        if (!yesno(jtransc(
+                       "This game comes from a previous release of Crawl.  "
+                       "If you load it now, you won't be able to go back. "
+                       "Continue?"),
                    true, 'n'))
         {
             you.save->abort(); // don't even rewrite the header

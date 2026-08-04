@@ -1,0 +1,236 @@
+%%%%
+ is flash-frozen.
+
+は一瞬のうちに凍結された。
+%%%%
+Problems might not have been completely fixed; still use deck?
+
+問題が完全には修正されていない可能性があります。それでもデッキを使いますか？
+%%%%
+The corpse has rotted away into a skeleton beforeyou could finish drinking it!
+
+死体はあなたが血を飲み終える前に白骨化してしまった！
+%%%%
+The corpse has rotted away into a skeleton beforeyou could %s!
+
+死体はあなたが%sする前に白骨化してしまった！
+%%%%
+It affects your evasion (+5 to EV).
+
+それはあなたの回避力を上昇させる。(EV +5)
+%%%%
+It is tipped with asphyxiating poison. Compared to other needles, it is twice as likely to be destroyed on impact
+
+窒息性の毒が塗られている。他の針と比べ、命中時に二倍壊れやすい。
+%%%%
+It has been contaminated by something likely to cause disease.
+
+病気を引き起こしそうな何かに汚染されている。
+%%%%
+This spell doesn't need a beam path.
+
+この呪文は光線の経路を必要としない。
+%%%%
+This game comes from a previous release of Crawl.  If you load it now, you won't be able to go back. Continue?
+
+このゲームは以前のバージョンのCrawlで作られています。今ロードすると元のバージョンへ戻せません。続けますか？
+%%%%
+%s shop name:%s%s%s gozag
+
+%s 店名:%s%s%s ゴザグ
+%%%%
+a beam
+
+光線
+%%%%
+ Isn't that enough for you?)
+
+ それでもまだ足りないのですか？)
+%%%%
+Buggy Original Equipment:
+
+不正な初期装備:
+%%%%
+You drew the Genie
+
+あなたはジーニーのカードを引いた
+%%%%
+You must possess at least fifteen runes to touch the sacred Orb which you defend.
+
+守護する聖なるオーブに触れるには、少なくとも15個のルーンが必要だ。
+%%%%
+[%c] random
+
+[%c] ランダム
+%%%%
+What kind of item mimic?
+
+どの種類のアイテムのミミックですか？
+%%%%
+ Enter a single letter to list %s displayed by that symbol.
+
+一文字入力すると、そのシンボルで表示される%sを一覧にします。
+%%%%
+Describe a %s; partial names and regexps are fine.%s
+
+%sの解説を表示します。名前の一部や正規表現も使用できます。%s
+%%%%
+Describe what?
+
+何の解説を表示しますか？
+%%%%
+Unknown command. (For a list of commands type <w>??</w>.)
+
+そのコマンドは存在しません。コマンド一覧を表示するには<w>??</w>を入力してください。
+%%%%
+Are you sure you want to leave the Orb unguarded?
+
+本当にオーブを無防備なまま残しますか？
+%%%%
+ is singed by your heat.
+
+はあなたの熱で焦げた。
+%%%%
+%s %s briefly %s through it before %s manages to get a firm grip on it.
+
+%1$sの%2$sは一瞬それをすり抜け%3$.0s、%4$sは握り直した。
+%%%%
+Trunk games don't count for the %s tournament. Play trunk anyway? (Y/N)
+
+Trunk版のゲームは%sトーナメントの対象外です。それでもTrunk版で遊びますか？ (Y/N)
+%%%%
+Only creatures of flesh and blood can berserk.
+
+血肉を持つ生物だけが狂戦士化できる。
+%%%%
+Your experience leads to an increase in your attributes! Increase:
+
+経験を積んだことで能力値が上昇します。上げる能力:
+%%%%
+Strength
+
+腕力
+%%%%
+Intelligence
+
+知力
+%%%%
+Dexterity
+
+器用さ
+%%%%
+You don't have enough Zot Points.
+
+ゾットポイントが足りない。
+%%%%
+You cannot mutate%s.
+
+あなたは%s変異できない。
+%%%%
+Yes
+
+はい
+%%%%
+No
+
+いいえ
+%%%%
+[<w>Esc</w>] exit
+
+[<w>Esc</w>] 終了
+%%%%
+skill_do_focus
+
+スキルの文字キーを押すと、訓練の重点度を切り替えます。
+%%%%
+Your Spells - Memorisation  (toggle to descriptions with '!')
+
+魔法一覧 - 習得 ('!'で解説表示に切り替え)
+%%%%
+Your Spells - Descriptions  (toggle to memorisation with '!')
+
+魔法一覧 - 解説 ('!'で習得表示に切り替え)
+%%%%
+Spells                        Type                          Failure  Level
+
+呪文                          系統                          失敗率    レベル
+%%%%
+Continue anyway?
+
+それでも続けますか？
+%%%%
+Stash (
+
+保管場所 (
+%%%%
+Warning: Crawl encountered errors during startup:
+
+警告: Crawlの起動中にエラーが発生しました:
+%%%%
+That weapon is stuck to your %s !
+
+その武器はあなたの%sに張り付いている！
+%%%%
+You cannot shoot with your %s while %s.
+
+%2$s間は%1$sで射撃できない。
+%%%%
+Your temperature is too high to benefit from that spell.
+
+体温が高すぎるため、その呪文の恩恵を受けられない。
+%%%%
+Your new body is particularly stony.
+
+新しい体はひときわ石のように硬い。
+%%%%
+You step safely past the trap.
+
+あなたは罠を安全に通り抜けた。
+%%%%
+The blade breaks!
+
+刃が壊れた！
+%%%%
+Level memory is imperfect, aborting.
+
+階層の記憶が不完全なため、中断します。
+%%%%
+<white>You must be new here indeed!</white>\n\n<cyan>You can be:</cyan>
+
+<white>本当に初心者のようですね！</white>
+
+<cyan>次から選べます:</cyan>
+%%%%
+<brown>\nEsc - Quit\n* - Random hints mode character</brown>
+
+<brown>
+Esc - 終了
+* - ランダムなヒントモード用キャラクター</brown>
+%%%%
+<cyan>[ <w>+</w>, <w>></w>, <w>Space</w> or <w>L-click</w>: Page down.   <w>-</w> or <w><<</w>: Page up.   <w>Esc</w> or <w>R-click</w> exits.]
+
+<cyan>[ <w>+</w>, <w>></w>, <w>Space</w>, <w>L-click</w>: 次ページ   <w>-</w>, <w><<</w>: 前ページ   <w>Esc</w>, <w>R-click</w>: 終了]
+%%%%
+Temperature Effects
+
+温度による効果
+%%%%
+Increase Attributes
+
+能力値の上昇
+%%%%
+<cyan>[ + : Page down.   - : Page up.                    Esc or Enter to continue.]
+
+<cyan>[ + : 次ページ   - : 前ページ                    EscまたはEnterで続行]
+%%%%
+Wand to zap?
+
+どのワンドを振りますか？
+%%%%
+Next page
+
+次ページ
+%%%%
+Previous page
+
+前ページ

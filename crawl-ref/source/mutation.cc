@@ -835,7 +835,7 @@ static void _display_temperature()
 
     string result;
 
-    string title = "Temperature Effects";
+    string title = jtrans("Temperature Effects");
 
     // center title
     int offset = 39 - strwidth(title) / 2;
