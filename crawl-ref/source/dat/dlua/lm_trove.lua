@@ -506,13 +506,13 @@ function TroveMarker:check_item_veto(marker, pname)
   if self:showing_item() then
     if not crawl.yesno("埋蔵庫へのポータルを動かすには"
                        .. self:item_name() .. "を呈示する必要があります。そうしますか？", true, "n") then
-      crawl.mpr("Okay, then.", "prompt")
+      crawl.mpr(crawl.jtrans("Okay, then."), "prompt")
       return "veto"
     end
   else
     if not crawl.yesno("埋蔵庫へのポータルを動かすには" .. self:item_name() ..
                        "が必要です。手放しますか？", true, "n") then
-      crawl.mpr("Okay, then.", "prompt")
+      crawl.mpr(crawl.jtrans("Okay, then."), "prompt")
       return "veto"
     end
   end
@@ -565,12 +565,12 @@ function TroveMarker:check_item_veto(marker, pname)
     -- We should not try to take equipped items, there are too many weird edge
     -- cases like distortion.
     if titem.equipped then
-      crawl.mpr("You must unequip the item" .. " first!")
+      crawl.mpr(crawl.jtrans("You must unequip the item" .. " first!"))
       return "veto"
     end
     self:note_payed(titem, true)
-    crawl.mpr("The portal accepts the item" ..
-              " and buzzes to life!")
+    crawl.mpr(crawl.jtrans("The portal accepts the item" ..
+                           " and buzzes to life!"))
     titem.dec_quantity(item.quantity)
   end
   return
@@ -609,7 +609,7 @@ function TroveMarker:accept_nopiety ()
   if you.god() ~= "No God" then
     local piety_loss = you.piety() - 15
     if piety_loss > 0 then
-      crawl.mpr("You feel utterly alone.")
+      crawl.mpr(crawl.jtrans("You feel utterly alone."))
       you.lose_piety(piety_loss)
     end
   end

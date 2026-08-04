@@ -36,9 +36,9 @@
                                                   data.teleport_spot)
 
     if you.teleport_to(my_slaves[1].x, my_slaves[1].y, true) then
-      crawl.mpr("Your surroundings suddenly seem different!")
+      crawl.mpr(crawl.jtrans("Your surroundings suddenly seem different!"))
     else
-      crawl.mpr("There is a strange hissing noise.")
+      crawl.mpr(crawl.jtrans("There is a strange hissing noise."))
     end
   end
 

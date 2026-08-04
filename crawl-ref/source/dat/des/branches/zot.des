@@ -49,7 +49,7 @@ function callback.grunt_zot_stairs_overgrown_start(data, triggerable,
     return
   end
 
-  crawl.mpr("You have a sense of imminent foreboding.", "warning")
+  crawl.mpr(crawl.jtrans("You have a sense of imminent foreboding."), "warning")
   dgn.persist.grunt_zot_stairs_overgrown_started = true
 end
 
@@ -94,9 +94,10 @@ function callback.grunt_zot_stairs_overgrown_oklobify(data, triggerable,
 
   if not data.warned then
     data.warned = true
-    crawl.mpr("One of the plants suddenly grows acid sacs!", "warning")
+    crawl.mpr(crawl.jtrans(
+        "One of the plants suddenly grows acid sacs!"), "warning")
   else
-    crawl.mpr("Another plant grows acid sacs!", "warning")
+    crawl.mpr(crawl.jtrans("Another plant grows acid sacs!"), "warning")
   end
 end
 }}
