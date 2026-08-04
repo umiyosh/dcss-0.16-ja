@@ -119,7 +119,7 @@ local function move_towards(dx, dy)
     if move == nil then move = try_move(sign(dx), 0) end
   end
   if move == nil then
-    crawl.mpr("Failed to move towards target.")
+    crawl.mpr(crawl.jtrans("Failed to move towards target."))
   else
     crawl.process_keys(move)
   end
@@ -273,20 +273,20 @@ function attack(allow_movement)
   local x, y, info = get_target(not allow_movement)
   local caught = you.caught()
   if af_hp_is_low() then
-    crawl.mpr("You are too injured to fight recklessly!")
+    crawl.mpr(crawl.jtrans("You are too injured to fight recklessly!"))
   elseif you.confused() then
-    crawl.mpr("You are too confused!")
+    crawl.mpr(crawl.jtrans("You are too confused!"))
   elseif caught then
     if AUTOFIGHT_CAUGHT then
       crawl.process_keys(delta_to_vi(1, 0)) -- Direction doesn't matter.
     else
-      crawl.mpr("You are " .. caught .. "!")
+      crawl.mpr("あなたは" .. crawl.jtrans(caught) .. "！")
     end
   elseif info == nil then
     if AUTOFIGHT_WAIT and not allow_movement then
       crawl.process_keys('s')
     else
-      crawl.mpr("No target in view!")
+      crawl.mpr(crawl.jtrans("No target in view!"))
     end
   elseif info.attack_type == 3 then
     if AUTOFIGHT_FIRE_STOP then
@@ -303,7 +303,7 @@ function attack(allow_movement)
   elseif AUTOFIGHT_WAIT then
     crawl.process_keys('s')
   else
-    crawl.mpr("No target in range!")
+    crawl.mpr(crawl.jtrans("No target in range!"))
   end
 end
 
@@ -349,7 +349,8 @@ end
 
 function toggle_autothrow()
   AUTOFIGHT_THROW = not AUTOFIGHT_THROW
-  crawl.mpr(AUTOFIGHT_THROW and "Enabling autothrow." or "Disabling autothrow.")
+  crawl.mpr(crawl.jtrans(AUTOFIGHT_THROW and "Enabling autothrow."
+                         or "Disabling autothrow."))
 end
 
 chk_lua_option.autofight_stop = set_stop_level
