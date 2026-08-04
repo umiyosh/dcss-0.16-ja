@@ -4,7 +4,8 @@
 function sprint_mu_zot_mons_gen(data, triggerable, triggerer, marker, ev)
     function spawn_zombie (x, y, spec)
         local mons = dgn.create_monster(x, y, spec)
-        crawl.mpr("You hear a whooshing noise from somewhere close by.")
+        crawl.mpr(crawl.jtrans(
+            "You hear a whooshing noise from somewhere close by."))
         return mons
     end
 
