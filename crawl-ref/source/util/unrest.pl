@@ -1,5 +1,7 @@
 #! /usr/bin/env perl
+use utf8;
 use warnings;
+use open qw(:std :encoding(UTF-8));
 
 undef $/;
 $_=<>;
@@ -42,8 +44,8 @@ my $DCSShead = <<END;
                    ダンジョンクロウルストーンスープ
                             - 取扱説明書 -
 END
-s/\+{9,}\nDungeon Crawl Stone Soup manual\n\+{9,}\n/$DCSShead/;
-s/#{9,}\nManual\n#{9,}\n\n//;
+s/\+{9,}\nDungeon Crawl Stone Soup(?: manual|マニュアル)\n\+{9,}\n/$DCSShead/;
+s/#{9,}\n(?:Manual|マニュアル)\n#{9,}\n\n//;
 
 # Make section headers nice and centered.
 my $dashes = "-"x72;
