@@ -36,317 +36,438 @@
 #
 T:html
 
-Dungeon Crawl Stone Soup - Frequently Asked Questions
+Dungeon Crawl Stone Soup -よくある質問
 ##############################################
 # Beginners' questions about playing the game.
 ##############################################
 %%%%
 Q:goal
 
-What exactly is the goal of this game?
+このゲームの目的は一体何でしょうか？
 %%%%
 A:goal
 
-A: To survive and to win, obviously. For this you need to find the fabled Orb of Zot deep down in the dungeon and bring it back to the surface. To enter the realm of Zot, you'll first need to collect three runes to be found in various branches of the dungeon.
+A:もちろん、生き残るため、そして勝つためです。そのためには、ダンジョンの奥深く
+で伝説のゾットのオーブを見つけて地上に戻す必要があります。ゾットの領域に入るに
+は、まずダンジョンのさまざまな分岐で見つかる3つのルーンを収集する必要がありま
+す。
 
-However, if you're new to the game, you really shouldn't worry about this. Just try to delve as deeply as possible and have fun exploring the many side branches in Crawl with various characters of different species, skill sets, and religions.
+ただし、このゲームを初めて使用する場合は、これについて心配する必要はありません。
+できるだけ深く掘り下げて、さまざまな種族、スキルセット、および宗教のさまざまな
+キャラクターを使用して、Crawlの多くのサイドブランチを探索して楽しんでください。
 %%%%
 Q:userdir
 
-I can't find my save files, morgue and character dumps. Where are they?
+セーブファイル、遺体安置所、キャラクターダンプが見つかりません。彼らはどこにい
+ますか？
 %%%%
 A:userdir
 
-If you're playing locally (i.e. not on one of the servers), the chardump command will tell you where the morgue file is written, and this information is also displayed below the highscore at the end of a game.
+ローカルでプレイしている場合(つまり、サーバーのいずれかでプレイしていない場合)、
+chardumpコマンドを使用すると遺体安置所ファイルが書き込まれた場所がわかり、この
+情報はゲーム終了時のハイスコアの下にも表示されます。
 
-The saves/ directory can be found in the same directory as the morgue/ one.
+saves/ディレクトリは、morgue/ディレクトリと同じディレクトリにあります。
 
-If you'd like to change either location, modify the morgue_dir and/or save_dir options in the init file.
+どちらかの場所を変更したい場合は、initファイル内のmorgue_dirおよび/または
+save_dirオプションを変更します。
 %%%%
 Q:drop
 
-How can I drop/pick up only part of a stack?
+スタックの一部だけをドロップ/ピックアップするにはどうすればよいですか?
 %%%%
 A:drop
 
-A: When choosing items to drop or pick up from a menu, you can select part of a stack by first entering a number (the desired amount), followed by the item slot. Stacks that are selected only in part are marked with '#' rather than '+'.
+A:メニューからドロップまたは拾うアイテムを選択するときは、最初に数字(希望の量)
+を入力し、続いてアイテムスロットを入力することで、スタックの一部を選択できます。
+部分的にのみ選択されたスタックには、'+'ではなく'#'のマークが付けられます。
 
-If you want to pick up part of a single-item stack, you can use the ';' command, which will prompt you for the quantity, but otherwise behaves the same as ','.
+単一アイテムのスタックの一部を取得したい場合は、数量の入力を求める';'コマンド
+を使用できますが、それ以外の動作は','と同じです。
 %%%%
 Q:roguelike difference
 
-What are the biggest differences to other popular roguelike games?
+他の人気のあるローグライクゲームとの最大の違いは何ですか?
 %%%%
 A:roguelike difference
 
-A: First, you might want to read the philosophy section in the manual ('?N') to read about general important principles in Stone Soup's game design.
+A:まず、マニュアル('?N')の哲学セクションを読んで、Stone Soupのゲームデザインに
+おける一般的な重要な原則について読んでください。
 
-As for specific differences, the most important are probably the following:
+具体的な違いとしては、おそらく最も重要なものは次のとおりです。
 
-* Species is *much* more important than the character background (or "class").
+* 種族は、文字職業(または「クラス」)より*はるかに*重要です。
 
-* Bones files only contain ghosts, never their equipment or cause of death.
+* 骨ファイルには幽霊のみが含まれており、その装備や死因は含まれていません。
 
-* You cannot sell items to shops or elsewhere.
+* ショップ等への販売はできません。
 
-* Resistances can be gained via mutations or items, never through eating.
+* 抵抗力は変異またはアイテムによって獲得できますが、食事によって獲得することは
+  できません。
 
-* Praying is mostly used to offer items or corpses to gods who'll accept them. To make use of divine powers use the 'a'bility command.
+* 祈りは主に、物品や死体を神に捧げて受け入れてもらうために行われます。神聖な力
+  を利用するには、'a'bilityコマンドを使用します。
 
-* There are inevitable deaths, but new players can win without spoilers, if they learn from their mistakes. Very good players can win several consecutive games.
+* 避けられない死はありますが、失敗から学べば、新規プレイヤーでもネタバレするこ
+  となく勝つことができます。非常に優れたプレイヤーは、複数のゲームに連続して勝
+  つことができます。
 
-Also, our aim is to give Crawl a really smooth interface, so you should really read through the command list ('??') some time. The following commands are particularly convenient:
+また、私たちの目的は、Crawlに非常にスムーズなインターフェイスを提供することな
+ので、コマンドリスト('??')をよく読んでください。次のコマンドは特に便利です。
 
-* 'o', for automatic exploration of an unknown level
+* 'o'、未知のレベルの自動探索用
 
-* 'G', for automatic travel to another level ('G?' for help)
+* 'G'、別のレベルへの自動移動用('G?'ヘルプ用)
 
-* 'X', to access the level map for travelling and other tasks ('X?')
+* 'X'、旅行やその他のタスクのレベルマップにアクセスします('X?')
 
-* 'Ctrl-F', to find and travel to items you've seen before ('Ctrl-F?')
+* 'Ctrl-F'、アイテムを見つけてそこに移動するには've seen before ('XXQ0002QXZ?'
+  )
 
-* 'Tab', to move towards or attack the nearest monster
+* 'Tab'、最も近いモンスターに向かって移動または攻撃します
 %%%%
 Q:survival
 
-How can I avoid dying all the time? Can you give me some playing tips?
+どうすれば常に死なずに済むでしょうか？プレイのヒントを教えていただけますか?
 %%%%
 A:survival
 
-A: If you've got trouble even reaching the Temple, you might want to try a game or two in hints mode for some general playing hints.
+A:神殿に到達することさえ困難な場合は、一般的なプレイのヒントを得るために、ヒン
+トモードで1 ～ 2ゲームを試してみるとよいでしょう。
 
-Also, there are easy playing combinations and more challenging ones (marked in dark grey on the selection screen). If you are new to Crawl, sticking to the easier ones is advisable. In general, treat each new monster you meet with utmost caution, try to choose the location where you fight monsters, and keep an eye on your health and magic.
+また、簡単にプレイできる組み合わせと、より挑戦的な組み合わせがあります(選択画
+面では濃い灰色でマークされています)。 Crawlを初めて使用する場合は、簡単なもの
+を使用することをお勧めします。一般に、新しく遭遇するモンスターには細心の注意を
+払い、戦う場所を選び、HPとMPを常に確認してください。
 
-For specific hints dealing with a particular character, you can press '#' in-game to create a "character dump" in your morgue directory that you can then post e.g. in the Stone Soup forum (https://crawl.develz.org/tavern/), so other players can comment on your equipment, skills or spell selection. Please trim your dump by removing stuff unnecessary for this task (such as the extensive Vanquished list).
+特定のキャラクターに関する具体的なヒントについては、ゲーム内で'#'を押して遺体
+安置所ディレクトリに「キャラクターダンプ」を作成し、それを投稿することができま
+す。 Stone Soupフォーラム(https://crawl.develz.org/tavern/)で、他のプレイヤー
+があなたの装備、スキルまたは呪文の選択についてコメントできるようにします。この
+タスクに不要なもの(広範なVanquishedリストなど)を削除して、ダンプをトリミングし
+てください。
 
-If you're playing online on one of the public servers, you can join the ##crawl channel of the freenode IRC, where you will find helpful souls who will even watch you and give hints.
+公開サーバーのいずれかでオンラインでプレイしている場合は、フリーノードIRCの##
+Crawlチャンネルに参加できます。そこでは、あなたを監視し、ヒントを与えてくれる
+親切な魂が見つかります。
 %%%%
 Q:downstairs
 
-I can't find any downstairs. Am I missing something?
+下の階には何も見つかりません。何かが足りないのでしょうか？
 %%%%
 A:downstairs
 
-A: They may be in a part of the level that is not reachable from the upstairs you came from. Try going up to the previous level and coming back down from there via a different set of stairs. Note that most levels feature three downstairs as well as three upstairs, not counting any escape hatches.
+A:来た階からは到達できない階の一部にある可能性があります。前のレベルに上がって、
+そこから別の階段を使って戻ってくることを試してください。ほとんどのレベルには、
+避難ハッチを除いて、2階に3つと2階に3つあることに注意してください。
 
-Alternatively, if you are in one of the branches, you might also have reached its lowest level and have to turn around to explore another one. Check the dungeon overview ('Ctrl-O') to see how deep you've delved into a given branch, or the database ('?/b') for the number of levels for unseen branches.
+あるいは、いずれかのブランチにいる場合は、最下位レベルに達しており、別のブラン
+チを探索するために方向転換する必要がある可能性もあります。ダンジョンの概要('
+Ctrl-O')で特定の分岐をどれだけ深く掘り下げたかを確認するか、データベース('?/b'
+)で未確認の分岐のレベル数を確認してください。
 %%%%
 Q:starving
 
-My characters keep starving. What am I doing wrong?
+私のキャラクターは飢え続けています。私の何が間違っているのでしょうか？
 %%%%
 A:starving
 
-A: It's possible that you simply spend too much time on cleared levels where not enough monsters are generated to dine on. You might also be too choosy about what you eat; unless you are herbivorous, you should usually be eating monster chunks. If you worship a god who enjoys sacrifices, pay attention to your own hunger status instead of offering all corpses you come across.
+A:単にクリアしたレベルに時間を費やしすぎて、食事をするのに十分なモンスターが生
+成されない可能性があります。また、食べるものについて選びすぎている可能性もあり
+ます。草食動物でない限り、通常はモンスターの塊を食べているはずです。犠牲を好む
+神を崇拝する場合は、出会ったすべての死体を捧げるのではなく、自分の飢え状態に注
+意を払いましょう。
 
-Also, casting (difficult) spells will make you hungry, but high Intelligence and Spellcasting will lessen this effect. If you press 'II', you can read about the hunger effects of your spells. Invocations likewise often have a Food cost.
+また、呪文を唱えると（難しい）お腹が空いてきますが、知力と呪文詠唱が高いとこの
+効果が軽減されます。 'II'を押すと、呪文の空腹効果について読むことができます。
+同様に、呼び出しには食料コストがかかることがよくあります。
 %%%%
 Q:labyrinth
 
-I'm stuck in a labyrinth and can't find the exit. How do I get out?
+迷宮に迷い込んでしまい、出口が見つかりません。どうすれば抜け出せますか？
 %%%%
 A:labyrinth
 
-A: To escape a labyrinth, it can be useful to know a few things:
+A:迷宮から脱出するには、次のことを知っておくと役立ちます。
 
-* Each labyrinth consists of several layers of different wall types, ranging from rock in the outer border to metal in the centre part, at the very centre of which the exit is located. (Though the exit itself may be part of a vault that has non-metal walls.)
+* 各迷宮は、外側の境界の岩から中央部の金属まで、さまざまな種類の壁の複数の層で
+  構成されており、その中心に出口があります。 (ただし、出口自体は非金属の壁を持
+  つ金庫室の一部である可能性があります。)
 
-* Teleportation will never take you into or even near the metal region.
+* テレポーテーションによって金属領域に移動したり、金属領域の近くに移動したりす
+  ることはありません。
 
-* From time to time, the walls will rearrange themselves. Though they will never close off the path to the exit, the path itself might change. In particular, this means that the "left hand" rule is not entirely reliable.
+* 時々、壁は再配置されます。出口への道を閉ざすことはありませんが、道自体が変わ
+  る可能性があります。特に、これは、「左手」ルールが完全には信頼できないことを
+  意味します。
 
-Also, exit and loot are guarded by a brutish minotaur, who is very much alive. Don't let yourself get sidetracked by necromantic remnants of its ancestors.
+また、出口と戦利品は、非常に生き生きとした残忍なミノタウロスによって守られてい
+ます。祖先の死霊術の残骸に脇道にそれないようにしてください。
 %%%%
 Q:cheating
 
-Is there a cheating mode to Crawl where I can play without dying?
+Crawlに死なずにプレイできるチートモードはありますか？
 %%%%
 A:cheating
 
-A: Press '+'!
+A: '+'を押してください。
 %%%%
 Q:weapons
 
-I've got two cool weapons. How can I tell which one is better?
+素敵な武器を2つ持っています。どちらが優れているかをどうやって見分けることがで
+きますか?
 %%%%
 A:weapons
 
-A: "Better" depends on a number of factors, such as your weapon skills, whether it's one- or two-handed, the randart properties, the weapon brand, and the monsters you're about to face. In general, switching from a weapon type at which you are already highly skilled to another one that you have no skill in is a waste of time. The brands may greatly differ in damage output, but you can get a good idea by bashing a few comparatively harmless monsters with each and comparing the results.
+A: 「より良い」かどうかは、武器スキル、片手武器か両手武器か、ランダートの特性、
+武器のブランド、これから直面するモンスターなど、さまざまな要因によって決まりま
+す。一般に、すでに高いスキルを持っている武器タイプから、スキルを持っていない別
+の武器タイプに切り替えるのは時間の無駄です。ブランドによってダメージ出力は大き
+く異なる場合がありますが、比較的無害なモンスターをいくつか叩き、結果を比較する
+と、良いアイデアが得られます。
 
-The delay in swinging a weapon can be reduced by the corresponding weapon skill.
+対応する武器スキルにより、武器を振る際の遅延を軽減できます。
 %%%%
 Q:religion
 
-Which gods would you recommend to a beginning player?
+初心者プレイヤーにどの神を勧めますか?
 %%%%
 A:religion
 
-A: The most straightforward gods to play are probably Trog or Okawaru (for melee and ranged combat), Vehumet or Sif Muna (for spellcasting), and Yredelemnul (for undead allies). Also, while unreliable, Xom can be a lot of fun.
+A:プレイするのに最も簡単な神は、おそらくTrogまたはOkawaru (近接戦闘および遠距
+離戦闘用)、VehumetまたはSif Muna (呪文詠唱用)、およびYredelemnul (アンデッドの
+味方用)でしょう。また、Xomは信頼性は高くありませんが、とても楽しいものです。
 
-Whenever you encounter an altar, be sure to read the corresponding god's description (by 'p'raying on the altar) and take your time in deciding whether to pick this deity or not. As a follower, you can reread your god's description, now more detailed via the '!' toggle, on the '^' screen.
+祭壇に出会ったら必ず、祭壇にある対応する神's description (by 'p'rayを読んで、
+この神を選ぶかどうかをゆっくりと決めてください。フォロワーは、'^'画面上の'!'ト
+グルを使用して、より詳細な神の説明を読み直すことができます。
 
-You're guaranteed to find altars to almost every god on the first nine levels of the main dungeon.
+メインダンジョンの最初の9レベルには、ほぼすべての神の祭壇が必ず見つかります。
 %%%%
 Q:ghosts
 
-I keep getting murdered by my own ghosts. Can I deactivate them?
+私は自分の幽霊に殺され続けています。それらを無効にできますか?
 %%%%
 A:ghosts
 
-A: There isn't any such option, and we're not planning to add one, either.
+A:そのようなオプションはありませんし、追加する予定もありません。
 
-For a more constructive answer, once a ghost has been loaded onto a level, it won't be loaded again - unless you happen to die on that level, thus creating a bones file featuring more than one ghost. Keep in mind that you don't absolutely have to fight every monster you meet, and with ghosts it's even easier: they cannot leave the level they were created on.
+より建設的な答えとしては、ゴーストがレベルにロードされると、そのレベルで偶然死
+亡しない限り、再度ロードされることはなく、したがって複数のゴーストをフィーチャ
+ーしたボーンファイルが作成されます。出会うすべてのモンスターと絶対に戦う必要は
+ないことに留意してください。ゴーストの場合はさらに簡単です。ゴーストは作成され
+たレベルから離れることができません。
 
-Alternatively, you could play a couple characters of strong species/background combinations for the sole purpose of busting those ghosts, e.g. Troll Berserkers. Or play online, where you'll mostly be killed by others' ghosts instead!
+あるいは、これらのゴーストを倒すことだけを目的として、強力な種族/職業の組み合
+わせのいくつかのキャラクターをプレイすることもできます。トロールバーサーカー。
+または、オンラインでプレイすると、ほとんどの場合、代わりに他の人の幽霊によって
+殺されます。
 %%%%
 Q:abyss
 
-I've somehow ended up in a place called "Abyss". How do I get out of here?
+どういうわけか「アビス」という場所に来てしまった。どうすればここから出られます
+か？
 %%%%
 A:abyss
 
-A: If you are in the Abyss for the first time, chances of getting out are slim. Still, here are a few general hints:
+A:初めてアビスにいる場合、抜け出す可能性はほとんどありません。ただし、一般的な
+ヒントをいくつか紹介します。
 
-* You need to find a gateway leading out of the Abyss. These are rare!
+* アビスから出るゲートウェイを見つける必要があります。これらは珍しいです！
 
-* Don't stick around to fight; move as much as possible!
+* 戦いのためにそこに固執しないでください。できるだけ動きましょう！
 
-* If you have it, use defensive equipment (weapons of protection, etc.).
+* 持っている場合は、防御装備（防御武器など）を使用してください。
 
-* Use teleportation to end up in a completely new part of the Abyss. (But keep in mind that teleportation will take much longer to kick in than in the Dungeon...)
+* テレポートを使用すると、アビスのまったく新しい部分に到達します。 (ただし、テ
+  レポートが開始されるまでにはダンジョンよりもはるかに長い時間がかかることに注
+  意してください...)
 
-* Consider switching your allegiance to Lugonu, the god of the Abyss. Upon conversion, you will be able to escape the Abyss immediately (but you may anger your previous god!).
+* アビスの神であるルゴヌに忠誠を切り替えることを検討してください。変換すると、
+  すぐにアビスから逃れることができます(ただし、以前の神を怒らせる可能性があり
+  ます!)。
 
-* Descending deeper in the Abyss will increase the chance of finding an exit out, but also increase the danger you face.
+* アビスをさらに深く下ると、出口を見つける可能性が高くなりますが、直面する危険
+  も高まります。
 %%%%
 Q:randart
 
-What do the terms "randart" and "unrandart" signify?
+「ランダート」と「アンランダート」という用語は何を意味しますか?
 %%%%
 A:randart
 
-A: Apart from the standard items you'll find lying around in the dungeon, you might also stumble upon artefacts which come in two varieties:
+A:ダンジョン内で転がっている標準的なアイテムとは別に、次の2種類のアーティファ
+クトを見つけることもあります。
 
-* randart: a random artefact, usually a weapon, armour or jewellery, with random properties such as conferring resistances or abilities.
+* randart:ランダムなアーティファクト。通常は、耐性や能力の付与などのランダムな
+  特性を持つ武器、防具、または宝飾品です。
 
-* unrandart: a rarer variety of artefact that is predefined instead of randomly generated. Most unrandarts are identified on sight, and some come with special effects or unique abilities that are not available elsewhere.
+* unrandart:ランダムに生成されるのではなく、事前に定義されている珍しい種類のア
+  ーティファクト。ほとんどのアンランダートは一目で識別でき、中には他では利用で
+  きない特殊な効果やユニークな能力を備えたものもあります。
 
-Neither of these types can be enchanted or branded, either temporarily or permanently, nor can they be corroded by acid.
+これらのタイプはどちらも、一時的または永続的にエンチャントやブランド化すること
+はできず、また酸によって腐食することもできません。
 %%%%
 Q:interact
 
-Is there a way for me to interact with other players?
+他のプレイヤーと交流する方法はありますか?
 %%%%
 A:interact
 
-A: If you play online you can watch games in progress, other players can watch you while you play, and you can kill other players' ghosts. You can even send and receive messages.
+A:オンラインでプレイする場合は、進行中のゲームを監視したり、プレイ中に他のプレ
+イヤーがあなたを監視したり、他のプレイヤーのゴーストを殺すことができます。メッ
+セージを送受信することもできます。
 
-Check https://crawl.develz.org/wordpress/howto for an explanation about how to play online.
+オンラインでプレイする方法の説明については、
+https://crawl.develz.org/wordpress/howto を確認してください。
 
-You can also chat in the Crawl channel (irc.freenode.net, ##crawl), or discuss in the Stone Soup forum (https://crawl.develz.org/tavern/), or in one of the other forums linked on the website.
+Crawlチャネル(irc.freenode.net、##Crawl)でチャットしたり、Stone Soupフォーラム
+(https://crawl.develz.org/tavern/)、またはWebサイトにリンクされている他のフォ
+ーラムのいずれかで議論したりすることもできます。
 %%%%
 ##############################################
 # Questions about the development process.
 ##############################################
 Q:version
 
-When will development reach the "stable" version 1.0?
+開発はいつ「安定版」バージョン1.0に達しますか?
 %%%%
 A:version
 
-A: Actually, by now we consider Stone Soup to be reasonably stable for a game of such active development, so please don't get hung up about the 0.X versioning and give it a try.
+A:実際のところ、現時点では、Stone Soupはこのような活発な開発が行われているゲー
+ムとしてはかなり安定していると考えられています。そのため、0.Xのバージョン管理
+にこだわらずに試してみてください。
 
-We've mostly kept the versioning for historic reasons and because it might cause undue confusion. We might decide to change that at some point, but maybe we won't.
+私たちは主に歴史的な理由と、過度の混乱を引き起こす可能性があるため、バージョン
+管理を維持してきました。ある時点でそれを変更することを決定するかもしれませんが、
+おそらく変更しないでしょう。
 %%%%
 Q:beta
 
-Is there a way for me to play the new version before it is released?
+新しいバージョンがリリースされる前にプレイする方法はありますか?
 %%%%
 A:beta
 
-A: There certainly is! You can play "trunk" (what will eventually become the next version) online on any of the online servers; https://crawl.develz.org also hosts Windows and Mac binaries you can download. Note that trunk may be buggy, and that very rarely a bug may invalidate your saved games. If that doesn't bother you, go ahead and play!
+A：確かにありますよ！どのオンラインサーバーでも、「トランク」（最終的には次の
+バージョンになります）をオンラインでプレイできます。 https://crawl.develz.org
+は、ダウンロードできるWindowsおよびMacのバイナリもホストします。トランクにはバ
+グがある可能性があり、ごくまれにバグにより保存したゲームが無効になる可能性があ
+ることに注意してください。それが気にならない場合は、先に進んでプレイしてくださ
+い。
 
-Be sure to reports bugs on our bug tracker (https://crawl.develz.org/mantis/) and to leave some feedback/suggestions on the forums (https://crawl.develz.org/tavern/).
+必ずバグトラッカー (https://crawl.develz.org/mantis/)でバグを報告し、フォーラ
+ム(https://crawl.develz.org/tavern/)にフィードバック/提案を残してください。
 
-When doing so, please mention the version (see '?v') you're currently playing, in case the bug's already been fixed or the feature already implemented.
+その際、バグがすでに修正されているか、機能がすでに実装されている場合に備えて、
+現在プレイしているバージョン('?v'を参照)について言及してください。
 %%%%
 Q:bug
 
-The game keeps crashing. / I think I found a bug. What do I do?
+ゲームがクラッシュし続けます。 /バグを見つけたみたいです。私は何をしますか？
 %%%%
 A:bug
 
-A: Please submit a bug report on Mantis (https://crawl.develz.org/mantis/), and give as much information as you can:
+A: Mantis (https://crawl.develz.org/mantis/)に関するバグレポートを送信し、でき
+るだけ多くの情報を提供してください。
 
-* What were you doing at the time?
+* そのときあなたは何をしていましたか？
 
-* What did you expect to happen, what happened instead, etc.
+* 何が起こると予想していましたか、代わりに何が起こったのかなど。
 
-* Most importantly, what version are you playing?
-  (If you're not sure, you can check in-game with '?v'.)
+*最も重要なのは、どのバージョンをプレイしているかということです。
+  (よくわからない場合は、ゲーム内で'?v'を使用して確認できます。)
 
-* Console or tiles?
+* コンソールかタイルか？
 
-For crashes or monsters/items/levels behaving oddly, we probably need a save file. If you're playing online console, you can create a copy of your save file for the developers to access by selecting the version you are playing and then pressing 'A' for Advanced options. Don't forget to include the server and your username in your bug report!
+クラッシュやモンスター/アイテム/レベルの動作が異常な場合は、おそらく保存ファイ
+ルが必要です。オンラインコンソールでプレイしている場合は、プレイしているバージ
+ョンを選択し、'A'を押して詳細オプションを選択することで、開発者がアクセスでき
+るように保存ファイルのコピーを作成できます。バグレポートにはサーバーとユーザー
+名を忘れずに含めてください。
 
-Sometimes a screenshot can be helpful. If there are error messages, please write them down. Short of a save file, a guide on how to reproduce the crash (or bug) can be useful; you can use wizard mode for this.
+スクリーンショットが役立つ場合もあります。エラーメッセージがある場合は、それを
+書き留めてください。保存ファイル以外にも、クラッシュ(またはバグ)を再現する方法
+に関するガイドが役立つ場合があります。これにはウィザードモードを使用できます。
 
-Thanks in advance!
+前もって感謝します！
 %%%%
 Q:idea
 
-I've got a cool idea! What can I do with it?
+素晴らしいアイデアがあるよ！それを使って何ができるでしょうか？
 %%%%
 A:idea
 
-A: If you'd like your idea to get in, your surest bet is to put it in a place where a developer can see it. One good place is the official forum, at https://crawl.develz.org/tavern/. If it catches the interest of at least one coder, chances are it'll' make it into the game.
+A:自分のアイデアを採用してもらいたい場合、最も確実な方法は、開発者が見える場所
+にアイデアを置くことです。良い場所の1つは、https://crawl.develz.org/tavern/ の
+公式フォーラムです。少なくとも1人のプログラマーの興味を引けば、'll'がゲームに
+組み込まれる可能性があります。
 
-Note that your idea has a better chance of being accepted if you present the ramifications on gameplay. ("How does [adding/removing X] make the game better?") A suggestion for how to improve the interface may go in without much ado, but other suggestions will probably require to defend & justify them.
+ゲームプレイへの影響を提示すると、アイデアが受け入れられる可能性が高くなります。
+(「[Xの追加/削除]はどのようにゲームを改善しますか?」)インターフェースを改善す
+る方法についての提案は、特に苦労することなく取り入れられるかもしれませんが、他
+の提案はおそらくそれらを擁護し、正当化する必要があるでしょう。
 %%%%
 Q:help
 
-I'd like to help improve the game. What can I do?
+ゲームの改善に貢献したいと思っています。私に何ができる？
 %%%%
 A:help
 
-A: There are several areas where you can get creative and outside help is much appreciated. These are:
+A:創造性を発揮できる分野がいくつかありますが、外部からの支援は非常にありがたい
+です。これらは：
 
-* maps/vaults (see dat/ directory, docs/develop/levels/introduction.txt)
+* マップ/ボールト(dat/ディレクトリ、docs/develop/levels/introduction.txtを参照
+  )
 
-* monster speech (see dat/database/, docs/develop/monster_speech.txt)
+* モンスタースピーチ(dat/database/、docs/develop/monster_speech.txtを参照)
 
-* monster/item/spell descriptions (see dat/descript/)
+* モンスター/item/呪文の説明(dat/descript/を参照)
 
-* tiles (see source/rltiles/, docs/develop/tiles_creation.txt)
+* タイル(source/rltiles/、docs/develop/tiles_creation.txtを参照)
 
-Also, if you'd like to write a patch but don't know how to go about it, read patch_guide.txt in the docs/develop/ directory. Submit it and other new things on our Mantis tracker: https://crawl.develz.org/mantis/
-Keep in mind that without previous discussions, we may not be able to use the patch, or it might need heavy modification. It's possible that it won't be accepted, usually for one of three reasons:
+また、パッチを作成したいが、その方法がわからない場合は、docs/develop/ディレク
+トリにあるpatch_guide.txtを読んでください。それとその他の新しいことをMantisト
+ラッカーに送信してください: https://crawl.develz.org/mantis/ 事前の議論がなけ
+れば、パッチを使用できない可能性や、大幅な変更が必要になる可能性があることに注
+意してください。通常、次の3つの理由のいずれかにより、それは受け入れられません。
 
-* It doesn't fit into the Crawl world as we see it.
+* 私たちが見ているようなCrawlの世界には当てはまりません。
 
-* It violates Crawl's philosophy to avoid grinding and spoiler-heavy stuff.
+* それは、ネタバレやネタバレの多い内容を避けるというCrawlの哲学に違反します。
 
-* We just don't think it's interesting enough to ever be implemented.
+* 実装されるのに十分興味深い't think it'を実行しているだけです。
 
-Thanks a lot for your support!
+ご支援ありがとうございました!
 %%%%
 Q:changes
 
-What did you change in the most recent version?
+最新バージョンでは何を変更しましたか?
 %%%%
 A:changes
 
-A: The admittedly highly subjective highlights of the most recent major release are listed along with the version information under '?v'. For older releases' changes, check out changelog.txt in the docs/ directory.
+A:最新のメジャーリリースの非常に主観的なハイライトは、'?v'の下にバージョン情報
+とともにリストされています。古いリリースの変更については、docs/ディレクトリの
+changelog.txtを確認してください。
 %%%%
 Q:tiles lag
 
-The Tiles version is awfully slow! How can I improve that?
+Tilesバージョンは非常に遅いです。どうすればそれを改善できますか?
 %%%%
 A:tiles lag
 
-A: Crawl renders its graphics using OpenGL and SDL. Because it uses OpenGL, it depends on a little bit of hardware acceleration to not run slowly. If your system is not set up to enable this, then Crawl will run quite poorly.
+A: Crawlは、OpenGLとSDLを使用してグラフィックスをレンダリングします。 OpenGLを
+使用しているため、動作が遅くならないようにするには、少しのハードウェアアクセラ
+レーションが必要です。システムがこれを有効にするように設定されていない場合、
+Crawlの動作は非常に低下します。
 
-On Windows, the default driver that ships with Windows is extremely slow. Make sure to update your graphics card driver to the latest one available. On Linux, you should be sure to enable DRI.
+Windowsでは、Windowsに付属するデフォルトのドライバーは非常に遅いです。グラフィ
+ックカードドライバーを利用可能な最新のものに更新してください。 Linuxでは、DRI
+を必ず有効にしてください。
 
-In addition to these suggestions, you can also try to see whether tweaking some options will improve performance. See docs/tiles_help.txt for details. If things are still too laggy after all of that, you could try the non-graphical console version, or wait for a future version that does not depend on OpenGL.
+これらの提案に加えて、いくつかのオプションを調整することでパフォーマンスが向上
+するかどうかを確認することもできます。詳細については、「docs/tiles_help.txt」
+を参照してください。これらすべてを行ってもまだ動作が遅すぎる場合は、非グラフィ
+カルコンソールバージョンを試すか、OpenGLに依存しない将来のバージョンを待つこと
+ができます。
 %%%%

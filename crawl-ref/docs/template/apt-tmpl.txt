@@ -1,36 +1,33 @@
-TABLES OF APTITUDES
+種族別スキル適性表
 
-The following three tables describe all aptitudes of the various species
-for the various skills. Knowledge, neither explicit nor implicit, of these
-are not necessary for winning in Crawl. The qualitative information behind
-this sheet (i.e., which species are good at which tasks) can be obtained in
-two other ways:
-- Read the species section in the manual about strengths and weaknesses.
-- Look at which combinations of species and background are recommended.
+以下の3つの表は、各種族の各スキルに対する適性を示します。数値を明示的にも暗黙的
+にも覚える必要はなく、知らなくてもCrawlに勝利できます。どの種族が何を得意とす
+るかという定性的な情報は、次の方法でも確認できます。
+- マニュアルの種族一覧で、長所と短所を読む。
+- 推奨されている種族と職業の組み合わせを見る。
 
- -5  abysmal aptitude
- -4  terrible aptitude (learning half as fast as at 0 aptitude)
- -3  very poor aptitude
- -2  poor aptitude
- -1  slightly disfavoured aptitude
-  0  standard aptitude
- +1  slightly favoured aptitude
- +2  strong aptitude
- +3  very strong aptitude
- +4  outstanding aptitude (learning twice as fast as at 0 aptitude)
- +5  exceptional aptitude
+ -5  絶望的な適性
+ -4  極めて低い適性(適性0の半分の速度で習得)
+ -3  とても低い適性
+ -2  低い適性
+ -1  やや不向き
+  0  標準的な適性
+ +1  やや向いている
+ +2  高い適性
+ +3  とても高い適性
+ +4  卓越した適性(適性0の2倍の速度で習得)
+ +5  例外的な適性
 
-There are three special values: HP, MP and Experience:
-- The HP and MP values indicate the percentages of hit points and magic
-  points that are gained per level, 100% being the Human standard.
-- The Experience value indicates how much experience has to be earned in
-  order to gain a new level. +1 is the Human standard, and all other
-  species (apart from Halfling and Kobold) are slower. These values use
-  the same scale as the skill aptitudes.
+HP、MP、経験値には特別な意味があります。
+- HPとMPは、レベルごとに得られるヒットポイントとMPの割合を示します。人間の
+  100%が基準です。
+- 経験値は、次のレベルに上がるために必要な経験値を示します。人間の+1が基準で、
+  ハーフリングとコボルドを除く他の種族は人間より遅く成長します。数値の尺度は
+  スキル適性と同じです。
 
-The abbreviations used for the skills are:
+スキル名には次の略号を使用します。英語名はゲームデータ上の識別子です。
 
-General skills, Experience   Melee and Ranged Combat     Spellcasting and Magic
+一般・経験値                 近接・遠距離戦闘             呪文詠唱・魔法
 --------------------------   -----------------------     ----------------------
 Arm - Armour                 Fgt - Fighting              Spc - Spellcasting
 Ddg - Dodging                SBl - Short Blades          Coj - Conjurations

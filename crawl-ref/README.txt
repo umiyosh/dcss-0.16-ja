@@ -1,159 +1,143 @@
 Dungeon Crawl Stone Soup
 ========================
 
-Dungeon Crawl Stone Soup is a game of dungeon exploration, combat and magic,
-involving characters of diverse skills, worshipping deities of great power and
-caprice. To win, you'll need to be a master of tactics and strategy, and
-prevail against overwhelming odds.
+Dungeon Crawl Stone Soupはダンジョン探索、戦闘、魔法のゲームで、強大な力と気ま
+ぐれな神を崇拝するさまざまなスキルのキャラクターが登場します。勝つためには、戦
+術と戦略の達人となり、圧倒的な確率に勝つ必要があります。
 
-Contents:
-1. How to get started? (Information for new players)
-2. The file system of this version.
-3. Contact and reporting bugs.
-4. License and history information.
-5. How you can help!
+目次: 1.どうやって始めますか? （新規プレイヤー向け情報） 2.このバージョンのフ
+ァイルシステム。 3.連絡してバグを報告します。 4.ライセンスと履歴情報。 5.どの
+ようにお手伝いできるでしょうか!
 
-There is a list of frequently asked questions which you can access pressing
-?Q in the game.
+よくある質問のリストがあり、ゲーム内で?Qを押すとアクセスできます。
 
-1. Getting started
+1. はじめる
 ------------------
-If you'd like to dive in immediately, your best bets are to
-* start a game and pick a tutorial (select tutorial in the game menu), or
-* read quickstart.txt (in the docs/ directory), or
-* for studious readers, browse the manual (see below for all doc files).
+すぐに始めたい場合は、*ゲームを開始してチュートリアルを選択する(ゲームメニュー
+でチュートリアルを選択する)、または* quickstart.txt (docs/ディレクトリにある)
+を読む、または*熱心な読者の場合はマニュアルを参照する(すべてのドキュメントファ
+イルについては以下を参照)ことが最善の方法です。
 
-Internet play:
-You can play Crawl online, both competing with other players and
-watching them. Check the homepage at
-http://crawl.develz.org/wordpress/howto for details, including
-information about additional servers. You just need a ssh or telnet
-console; on Windows, the PuTTY program works very well. Read
-docs/ssh_guide.txt for a step by step guide on how to set this up.
+インターネットプレイ: Crawlはオンラインでプレイでき、他のプレイヤーと対戦した
+り、観戦したりできます。追加サーバーに関する情報など、詳細については、ホームペ
+ージ(http://crawl.develz.org/wordpress/howto)を確認してください。必要なのはSSH
+またはTelnetコンソールだけです。 Windowsでは、PuTTYプログラムは非常にうまく機
+能します。これを設定する方法のステップバイステップガイドについては、
+docs/ssh_guide.txtをお読みください。
 
-Tiles:
-Crawl features an alternative to the classical ASCII display; Tile-based
-Crawl is often a lot more accessible to new players. Tiles are available for
-Linux, Windows and OS X.
-Tile-based Crawl can also be played online on https://tiles.crawl.develz.org,
-although it does not support all features of local Tiles yet.
+タイル: Crawlは、従来のASCII表示に代わる機能を備えています。多くの場合、タイル
+ベースのCrawlは、新規プレイヤーにとってはるかにアクセスしやすいものです。タイ
+ルは、Linux、Windows、およびOS Xで利用できます。タイルベースのCrawlは、
+https://tiles.crawl.develz.org でオンラインでプレイすることもできますが、ロー
+カルタイルのすべての機能はまだサポートされていません。
 
 
-2. File system
+2. ファイルシステム
 --------------
-The following files in the Crawl's main folder are essential:
+Crawlのメインフォルダーにある次のファイルは必須です。
 
-* crawl              These start the game. (The actual name depends on your
-* crawl.exe          operating system.)
+* Crawlこれらでゲームが始まります。 (実際の名前はユーザーによって異なります)
+* Crawl.exeオペレーティングシステム。)
 
-The docs/ folder contains the following helpful texts (all of which can be
-read in-game by bringing up the help menu with '?'):
+docs/フォルダーには、次の役立つテキストが含まれています(これらはすべて、'?'で
+ヘルプメニューを表示することでゲーム内で読むことができます)。
 
-* quickstart.txt     A very short introduction into the game.
-* crawl_manual.txt   The complete manual; describing all aspects in detail.
-                     Contains appendices on species, backgrounds, etc.
-* options_guide.txt  Describes all options in detail. The structure of
-                     init.txt follows this text.
-* macros_guide.txt   A how-to on using macros and keymappings, with examples.
-* tiles_help.txt     An explanation of the Tiles interface.
+* quickstart.txtゲームの非常に短い紹介です。
+* crawl_manual.txt完全なマニュアル。すべての側面を詳細に説明します。種族、職業
+  などの付録が含まれています。
+* options_guide.txtすべてのオプションを詳細に説明します。 init.txtの構造はこの
+  テキストに従います。
+* macros_guide.txtマクロとキーマッピングの使用方法と例。
+* tiles_help.txt Tilesインターフェイスの説明。
 
-The settings/ folder contains, among others, the following files:
+settings/フォルダーには、特に次のファイルが含まれています。
 
-* init.txt           These contain the options for the game. The defaults
-* .crawlrc           play well, so don't bother with this in the beginning.
-                     Permanent death is not an option, but a feature!
-* macro.txt          Playing Crawl can be made even more convenient by
-                     redefining keys and assigning macros. Ignore early on.
+* init.txtこれらにはゲームのオプションが含まれています。デフォルト
+* .crawlrcはうまく動作するので、最初は気にしないでください。永久の死はオプショ
+  ンではなく、機能です。
+* macro.txtキーを再定義し、マクロを割り当てることで、Crawlの再生がさらに便利に
+  なります。早い段階で無視してください。
 
 
-3. Contact and reporting bugs
+3. 連絡先とバグの報告
 -----------------------------
-The official webpage is at
-      http://crawl.develz.org/
-and there you can find both trackers to add bug reports, feature requests, or
-upload patches, as well as sources and binaries. This is the best way to report
-bugs or mention new ideas.
+公式Webページはhttp://crawl.develz.org/ にあり、バグレポートを追加したり、機能
+リクエストを追加したり、パッチをアップロードしたりするためのトラッカーと、ソー
+スとバイナリが両方見つかります。これは、バグを報告したり、新しいアイデアについ
+て言及したりするための最良の方法です。
 
-There is a Usenet newsgroup dealing with roguelikes, including Crawl:
-      rec.games.roguelike.misc
-It is polite to flag your post with -crawl- as other games are discussed over
-there as well. This is a good place to ask general questions, both from new
-players as well as for spoilers, or to announce spectacular wins.
+Crawlを含むローグライクを扱うUsenetニュースグループがあります
+:rec.games.roguelike.misc他のゲームもそこで議論されているため、投稿に-Crawl-の
+フラグを付けるのが礼儀です。ここは、新規プレイヤーやネタバレに関する一般的な質
+問をしたり、素晴らしい勝利を発表したりするのに適した場所です。
 
-If you want to chime in with development, you can read the mailing list
-      crawl-ref-discuss@lists.sourceforge.net
-which can get pretty busy on the occasion.
+開発に参加したい場合は、メーリングリストCrawl-ref-discuss@
+lists.sourceforge.netを読んでください。この場合はかなり忙しくなります。
 
 
-4. License and history information
+4. ライセンスと履歴情報
 ----------------------------------
-This is a descendant of Linley's Dungeon Crawl. Development of the main branch
-stalled at version 4.0.0b26, with a final alpha of 4.1 being released by Brent
-Ross in 2005. Since 2006, the Dungeon Crawl Stone Soup team has been continuing
-the development. See the CREDITS in the main folder for a myriad of
-contributors, past and present; license.txt contains the legal blurb.
+これは、LinleyのDungeon Crawlの子孫です。メインブランチの開発はバージョン
+4.0.0b26で停滞し、2005年にBrent Rossによって最終アルファ版4.1がリリースされま
+した。2006年以来、Dungeon Crawl Stone Soupチームが開発を継続しています。過去お
+よび現在の無数の貢献者については、メインフォルダー内のクレジットを参照してくだ
+さい。 license.txtには法的宣伝文が含まれています。
 
-Dungeon Crawl Stone Soup is an open source, freeware roguelike. It is supported
-on Linux, Windows, OS X, and, to a lesser extent, on DOS. The source should
-compile and run on any reasonably modern Unix.
-Stone Soup features both ASCII and graphical (Tiles) display.
+Dungeon Crawl Stone Soupは、オープンソースのフリーウェア、ローグライクです。
+Linux、Windows、OS X、および程度は低いですがDOSでサポートされています。ソース
+は、適切な最新のUnix上でコンパイルして実行できる必要があります。 Stone Soupは、
+ASCII表示とグラフィック(タイル)表示の両方を備えています。
 
-Crawl gladly and gratuitously uses the following open source packages; the
-text files mentioned can be found in the docs/license/ folder:
-* The Lua script language, see lualicense.txt.
-* The PCRE library for regular expressions, see pcre_license.txt.
-* The SQLite library as database engine; it is properly in the public domain.
-* The SDL and SDL_image libraries under the LGPL 2.1 license: lgpl.txt.
-* The libpng library, see libpng-LICENSE.txt
+Crawlは、次のオープンソースパッケージを無償で喜んで使用します。上記のテキスト
+ファイルはdocs/license/フォルダーにあります。 * Luaスクリプト言語については、
+lualicense.txtを参照してください。 *正規表現用のPCREライブラリについては、
+pcre_license.txtを参照してください。 *データベースエンジンとしてのSQLiteライブ
+ラリ。それは適切にパブリックドメインにあります。 * LGPL 2.1ライセンスに基づく
+SDLおよびSDL_imageライブラリ: lgpl.txt。 * libpngライブラリ、
+libpng-LICENSE.txtを参照
 
 
-5. How you can help
+5. どのようにお手伝いできるか
 -------------------
-If you like the game and you want to help making it better, there are a number
-of ways to do so:
+ゲームが好きで、ゲームの改善に協力したい場合は、さまざまな方法があります。
 
-* Playtesting.
-At any time, there will be bugs -- playing and reporting these is a great help.
-There is a beta server at http://crawl.develz.org. Besides pointing out bugs,
-new ideas on how to improve interface or gameplay are welcome. You can mention
-them again at the homepage, http://crawl.develz.org/mantis/.
+* プレイテスト。バグはいつでも発生します。これらをプレイして報告することは大き
+  な助けとなります。 http://crawl.develz.org にベータサーバーがあります。バグ
+  の指摘に加えて、インターフェイスやゲームプレイを改善する方法に関する新しいア
+  イデアも歓迎します。ホームページhttp://crawl.develz.org/mantis/ で再度言及す
+  ることができます。
 
-* Vault making.
-Crawl uses many hand-drawn (but often randomised) maps. Making them is fun and
-easy. It's best to start with simple entry vaults (look at dat/entry.des for a
-first impression). Later, you may read docs/develop/levels/introduction.txt.
-If you're ambitious, new maps for branch ends are possible, as well.
-If you've made some maps, you can test them on your system (no compiling
-needed) and then just mail them to the mailing list.
+* 金庫作り。 Crawlでは、多くの手描き(ただしランダム化されたマップ)が使用されて
+  います。作るのは楽しくて簡単です。単純なエントリーボールトから始めるのが最善
+  です(第一印象については、dat/entry.desを見てください)。後で、
+  docs/develop/levels/introduction.txtを読むこともできます。意欲があれば、分岐
+  の終点に新しいマップを追加することも可能です。いくつかのマップを作成した場合
+  は、システム上でそれらをテストし(コンパイルは必要ありません)、メーリングリス
+  トに送信するだけです。
 
-* Speech.
-Monster talking provides a lot of flavour. Just like vaults, speech depends
-upon a large set of entries. Since most of the speech has been outsourced, you
-can add new prose. The syntax is effective, but slightly strange, so you may
-want to read docs/monster_speech.txt.
-Again, changing or adding speech is possible on your local game. If you
-have added something, send the files to the list.
+* スピーチ。モンスターの会話には多くの味わいがあります。保管庫と同様に、音声も
+  大規模なエントリのセットに依存します。スピーチの大部分は外部委託されているた
+  め、新しい散文を追加することができます。この構文は効果的ですが、少し奇妙であ
+  るため、docs/monster_speech.txtを読むとよいでしょう。繰り返しになりますが、
+  音声の変更や追加はローカルゲーム上で可能です。何かを追加した場合は、ファイル
+  をリストに送信します。
 
-* Monster descriptions.
-You can look up the current monster descriptions in-game with '?/' or just read
-them in dat/descript/monsters.txt. The following conventions should be more or
-less obeyed: Descriptions ought to contain flavour text, ideally pointing out
-major weaknesses/strengths. No numbers, please. Citations are okay, but try to
-stay away from the most generic ones.
-If you like, you can similarly modify the descriptions for features, items or
-branches.
+* モンスターの説明。現在のモンスターの説明は、ゲーム内で'?/'を使用して検索する
+  か、単にdat/descript/monsters.txtで読むことができます。以下の規則に多かれ少
+  なかれ従う必要があります。説明にはフレーバーテキストを含める必要があり、理想
+  的には主要な弱点/長所を指摘する必要があります。数字は無しでお願いします。引
+  用は問題ありませんが、最も一般的なものは避けるようにしてください。必要に応じ
+  て、機能、項目、またはブランチの説明も同様に変更できます。
 
-* Tiles.
-Since version 0.4, tiles are integrated within Crawl. Having variants of
-often-used glyphs is always good. If you want to give this a shot, please
-contact us via the mailing list. In case you drew some tiles of your own,
-tell us via the list.
+* タイル。バージョン0.4以降、タイルはCrawl内に統合されています。よく使用される
+  グリフのバリエーションがあることは常に良いことです。これを試してみたい場合は、
+  メーリングリスト経由でご連絡ください。独自のタイルをいくつか引いた場合は、リ
+  ストからお知らせください。
 
-* Patches.
-If you like to, you can download the source code and apply patches. Both
-patches for bug fixes as well as implementation of new features are very much
-welcome. If you want to code a cool feature that is likely to be accepted but
-unlikely to be coded by the devteam, please ask on the IRC channel ##crawl-dev.
-Please be sure to read docs/develop/coding_conventions.txt first.
+* パッチ。必要に応じて、ソースコードをダウンロードしてパッチを適用できます。バ
+  グ修正のためのパッチと新機能の実装はどちらも大歓迎です。採用される可能性は高
+  いが、開発チームによってコーディングされる可能性は低いクールな機能をコーディ
+  ングしたい場合は、IRCチャネル##Crawl-devで質問してください。最初に
+  docs/develop/coding_conventions.txtを必ずお読みください。
 
-Thank you, and have fun crawling!
+ありがとう、そしてクロールを楽しんでください！

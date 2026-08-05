@@ -1,1708 +1,1465 @@
-Guide to Crawl's options
+Crawlのオプションガイド
 ========================
 
-This document explains all of the options in the latest version of
-Dungeon Crawl Stone Soup. If you get stuck or some things don't seem to
-work properly, ask for help in ##crawl on freenode, or on the Crawl
-forums at http://crawl.develz.org/tavern/.
+このドキュメントでは、Dungeon Crawl Stone Soupの最新バージョンのすべてのオプシ
+ョンについて説明します。行き詰まったり、正常に動作しないように見える場合は、
+freenodeの##Crawl、またはhttp://crawl.develz.org/tavern/ のCrawlフォーラムで助
+けを求めてください。
 
-The contents of this text are:
+このテキストの内容は次のとおりです。
 
-0-  Generalities.
-0-a     Standard and additional option files.
-0-b     Options on the command line.
-0-c     Options and how to set them.
-0-d     List options.
-0-e     Aliases and variables.
-1-  Starting Screen.
-                name, remember_name, weapon, species, background,
-                combo, random_pick, good_random, restart_after_game,
-                restart_after_save, default_manual_training,
-                autopickup_starting_ammo
-2-  File System and Sound.
-                crawl_dir, morgue_dir, save_dir, macro_dir, sound
-3-  Interface.
-3-a     Dropping and Picking up.
-                autopickup, autopickup_exceptions, default_autopickup,
-                pickup_thrown, assign_item_slot,
-                pickup_menu_limit, drop_filter
-3-b     Passive Sightings (detected and remembered entities).
-                detected_monster_colour, detected_item_colour,
-                remembered_monster_colour
-3-c     Branding (Item and Monster Highlighting).
-                friend_brand, neutral_brand, stab_brand, may_stab_brand,
-                heap_brand, feature_item_brand, trap_item_brand
-3-d     Level Map Functions.
-                level_map_cursor_step, show_waypoints
-3-e     Viewport Display Options.
-                view_max_width, view_max_height, view_lock_x,
-                view_lock_y, view_lock, center_on_scroll,
-                symmetric_scroll, scroll_margin_x, scroll_margin_y,
-                scroll_margin
-3-f     Travel and Exploration.
-                travel_delay, explore_delay, rest_delay, travel_avoid_terrain,
-                explore_greedy, explore_stop, explore_stop_pickup_ignore,
-                explore_wall_bias, explore_improved, auto_sacrifice,
-                travel_key_stop, tc_reachable, tc_dangerous, tc_disconnected,
-                tc_excluded, tc_exclude_circle,
-                runrest_ignore_message, runrest_stop_message,
-                runrest_safe_poison, runrest_ignore_monster,
-                rest_wait_both, auto_exclude
-3-g     Command Enhancements.
-                auto_switch, travel_open_doors, easy_unequip, equip_unequip,
-                jewellery_prompt, easy_confirm, allow_self_target,
-                confirm_butcher, easy_eat_chunks, easy_quit_item_prompts,
-                easy_exit_menu, sort_menus, spell_slot, autofight_stop,
-                autofight_throw, autofight_throw_nomove, autofight_fire_stop,
-                autofight_caught, automagic_enable, automagic_slot,
-                automagic_fight, automagic_stop, fail_severity_to_confirm,
-                easy_door
-3-h     Message and Display Improvements.
-                hp_warning, mp_warning, hp_colour, mp_colour, stat_colour,
-                status_caption_colour, enemy_hp_colour, clear_messages,
-                show_more, small_more, show_newturn_mark,
-                show_game_turns, item_stack_summary_minimum,
-                mlist_min_height, mlist_allow_alternate_layout,
-                mlist_targeting, msg_min_height, msg_max_height,
-                messages_at_top, skill_focus, msg_condense_repeats,
-                msg_condense_short, show_travel_trail, monster_list_colour,
-                view_delay, force_more_message, use_animations, cloud_status
-3-i     Colours (messages and menus)
-                menu_colour, message_colour
-3-j     Missiles.
-                fire_items_start, fire_order
-3-k     Message Channels.
-                plain, prompt, god, pray, duration, danger, food, warning,
-                recovery, talk, talk_visual, timed_portal, sound,
-                intrinsic_gain, mutation, monster_spell, monster_enchant,
-                monster_warning, friend_spell, friend_enchant, friend_action,
-                monster_damage, monster_target, banishment, rotten_meat,
-                equipment, floor, multiturn, examine, examine_filter,
-                diagnostic, error, tutorial, orb, hell_effect, dgl_message
-3-l     Inscriptions.
-                autoinscribe, show_god_gift
-3-m     Macro related Options.
-                flush.failure, flush.command, flush.message,
-                additional_macro_file, bindkey
-3-n     Tiles Options.
-                tile_show_items, tile_skip_title, tile_menu_icons,
-                tile_player_col, tile_monster_col, tile_neutral_col,
-                tile_peaceful_col, tile_friendly_col, tile_plant_col,
-                tile_item_col, tile_unseen_col, tile_floor_col, tile_wall_col,
-                tile_mapped_floor_col, tile_mapped_wall_col, tile_door_col,
-                tile_downstairs_col, tile_upstairs_col, tile_branchstairs_col,
-                tile_feature_col, tile_trap_col, tile_water_col, tile_lava_col,
-                tile_excluded_col, tile_excl_centre_col, tile_update_rate,
-                tile_runrest_rate, tile_key_repeat_delay, tile_tooltip_ms,
-                tile_tag_pref, tile_full_screen, tile_window_width,
-                tile_window_height, tile_map_pixels, tile_cell_pixels,
-                tile_force_overlay, tile_font_crt_file, tile_font_stat_file,
-                tile_font_msg_file, tile_font_tip_file, tile_font_lbl_file,
-                tile_font_crt_family, tile_font_stat_family,
-                tile_font_msg_family, tile_font_lbl_family, tile_font_crt_size,
-                tile_font_stat_size, tile_font_msg_size, tile_font_tip_size,
-                tile_font_lbl_size, tile_font_ft_light,
-                tile_show_minihealthbar, tile_show_minimagicbar,
-                tile_show_demon_tier, tile_water_anim, tile_misc_anim,
-                tile_realtime_anim, tile_show_player_species,
-                tile_layout_priority, tile_display_mode,
-                tile_level_map_hide_messages, tile_level_map_hide_sidebar,
-                tile_player_tile, tile_weapon_offsets, tile_shield_offsets
-4-  Character Dump.
-4-a     Saving.
-                dump_on_save
-4-b     Items and Kills.
-                kill_map, dump_kill_places, dump_kill_breakdowns,
-                dump_item_origins, dump_item_origin_price, dump_message_count,
-                dump_order, dump_book_spells
-4-c     Notes.
-                user_note_prefix, note_items, note_monsters,
-                note_hp_percent, note_skill_levels, note_all_skill_levels,
-                note_skill_max, note_xom_effects, note_messages,
-                note_chat_messages, note_dgl_messages
-5-  Miscellaneous.
-5-a     All OS.
-                mouse_input, wiz_mode, explore_mode, char_set, colour,
-                display_char, feature, mon_glyph, item_glyph,
-                use_fake_player_cursor, show_player_species, fake_lang, pizza
+0-一般論。 0-a標準および追加のオプションファイル。 0-bコマンドラインのオプショ
+ン。 0-cオプションとその設定方法。 0-dリストオプション。 0-eエイリアスと変数。
+1-開始画面。名前、remember_name、武器、種族、職業、コンボ、random_pick、
+good_random、restart_after_game、restart_after_save、default_manual_training、
+autopickup_starting_ammo 2-ファイルシステムとサウンド。 crawl_dir、morgue_dir、
+save_dir、macro_dir、サウンド3-インターフェイス。 3-a落とすことと拾うこと。自
+動ピックアップ、autopickup_exceptions、default_autopickup、pickup_thrown、
+assign_item_slot、pickup_menu_limit、drop_filter 3-b受動的目撃情報(検出および
+記憶されたエンティティ)。 detected_monster_colour、detected_item_colour、
+remembered_monster_colour 3-cブランド化(アイテムとモンスターの強調表示)。
+friend_brand、neutral_brand、stab_brand、may_stab_brand、heap_brand、
+feature_item_brand、trap_item_brand 3次元レベルマップ関数。
+level_map_cursor_step、show_waypoints 3-eビューポート表示オプション。
+view_max_width、view_max_height、view_lock_x、view_lock_y、view_lock、
+center_on_scroll、symmetric_scroll、scroll_margin_x、scroll_margin_y、
+scroll_margin 3-fトラベルおよび探検。 travel_delay、explore_delay、rest_delay、
+travel_avoid_terrain、explore_greedy、explore_stop、explore_stop_pickup_ignore、
+explore_wall_bias、explore_improved、auto_sacrifice、 travel_key_stop、
+tc_reachable、tc_dangerous、tc_disconnected、tc_excluded、tc_exclude_circle、
+runrest_ignore_message、runrest_stop_message、runrest_safe_poison、
+runrest_ignore_monster、 rest_wait_both、auto_exclude 3-gコマンドの機能強化。
+auto_switch、travel_open_doors、easy_unequip、equip_unequip、jewellery_prompt、
+easy_confirm、allow_self_target、confirm_butcher、easy_eat_chunks、
+easy_quit_item_prompts、 easy_exit_menu、sort_menus、spell_slot、
+autofight_stop、autofight_throw、autofight_throw_nomove、autofight_fire_stop、
+autofight_caught、automagic_enable、automagic_slot、 automagic_fight、
+automagic_stop、fail_severity_to_confirm、easy_door 3時間のメッセージと表示の
+改善。 hp_warning、mp_warning、hp_colour、mp_colour、stat_colour、
+status_caption_colour、enemy_hp_colour、clear_messages、show_more、small_more、
+show_newturn_mark、show_game_turns、item_stack_summary_minimum、
+mlist_min_height、mlist_allow_alternate_layout、mlist_targeting、
+msg_min_height、msg_max_height、messages_at_top、skill_focus、
+msg_condense_repeats、msg_condense_short、show_travel_trail、
+monster_list_colour、view_delay、force_more_message、use_animations、
+cloud_status 3-iカラー (メッセージおよびメニュー) menu_colour、message_colour
+3-jミサイル。 fire_items_start、fire_order 3-kメッセージチャネル。プレーン、プ
+ロンプト、神、祈る、期間、危険、食べ物、警告、回復、トーク、talk_visual、
+timed_portal、サウンド、intrinsic_gain、変異、monster_spell、monster_enchant、
+monster_warning、friend_spell、 friend_enchant、friend_action、monster_damage、
+monster_target、追放、rotten_meat、装備、フロア、マルチターン、調べる、
+examine_filter、診断、エラー、チュートリアル、オーブ、hell_effect、dgl_message
+3-l碑文。 autoinscribe、show_god_gift 3-mマクロ関連のオプション。 lush.failure、
+flush.command、flush.message、additional_macro_file、bindkey 3-nタイルオプショ
+ン。 tile_show_items、tile_skip_title、tile_menu_icons、tile_player_col、
+tile_monster_col、tile_neutral_col、tile_peaceful_col、tile_friendly_col、
+tile_plant_col、tile_item_col、 tile_unseen_col、tile_floor_col、tile_wall_col、
+tile_mapped_floor_col、tile_mapped_wall_col、tile_door_col、
+tile_downstairs_col、tile_upstairs_col、tile_branchstairs_col、
+tile_feature_col、 tile_trap_col、tile_water_col、tile_lava_col、
+tile_excluded_col、tile_excl_centre_col、tile_update_rate、tile_runrest_rate、
+tile_key_repeat_delay、tile_tooltip_ms、tile_tag_pref、 tile_full_screen、
+tile_window_width、tile_window_height、tile_map_pixels、tile_cell_pixels、
+tile_force_overlay、tile_font_crt_file、tile_font_stat_file、
+tile_font_msg_file、tile_font_tip_file、 tile_font_lbl_file、
+tile_font_crt_family、tile_font_stat_family、tile_font_msg_family、
+tile_font_lbl_family、tile_font_crt_size、tile_font_stat_size、
+tile_font_msg_size、tile_font_tip_size、tile_font_lbl_size、
+tile_font_ft_light、tile_show_minihealthbar、tile_show_minimagicbar、
+tile_show_demon_tier、tile_water_anim、tile_misc_anim、tile_realtime_anim、
+tile_show_player_species、tile_layout_priority、tile_display_mode、
+tile_level_map_hide_messages、 tile_level_map_hide_sidebar、tile_player_tile、
+tile_weapon_offsets、tile_shield_offsets 4-文字ダンプ。 4-a保存。 dump_on_save
+4-bアイテムとキル。 kill_map、dump_kill_places、dump_kill_breakdowns、
+dump_item_origins、dump_item_origin_price、dump_message_count、dump_order、
+dump_book_spells 4-c注意事項。 user_note_prefix、note_items、note_monsters、
+note_hp_percent、note_skill_levels、note_all_skill_levels、note_skill_max、
+note_xom_effects、note_messages、note_chat_messages、 note_dgl_messages 5-その
+他。 5-aすべてのOS。 mouse_input、wiz_mode、explore_mode、char_set、色、
+display_char、機能、mon_glyph、item_glyph、use_fake_player_cursor、
+show_player_species、fake_lang、ピザ
 
-5-b     DOS and Windows.
-                dos_use_background_intensity
-5-c     Unix.
-                background_colour, use_fake_cursor
+5-b DOSとWindows。 dos_use_background_intensity 5-c Unix。 background_colour、
+use_fake_cursor
 
-6-  Lua.
-6-a     Including lua files.
-6-b     Executing inline lua.
-6-c     Conditional options.
-6-d     Conditional option caveats.
+6-ルア。 6-a luaファイルを含みます。 6-bインラインluaを実行します。 6-c条件付
+きオプション。 6-d条件付きオプションに関する注意事項。
 
 ------------------------------------------------------------------------
 
-0-  Generalities on options.
+0-オプションに関する一般事項。
 ============================
 
-0-a     Standard and additional option files.
+0-a標準および追加のオプションファイル。
 ---------------------------------------------
 
-Crawl uses the first file of the following list as its option file:
-* settings/init.txt
-* init.txt (in the Crawl directory)
-* .crawlrc (in the Unix home directory)
+Crawlは、次のリストの最初のファイルをオプションファイルとして使用します。 *
+settings/init.txt * init.txt (Crawlディレクトリ内) * .crawlrc (Unixホームディ
+レクトリ内)
 
-Alternatively, you can use the command line option
-    -rc <file>
-which tells Crawl to use precisely that file.
+あるいは、コマンドラインオプション-rc <file>を使用して、そのファイルを正確に使
+用するようにCrawlに指示することもできます。
 
-On the starting screen, Crawl tells you which init file it uses, if any.
+開始画面で、Crawlは、使用する初期化ファイルがある場合はそれを示します。
 
-It is possible to include additional files within the options file via
+オプションファイル内に追加のファイルを含めることができます。
     include = <file>
-Note that these are treated as if their content was entered verbatim
-in the options file. By default, Crawl searches for all these included
-files in the settings/ directory but you can specify a special folder
-using the command line option
-    -rcdir <dir>
+これらは、その内容がオプションファイルにそのまま入力されたかのように扱われるこ
+とに注意してください。デフォルトでは、Crawlは、これらすべての含まれるファイル
+をsettings/ディレクトリ内で検索しますが、コマンドラインオプション-rcdir <dir>
+を使用して特別なフォルダーを指定できます。
 
-External option files have several uses: They allow quick customisation
-of Crawl's general appearance (colouring/suppression of messages, and
-the inventory style). More elaborate option magic (usually containing
-lua) can also be conveniently hidden this way. Finally, there are some
-additional option files in the settings/ directory; these allow setting
-some options and monster glyphs to their defaults from older versions.
-See the header of the default init.txt for more details.
+外部オプションファイルにはいくつかの用途があります。 Crawlの一般的な外観(メッ
+セージの色付け/抑制、およびインベントリスタイル)を迅速にカスタマイズできます。
+より複雑なオプションマジック(通常はluaが含まれる)も、この方法で簡単に隠すこと
+ができます。最後に、settings/ディレクトリには追加のオプションファイルがいくつ
+かあります。これらにより、一部のオプションとモンスターグリフを古いバージョンの
+デフォルトに設定できます。詳細については、デフォルトのinit.txtのヘッダーを参照
+してください。
 
-0-b     Options on the command line.
+0-bコマンドラインのオプション。
 ------------------------------------
 
-A quick way to make small changes to the options, without having to
-switch to a different option file, is to use the command line options
--extra-opt-first or -extra-opt-last, which make it as if the given
-option was (respectively) at the top or bottom of the option file. For
-example,
+別のオプションファイルに切り替えることなく、オプションに小さな変更を加える簡単
+な方法は、コマンドラインオプション-extra-opt-firstまたは-extra-opt-lastを使用
+することです。これにより、指定されたオプションが(それぞれ)オプションファイルの
+先頭または末尾にあるかのようになります。例えば、
 
-    -extra-opt-last wiz_mode=yes
+    -extra-opt-last wiz_mode=はい
 
-will cause any new game to start in wizard mode. -extra-opt-first and
--extra-opt-last can be used multiple times on the same command line.
+新しいゲームはウィザードモードで開始されます。 -extra-opt-firstと
+-extra-opt-lastは、同じコマンドラインで複数回使用できます。
 
-0-c     Options and how to set them.
+0-cオプションとその設定方法。
 ------------------------------------
 
-There are three broad types of Crawl options: true/false values
-(booleans), arbitrary values, and lists of values. In this document,
-options are usually described with their default values (if there is a
-default); this should also explain which of the above-mentioned types
-it is. Each option should have some remarks on how it's typically used
-- but keep in mind that the options you want to use depend on your
-playing style and sometimes also on your operating system.
+Crawlオプションには、true/false値(ブール値)、任意の値、および値のリストという3
+つの大きなタイプがあります。このドキュメントでは、通常、オプションはデフォルト
+値(デフォルトがある場合)とともに説明されています。これは、それが上記のタイプの
+どれであるかを説明する必要もあります。各オプションには、通常の使用方法について
+の説明が必要です。ただし、使用するオプションはプレイスタイルによって異なり、場
+合によってはオペレーティングシステムによっても異なることに注意してください。
 
-There are two styles you can use to set options. The classic
-name=value syntax, one option per-line:
+オプションの設定に使用できるスタイルは2つあります。古典的なname=value構文、1行
+に1つのオプション:
     remember_name  = true
     explore_greedy = false
     confirm_butcher= never
 
-And the NetHack-style combined option line:
-    OPTION = remember_name, !explore_greedy, confirm_butcher:never
+NetHackスタイルの複合オプション行:
+  オプション= remember_name、!explore_greedy、confirm_butcher:なし
 
-The second style is useful to specify simple options in a few lines,
-but it cannot be used for options that take complex lists of values
-(such as the autopickup_exceptions option).
+2番目のスタイルは、単純なオプションを数行で指定する場合に便利ですが、複雑な値
+のリストを取るオプション(autopickup_exceptionsオプションなど)には使用できませ
+ん。
 
-Some options need a path as an argument; here you have to use a
-filesystem path suitable for your system. Other options accept regular
-expressions (regexes): here you can simply use ordinary strings, adapt
-the suggested regexes to your needs or search the internet for regex
-syntax.
+一部のオプションには引数としてパスが必要です。ここでは、システムに適したファイ
+ルシステムパスを使用する必要があります。他のオプションは正規表現(正規表現)を受
+け入れます。ここでは、単に通常の文字列を使用するか、提案された正規表現をニーズ
+に合わせて調整するか、インターネットで正規表現構文を検索することができます。
 
-Note that in the tutorial and hints modes, some of your options settings may
-get overwritten to facilitate the explanations. This concerns the following
-options, and their enforced setting for tutorial games are as follows:
+チュートリアルおよびヒントモードでは、説明をわかりやすくするためにオプション設
+定の一部が上書きされる場合があることに注意してください。これは次のオプションに
+関係しており、チュートリアルゲームに対する強制設定は次のとおりです。
    clear_messages      = true
    weapon              = hand axe, for Berserkers in hints mode
-and, for Tiles,
+そしてタイルについては、
    tile_tag_pref       = tutorial
 
-0-d     List options.
+0-dリストオプション。
 ---------------------
 
-A number of options can have a list of values. Most but not all of these
-options allow setting multiple values in a single line, separated by commas.
-It is possible to reset, add items to, or remove items from such an option.
-   Add values to the end of the list (append):
+多くのオプションには値のリストを含めることができます。これらのオプションのすべ
+てではありませんが、ほとんどでは、カンマで区切って1行に複数の値を設定できます。
+このようなオプションでは、リセット、項目の追加、または項目の削除が可能です。リ
+ストの最後に値を追加します(追加):
       drop_filter += useless, enchant
-   Add values to the beginning of the list (prepend):
+   リストの先頭に値を追加します(先頭に追加します)。
       drop_filter ^= forbidden
-   Remove values from the list (exact match only):
+   リストから値を削除します(完全一致のみ)。
       drop_filter -= enchant
-   Reset the list:
+   リストをリセットします。
       drop_filter = bad_item, dangerous_item
-   Empty the list:
-      drop_filter =
+   リストを空にします: drop_filter =
 
-The "listopt = value" syntax first clears the list, then adds values. In
-previous versions of Crawl it was a synonym for +=, and only bare
-"listopt =" cleared the list.
+「listopt = value」構文は、まずリストをクリアしてから、値を追加します。 Crawl
+の以前のバージョンでは、これは+=の同義語であり、リストをクリアするのは裸の"
+listopt ="だけでした。
 
-For many options, such as drop_filter, there is effectively no difference
-between appending and prepending. However, other options, such as
-message_colour, do care about the order of items; these will be noted as
-"Ordered list options" in their descriptions. In most cases, earlier items
-take precedence over later ones, so += defers to existing matches (including
-defaults) while ^= overrides them. So, for example, with the sequence of
-options:
+drop_filterなどの多くのオプションでは、追加と先頭に実質的な違いはありません。
+ただし、message_colourなどの他のオプションでは項目の順序が考慮されます。これら
+は、説明では「順序付きリストオプション」として示されます。ほとんどの場合、前の
+項目が後の項目よりも優先されるため、+=は既存の一致(デフォルトを含む)に従います
+が、^=はそれらをオーバーライドします。たとえば、一連のオプションでは次のように
+なります。
    message_colour  = cyan:hits
    message_colour ^= red:crimson
    message_colour += yellow:killer
-the message "The crimson imp hits you!" will be displayed in red, while "The
-killer bee hits you!" will be displayed in cyan.
+「真紅のインプがあなたを襲います！」というメッセージが赤色で表示され、「キラー
+ビーがあなたを攻撃します！」と表示されます。シアン色で表示されます。
 
-0-e     Aliases and variables.
+0-eエイリアスと変数。
 ------------------------------
 
-For long option names, you can define option aliases by doing:
-    alias := long_option_name
-For instance, you can use:
-    ae := autopickup_exceptions
-and thereafter use "ae" instead of "autopickup_exceptions":
+長いオプション名の場合は、次のようにしてオプションのエイリアスを定義できます:
+alias := long_option_nameたとえば、次のように使用できます: ae :=
+autopickup_exceptions以降は、「autopickup_exceptions」の代わりに「ae」を使用し
+ます。
     ae += >uselessness, >inaccuracy
 
-You can define shortcuts for option values (variables). For example,
-    $useless := darkgrey
-could be used in conjunction with
+オプション値（変数）のショートカットを定義できます。たとえば、 $useless :=
+darkgreyは以下と組み合わせて使用できます。
     menu_colour += $useless:random uselessness
 
-To prevent a variable from being changed you can make it a constant:
+変数が変更されないようにするには、変数を定数にします。
     constant = useless
 
-This is useful if you wish to prevent an included file from altering
-a variable.
+これは、インクルードされたファイルによって変数が変更されるのを防ぎたい場合に便
+利です。
 
-See dat/defaults/standard_colours.txt and dat/defaults/food_colouring.txt
-for usage of aliases and variables. Note that changing the variables defined
-in these files will only affect your own configuration file, as the default
-options will have already been loaded. If you want to change them, you will
-have to override the options themselves.
+エイリアスと変数の使用法については、dat/defaults/standard_colours.txtおよび
+dat/defaults/food_colouring.txtを参照してください。デフォルトのオプションはす
+でにロードされているため、これらのファイルで定義されている変数を変更すると、独
+自の構成ファイルにのみ影響することに注意してください。それらを変更したい場合は、
+オプション自体をオーバーライドする必要があります。
 
 
-1-  Starting Screen.
+1-開始画面。
 ====================
 
-The following options are a convenience to help you quickly start your
-game of Crawl.
+次のオプションは、Crawlのゲームをすぐに開始するのに便利です。
 
 name = Delilah
-        If set, that's the name all your Crawl characters will get.
+        設定されている場合、それがすべてのCrawlキャラクターに与えられる名前に
+        なります。
 
 remember_name = true
-        Crawl remembers the options (species, background etc.) you used
-        to create your last character. You may recycle them in the
-        starting screen for a new character. If this option is set to
-        true, Crawl will also remember the last name you used.
+        Crawlは、最後のキャラクターの作成に使用したオプション(種族、職業など)
+        を記憶します。新しいキャラクターの開始画面でそれらをリサイクルできます。
+        このオプションがtrueに設定されている場合、Crawlは使用した姓も記憶しま
+        す。
 
-        If you use this option and want to enter a name _after_
-        choosing your species and background, you must enter . at the
-        initial name prompt - hitting Enter at the name prompt will
-        simply reuse your old name if remember_name is set.
+        このオプションを使用し、種族および職業を選択した後で名前を入力する場合
+        は、を入力する必要があります。最初の名前プロンプトで- remember_nameが
+        設定されている場合は、名前プロンプトでEnterキーを押すだけで古い名前が
+        再利用されます。
 
 weapon += (short sword |...| unarmed | random | viable), <weapon>, ...
-        (List option)
-        Specifying the weapon option allows you to bypass the weapon
-        selection screen. Tridents, flails, cutlasses, long swords, and war
-        axes are restricted to fighters and gladiators only, quarterstaves
-        are restricted to gladiators, and unarmed is restricted to races
-        with claws. The standard weapon prompt will be shown if an illegal
-        choice for the selected background is specified. The "viable" option
-        makes a random choice from among the "good" weapons for the chosen
-        character. Specifying more than one option causes the game to
-        randomly select a weapon from the given list. The combo option
-        overrides (and is overriden by) this option.
+        （リストオプション）武器オプションを指定すると武器選択画面を省略できま
+        す。トライデント、フレイル、カトラス、ロングソード、ウォーアックスは戦
+        闘機と剣闘士のみに制限され、クォーターステーブは剣闘士に制限され、非武
+        装は爪を持つ種族に制限されます。選択した職業に不正な選択が指定された場
+        合、標準の武器プロンプトが表示されます。 「実行可能な」オプションでは、
+        選択したキャラクターにとって「良い」武器の中からランダムに選択されます。
+        複数のオプションを指定すると、ゲームは指定されたリストから武器をランダ
+        ムに選択します。コンボオプションはこのオプションをオーバーライドします
+        (また、このオプションによってオーバーライドされます)。
 
 species += (Human |...| Vampire | random | viable), <species>, ...
-        (List option)
-        The usual abbreviations (Hu, HE, etc.) work. "viable" will choose a
-        viable species for a given background if the background is chosen
-        first. Specifying multiple species causes one to be selected at
-        random from the given species. The combo option overrides (and is
-        overridden by) this option.
+        (リストオプション)通常の略語(Hu、HEなど)が機能します。 「viable」は、
+        職業が最初に選択された場合、特定の職業に対して実行可能な種族を選択しま
+        す。複数の種族を指定すると、指定された種族からランダムに1つが選択され
+        ます。コンボオプションはこのオプションをオーバーライドします(また、こ
+        のオプションによってオーバーライドされます)。
 
 background += (Fighter |...| Wanderer | random | viable), <background>, ...
-        (List option)
-        Here again the abbreviations (Fi, Wz, AK, etc.) can be used. The same
-        caveat applies to "viable": it is only really meaningful if the
-        species option is also set. Specifying multiple backgrounds causes
-        one to be selected at random from the given species. The combo option
-        overrides (and is overridden by) this option.
+        (リストオプション)ここでも略語(Fi、Wz、AKなど)を使用できます。同じ注意
+        が「実行可能」にも当てはまります。実際に意味があるのは、種族オプション
+        も設定されている場合のみです。複数の職業を指定すると、指定された種族か
+        らランダムに1つが選択されます。コンボオプションはこのオプションをオー
+        バーライドします(また、このオプションによってオーバーライドされます)。
 
 combo += (HuFi . short sword | Human Monk | ...), <combo>, ...
-        (List option)
-        Specifies a complete set of species, background, and (where
-        applicable) weapon. If a combo requires a weapon choice and one isn't
-        specified, it is prompted for. Combos may be abbreviated or specified
-        in full. If multiple combos are specified, one is selected randomly
-        from the specified combos. The weapon, species, and background
-        options are overriden by (and override) this option.
+        (リストオプション)種族、職業、および(該当する場合)武器の完全なセットを
+        指定します。コンボに武器の選択が必要で、武器が指定されていない場合は、
+        武器の選択を求めるプロンプトが表示されます。コンボは省略することも、完
+        全に指定することもできます。複数のコンボが指定された場合、指定されたコ
+        ンボの中からランダムに1つが選択されます。武器、種族、および職業オプシ
+        ョンは、このオプションによってオーバーライドされます(オーバーライドさ
+        れます)。
 
 random_pick = false
-        The random_pick option will randomly generate a character.
-        The above options (weapons and species/background options) will
-        override where appropriate.
+        random_pickオプションはランダムにキャラクターを生成します。上記のオプ
+        ション(武器および種族/職業オプション)は、必要に応じてオーバーライドさ
+        れます。
 
 good_random = true
-        Whenever random_pick is used, species or background are set
-        random, or a remembered random choice is executed in the character
-        selection, the game will only pick good (viable) combinations.
+        random_pickが使用される場合、種族または職業がランダムに設定される場合、
+        またはキャラクター選択で記憶されたランダムな選択が実行される場合、ゲー
+        ムは適切な(実行可能な)組み合わせのみを選択します。
 
 restart_after_game = true/false
-        When a game ends, Crawl will return to the main menu if
-        restart_after_game is set. This option is enabled by default
-        for tiles builds and disabled by default for other builds.
+        restart_after_gameが設定されている場合、ゲームが終了すると、Crawlはメ
+        インメニューに戻ります。このオプションは、タイルビルドではデフォルトで
+        有効になり、他のビルドではデフォルトで無効になります。
 
 restart_after_save = false
-        When the game is saved, return to the main menu. This option
-        has no effect unless restart_after_game is also enabled.
+        ゲームが保存されたら、メインメニューに戻ります。 restart_after_gameも
+        有効にしない限り、このオプションは効果がありません。
 
 default_manual_training = false
-        When set to true, new characters will start with skill training
-        set to manual mode instead of automatic mode.
+        trueに設定すると、新しいキャラクターは自動モードではなく手動モードに設
+        定されたスキルトレーニングから開始されます。
 
 autopickup_starting_ammo = true
-        When set, at game start, autopickup is forced on (as per the \
-        menu) for the player's starting ammunition type (including stones
-        for Earth Elementalists and arrows for Transmuters). Even when this
-        option is set, autopickup of those items can be disabled from the
-        \ menu once the game has begun.
+        設定すると、ゲーム開始時に、プレイヤーの開始弾薬タイプ(アースエレメン
+        タリストの石やトランスミューターの矢を含む)の自動ピックアップが(\メニ
+        ューに従って)強制的にオンになります。このオプションが設定されている場
+        合でも、ゲームが開始されると、\メニューからこれらのアイテムの自動取得
+        を無効にすることができます。
 
-2-  File System.
+2-ファイルシステム。
 ================
 
 crawl_dir = <path>
-        The path used for the relative paths when looking for other
-        files. Defaults to the directory that contains the Crawl
-        executable.
+        他のファイルを検索するときに相対パスとして使用されるパス。デフォルトは、
+        Crawl実行可能ファイルを含むディレクトリです。
 
 morgue_dir = morgue
-        Directory where morgue dumps files (morgue*.txt and
-        morgue*.lst) as well as character dumps files are written.
+        遺体安置所ダンプファイル(morgue*.txtおよびmorgue*.lst)および文字ダンプ
+        ファイルが書き込まれるディレクトリ。
 
 save_dir = saves
-        Directory where saves and bones are stored. This option may be
-        ignored depending on the settings used to compile Crawl, but
-        should be honoured for the official Crawl binaries.
+        セーブとボーンが保存されるディレクトリ。このオプションは、Crawlのコン
+        パイルに使用される設定によっては無視される場合がありますが、公式の
+        Crawlバイナリでは考慮される必要があります。
 
 macro_dir = settings/
-        Directory for reading macro.txt.
-        For tile games, wininit.txt will also be stored here.
-        It should end with the path delimiter.
+        macro.txtを読み取るためのディレクトリ。タイルゲームの場合、wininit.txt
+        もここに格納されます。パス区切り文字で終わる必要があります。
 
 sound ^= <regex>:<path to sound file>, <regex>:<path>, ...
-        (Ordered list option)
-        Plays the sound file if a message contains regex. The regex
-        should not include commas or colons. For example
-             sound += LOW HITPOINT WARNING:sound\sounds2\danger3.wav
+        (順序付きリストオプション)メッセージに正規表現が含まれている場合、サウ
+        ンドファイルを再生します。正規表現にはコンマやコロンを含めないでくださ
+        い。例: sound +=低ヒットポイント警告:sound\sounds2\danger3.wav
 
-3-  Interface.
+3-インターフェース。
 ==============
 
-3-a     Picking up and Dropping.
+3-a拾い上げと落とし。
 --------------------------------
 
 autopickup = $?!+"/%
-        The above is the default list. The valid symbols are
-        )       Weapons
-        (       Missiles
-        [       Armour
-        /       Wands
-        %       Food
-        ?       Scrolls
-        " or =  Jewellery
-        !       Potions
-        + or :  Books
-        |       Staves
-        \       Rods
-        0       Orbs
-        }       Misc. items
-        X       Corpses
-        $       Gold
-        Note that _whether_ items are picked up automatically or not, is
-        controlled by the in-game toggle Ctrl-A. Also note that picking
-        up takes a turn, but only one turn (regardless of the number of
-        items). If you teleport or blink onto a square with interesting
-        items, these will not be picked up.
+        上記はデフォルトのリストです。有効なシンボルは次のとおりです。)武器(ミ
+        サイル[鎧/杖%食べ物?スクロール" or =ジュエリー !ポーション+ or :本|杖\
+        ロッド0オーブ}その他のアイテムX死体$ゴールドアイテムが自動的に拾われる
+        かどうかは、ゲーム内のトグルCtrl-Aによって制御されることに注意してくだ
+        さい。また、拾い上げるには1ターンかかりますが、(アイテムの数に関係なく
+        ) 1ターンだけであることに注意してください。アイテム）。興味深いアイテ
+        ムのある広場にテレポートまたは点滅しても、それらは拾われません。
 
 autopickup_exceptions ^= <pickup-regex, >don't-pickup-regex, ...
-        (Ordered list option)
-        A set of regexes that force matching items to be picked up (if
-        prefixed with <), or never picked up (if prefixed with >).
-        Excludes (>) take precedence over includes (<), so if the same
-        item is matched by both an exclude and an include, it will not
-        be subject to autopickup.
+        (順序付きリストオプション)一致する項目を強制的に選択するか(先頭に<が付
+        いている場合)、または決して選択されない(>が付いている場合)を指定する正
+        規表現のセット。除外(>)は包含(<)よりも優先されるため、同じアイテムが除
+        外と包含の両方に一致する場合、自動ピックアップの対象にはなりません。
 
-        An example:
+        例:
              autopickup_exceptions += <curare-tipped needle
-        Forces autopickup to grab all curare-tipped needles, even if
-        missiles are not set in the "autopickup" option.
+        ミサイルが「自動ピックアップ」オプションに設定されていない場合でも、自
+        動ピックアップですべてのクラーレ先端の針を強制的に捕捉します。
 
-        Whitespace between <> and the match expression is significant,
-        so the following won't work:
+        <>と一致式の間の空白は重要であるため、以下は機能しません。
              autopickup_exceptions += <   ebony casket
 
-        autopickup_exceptions replace the older ban_pickup. Using
+        autopickup_exceptionsは古いban_pickupを置き換えます。使用する
              autopickup_exceptions += >uselessness, >inaccuracy
-        is the same as using
+        を使用するのと同じです
              ban_pickup += uselessness, inaccuracy
 
-        If the regexes are not prefixed with < or >, > is implied, so
-        the option setting above can also be written as
+        正規表現の先頭に<または>が付いていなければ、 >が暗黙的に指定されるため、
+        上記のオプション設定は次のように記述することもできます。
              autopickup_exceptions += uselessness, inaccuracy
 
-        You can use multiple autopickup_exceptions lines. Some examples:
+        複数のautopickup_exceptions回線を使用できます。いくつかの例:
              autopickup_exceptions += inaccuracy, scrolls? of paper
              autopickup_exceptions += immolation, curse (armour|weapon)
              autopickup_exceptions += uselessness, noise, torment
 
-        Unless you clear the list of exceptions, you won't need to set
-        autopickup exceptions for potions except maybe for very special
-        cases.
+        例外のリストをクリアしない限り、非常に特殊な場合を除いて、ポーションの
+        自動ピックアップ例外を設定する必要はありません。
 
 default_autopickup = true
-        When set to false, the game starts with autopickup turned off.
-        You can still toggle autopickup in-game with Ctrl-A.
+        falseに設定すると、自動ピックアップがオフになった状態でゲームが開始さ
+        れます。ゲーム内でCtrl-Aを使用して自動ピックアップを切り替えることもで
+        きます。
 
 pickup_thrown = true
-        pickup_thrown = true causes autopickup to pick up thrown/fired
-        missiles, which can make life much easier for hunter types. Be
-        aware that autopickup uses a turn, though it won't trigger if
-        there are hostile monsters in sight.
+        pickup_thrown = trueにすると、投げられた/発射されたミサイルを自動ピッ
+        クアップで拾うことができるため、ハンタータイプにとっては非常に楽になり
+        ます。自動ピックアップにはターンが必要ですが、敵対的なモンスターが視界
+        にある場合はトリガーされないことに注意してください。
 
 assign_item_slot = (forward | backward)
-        When picking up items, the inventory slot into which the item
-        goes is normally the first free slot from a-zA-Z (this is the
-        default "forward" behaviour). Setting assign_item_slot to
-        "backward" changes the slot assignment to the first letter after
-        the last slot.
-        For instance, if you have items on 'a' and 'c', then with
-          assign_item_slot = forward, the next item will go into 'b',
-          assign_item_slot = backward, the next item will go to 'd'
-        instead.
-        With "backward", items dropped/fired and picked up later are
-        more likely to get their old slot back.
+        アイテムを拾うとき、アイテムが入る在庫スロットは通常、a-zA-Zの最初の空
+        きスロットです(これがデフォルトの「転送」動作です)。 assign_item_slot
+        を「後方」に設定すると、スロットの割り当てが最後のスロットの後の最初の
+        文字に変更されます。たとえば、'a'と'c'にアイテムがある場合、
+        assign_item_slot =前方にすると、次のアイテムは'b'に移動し、
+        assign_item_slot =後方に移動し、次のアイテムは代わりに'd'に移動します。
+        「後方」では、ドロップ/発射され、後で拾われたアイテムは、古いスロット
+        を取り戻す可能性が高くなります。
 
 pickup_menu_limit = 1
-        If there are more items than this on your square, a menu will be
-        displayed when picking up multiple items instead of prompting for each
-        item. If zero, never use the menu. If negative, use the value of
-        item_stack_summary_minimum - 1, instead.
+        正方形にこれより多くのアイテムがある場合、複数のアイテムを選択すると、
+        アイテムごとにプロンプトが表示されるのではなく、メニューが表示されます。
+        ゼロの場合は、メニューを決して使用しないでください。負の場合は、代わり
+        にitem_stack_summary_minimum - 1の値を使用します。
 
-        Note that no matter the vaulue of the option, picking up will always
-        take one turn.
+        オプションの価値に関係なく、ピックアップには常に1ターンかかることに注
+        意してください。
 
 drop_filter += <regex>, <regex>, ...
-        (List option)
-        When selecting items using the global (de)select keys (',' or
-        '-') in a multidrop menu, you can choose to select only items
-        that match a search regex using this option.
+        (リストオプション)マルチドロップメニューでグローバル(解除)選択キー (',
+        'または'-')を使用して項目を選択する場合、このオプションを使用して検索
+        正規表現に一致する項目のみを選択することを選択できます。
 
-        For instance, to quickly select items forbidden by your god, you could
-        use:
+        たとえば、神によって禁止されているアイテムをすばやく選択するには、次の
+        ように使用できます。
              drop_filter += forbidden
-        Other choices can come in handy as well, e.g. if you want to
-        regularly sacrifice all weapons except axes, use:
+        他の選択肢も同様に便利です。軸を除くすべての武器を定期的に犠牲にしたい
+        場合は、次を使用します。
              drop_filter += axe, broadaxe
 
-        drop_filter will match against the same keywords menu_colour uses,
-        except that it lacks identification status and chunk information. It
-        defaults to useless_item.
+        drop_filterは、識別ステータスとチャンク情報が欠如していることを除いて、
+        menu_colourが使用するのと同じキーワードと一致します。デフォルトは
+        useless_itemです。
 
-        When a drop_filter is set, using the select/deselect keys will
-        set/clear selection of items that match the filter
-        expression(s).
+        drop_filterが設定されている場合、選択/選択解除キーを使用すると、フィル
+        ター式に一致する項目の選択が設定/解除されます。
 
-3-b     Passive Sightings (detected or remembered entities).
+3-b受動的目撃（検出または記憶された実体）。
 ------------------------------------------------------------
 
 detected_monster_colour = lightred
-        Detected monsters will be given this colour.
+        検出されたモンスターにはこの色が与えられます。
 
 detected_item_colour = green
-        Detected items will be given this colour.
+        検出されたアイテムにはこの色が付けられます。
 
 remembered_monster_colour = darkgrey
-        The colour for monsters you have seen before.
+        見たことのあるモンスターのカラー。
 
-3-c     Branding (Item and monster highlighting).
+3-cブランド化(アイテムとモンスターの強調表示)。
 -------------------------------------------------
 
-Branding refers to displaying particular monsters (e.g. summons) or
-items in a special way; special as in reversing fore- and background.
-There are several branding choices (these will not work everywhere; it
-depends on OS and terminal):
-   standout         -- often the same as reverse, might be underline or
-                       dim
-   bold             -- used by colour curses for brightening foreground
-                       colours
-   blink            -- used by colour curses for brightening background
-                       colours
-   reverse          -- this will probably work
-   dim              -- probably no effect
-   underline        -- this will probably work
-   highlight:colour -- set background colour of branded monsters to
-                       "colour"
-The last can be abbreviated to hi:colour.
-See part DOS and Windows (5-b) for dos_use_background_intensity.
+ブランド化とは、特定のモンスター (召喚獣など)またはアイテムを特別な方法で表示
+することを指します。フォアと職業をリバースする場合のように特別です。ブランドの
+選択肢はいくつかあります(これらはどこでも機能するわけではありません。OSと端末
+によって異なります):スタンドアウト--多くの場合リバースと同じで、下線または薄暗
+い太字になる可能性があります--前景色を明るくするためにカラー呪いによって使用さ
+れますブリンク--職業の色を明るくするためにカラー呪いによって使用されます逆--こ
+れはおそらく機能します薄暗い--おそらく効果はありません下線--これはおそらく機能
+しますハイライト:カラー --ブランドの職業の色を設定しますモンスターから「colour」
+へ最後の部分はhi:colourと省略できます。 dos_use_background_intensityについては、
+「DOSとWindows (5-b)」を参照してください。
 
-By default, only two of the item brands are active (and set to reverse):
-   heap_brand, feature_item_brand
-They can be deactivated by setting them to "none".
+デフォルトでは、アイテムブランドのうち2つだけがアクティブになります(そして逆に
+設定されます): heap_brand、feature_item_brand。これらは、「なし」に設定するこ
+とで非アクティブにできます。
 
 friend_brand = hi:green
-        Brand friends in some way. This is very helpful for summoners. The
-        default setting shows friends with a green background. If the friend is
-        itself green, it'll show up as black on green.
+        友達に何らかの形でブランドを付けましょう。これは召喚者にとって非常に役
+        立ちます。デフォルト設定では、友達には緑色の職業が表示されます。友達自
+        体が緑の場合は、緑の上に黒として表示されます。
 
 neutral_brand = hi:lightgrey
-        Brand neutral monsters in some way. Useful both to get out of
-        a neutral monster's path, and to avoid accidentally killing it.
-        The default setting shows neutrals with a dark grey background. Since
-        there are no darkgrey monster glyphs anymore, this works fine.
+        ある意味、ブランド中立のモンスター。中立のモンスターのパスから抜け出す
+        場合と、誤って殺してしまうことを避ける場合の両方に役立ちます。デフォル
+        ト設定では、ダークグレーの職業でニュートラルが表示されます。ダークグレ
+        ーのモンスターグリフはもうないので、これは正常に機能します。
 
 stab_brand = hi:blue
-        Some deities object to you stabbing monsters. Certain backgrounds
-        specialise in stabbing monsters. Still other characters are
-        happy if they spot a monster before the monster spots them. In
-        all these cases, it helps to identify monsters that are unaware
-        of the character (and hence susceptible to being stabbed) without
-        using the 'x' command. All the normal 'brand' options apply.
+        あなたがモンスターを刺すことに反対する神々もいます。特定の職業はモンス
+        ターを刺すことに特化しています。さらに他のキャラクターは、モンスターが
+        発見する前にモンスターを発見すると満足します。これらすべてのケースにお
+        いて、'x'コマンドを使用せずに、キャラクターを認識していない(したがって
+        刺されやすい)モンスターを識別するのに役立ちます。通常の'brand'オプショ
+        ンがすべて適用されます。
 
 may_stab_brand = hi:yellow
-        Stabbing may be possible even if the monster is not asleep (if
-        it's confused or distracted, for instance). This option brands
-        monsters that you *might* be able to stab.
+        モンスターがスリープ状態でなくても(混乱している、または気が散っている
+        場合など)刺す可能性があります。このオプションでは、刺すことができる*か
+        もしれない*モンスターというブランドを付けます。
 
 heap_brand = reverse
-        Brand heaps of items (more than one item or stack).
+        ブランドのアイテムの山(複数のアイテムまたはスタック)。
 
 feature_item_brand = reverse
-        Brands features (stairs, shops, altars) that would otherwise be
-        hidden by items. If you use this brand, the items on the square
-        are hidden by the feature symbol and the feature symbol is
-        branded.
+        アイテムに隠れてしまうブランドの特徴（階段、店舗、祭壇）。このブランド
+        を使用すると、四角形のアイテムがフィーチャーシンボルで隠され、フィーチ
+        ャーシンボルがブランド化されます。
 
 trap_item_brand = reverse
-        Brands traps that would otherwise be hidden by items. If you
-        use this brand, the items on the square are hidden by the trap
-        symbol (^) and the trap symbol is branded.
+        アイテムに隠れてしまうブランドの罠。このブランドを使用すると、四角形の
+        アイテムがトラップシンボル(^)で隠され、トラップシンボルがブランド化さ
+        れます。
 
-3-d     Level Map Functions.
+3-Dレベルマップ関数。
 ----------------------------
 
 level_map_cursor_step = 7
-        How many squares the cursor moves on the level map when using
-        Shift-direction.
+        Shift-direction使用時にレベルマップ上でカーソルが移動するマス数。
 
 show_waypoints = true
-        Whether to display a number on the level map to indicate
-        waypoints (placed with the Ctrl-W command).
+        レベルマップ上にウェイポイントを示す数字を表示するかどうか(Ctrl-Wコマ
+        ンドで配置)。
 
-3-e     Viewport Display Options.
+3-eビューポート表示オプション。
 ---------------------------------
 
-The viewport is the portion of the map that is displayed during normal
-play. The viewport is 33x17 by default, but if you use larger terminal
-sizes, you can set these options to make the game show a larger
-viewport. (These options are not fully available on DOS.)
+ビューポートは、通常のプレイ中に表示されるマップの部分です。デフォルトではビュ
+ーポートは33x17ですが、より大きな端末サイズを使用する場合は、これらのオプショ
+ンを設定してゲームに大きなビューポートを表示することができます。 (これらのオプ
+ションはDOSでは完全には利用できません。)
 
-None of these options affects gameplay. In particular, your character's
-line-of-sight is unaffected by these options.
+これらのオプションはいずれもゲームプレイに影響しません。特に、キャラクターの視
+線はこれらのオプションの影響を受けません。
 
 view_max_width = 33 (max 81)
-        Sets the maximum width of the viewport (defaults to 33).
-        Making this larger will allow Crawl to show a wider viewport
-        on larger terminals. This is ignored in tiles, the viewport will
-        always use all the available space.
+        ビューポートの最大幅を設定します(デフォルトは33)。これを大きくすると、
+        Crawlはより大きな端末でより広いビューポートを表示できるようになります。
+        これはタイルでは無視され、ビューポートは常に利用可能なすべてのスペース
+        を使用します。
 
 view_max_height = 21 (max 71)
-        Similar to view_max_width, but sets the viewport's maximum height.
-        In tiles, this value is used to set when space starts to be affected
-        to the message area instead of the viewport. When the message area
-        reaches msg_max_height, the remaining space goes to the viewport.
-        If for performance reason you need a smaller viewport, either reduce
-        the window size, or increase the message area.
+        view_max_widthと似ていますが、ビューポートの最大高さを設定します。タイ
+        ルでは、この値は、スペースがビューポートではなくメッセージ領域に影響を
+        与え始めるタイミングを設定するために使用されます。メッセージ領域が
+        msg_max_heightに達すると、残りの領域がビューポートに移動します。パフォ
+        ーマンス上の理由から、より小さいビューポートが必要な場合は、ウィンドウ
+        サイズを小さくするか、メッセージ領域を大きくしてください。
 
-* Note that using large viewports can slow the game down.
+* 大きなビューポートを使用すると、ゲームの速度が低下する可能性があることに注意
+  してください。
 
 view_lock_x = true
-        Keeps the player character centered horizontally in the
-        viewport, continuously scrolling the viewport to match the
-        PC's movements. If this is not set, the player character can
-        move horizontally within the viewport, and the viewport will
-        scroll only when the character's line-of-sight reaches the
-        left or right edge.
+        プレイヤーキャラクターをビューポート内で水平方向の中央に配置し、PCの動
+        きに合わせてビューポートを継続的にスクロールします。これが設定されてい
+        ない場合、プレイヤーキャラクターはビューポート内で水平に移動でき、キャ
+        ラクターの視線が左端または右端に達した場合にのみビューポートがスクロー
+        ルします。
 
 view_lock_y = true
-        Keeps the character centered vertically in the viewport.
+        キャラクターをビューポート内で垂直方向の中央に配置します。
 
 view_lock = true
-        Aliased option that sets both view_lock_x and view_lock_y.
+        view_lock_xとview_lock_yの両方を設定するエイリアス化オプション。
 
 center_on_scroll = false
-        If this is set, the viewport centers on the player character
-        whenever it scrolls (this option is irrelevant if view_lock_x
-        and view_lock_y are set).
+        これが設定されている場合、ビューポートはスクロールするたびにプレイヤー
+        キャラクターを中心に配置されます(view_lock_xおよびview_lock_yが設定さ
+        れている場合、このオプションは無関係です)。
 
 symmetric_scroll = true
-        If this is set, the viewport will scroll in a manner consistent
-        with the character movement that caused the scroll.
+        これを設定すると、スクロールの原因となったキャラクターの動きと一致する
+        方法でビューポートがスクロールします。
 
-        To illustrate, let's say the PC is at the lower edge of the
-        viewport, but is near the horizontal center. Now the PC moves
-        diagonally down and right, forcing the viewport to scroll up
-        one line. If symmetric_scroll is set, the viewport will also
-        scroll left one column to match the PC's diagonal movement. If
-        symmetric_scroll is not set, the viewport will only scroll up,
-        not horizontally. symmetric_scroll can be less disorienting
-        than free scrolling.
+        説明のために、PCがビューポートの下端にあり、水平方向の中心近くにあると
+        します。ここで、PCが斜め下と右に移動し、ビューポートが強制的に1行上に
+        スクロールします。 symmetric_scrollが設定されている場合、ビューポート
+        もPCの斜めの動きに合わせて1列左にスクロールします。 symmetric_scrollが
+        設定されていない場合、ビューポートは水平方向ではなく上方向にのみスクロ
+        ールします。 symmetric_scrollは、フリースクロールよりも方向感覚を失う
+        可能性が低くなります。
 
-        This option is not relevant if view_lock or center_on_scroll
-        are set.
+        view_lockまたはcenter_on_scrollが設定されている場合、このオプションは
+        関係ありません。
 
 scroll_margin_x = 2
-        How far from the left or right edges scrolling starts. By
-        default, if the PC's circle of line-of-sight is closer than
-        two squares from the edge, the viewport scrolls. If set at
-        zero, the viewport scrolls only when the LOS circle reaches
-        the viewport edge.
+        スクロールを開始する左端または右端からの距離。デフォルトでは、PCの視線
+        範囲が端から2マス以内にある場合、ビューポートはスクロールします。ゼロ
+        に設定すると、LOS円がビューポートの端に達した場合にのみビューポートが
+        スクロールします。
 
 scroll_margin_y = 2
-        How far from the top or bottom edges scrolling starts.
+        上端または下端からスクロールを開始する距離。
 
 scroll_margin = 2
-        An aliased option that sets both scroll_margin_x and
-        scroll_margin_y.
+        scroll_margin_xとscroll_margin_yの両方を設定するエイリアスオプション。
 
 always_show_exclusions = true
-        If true, display travel exclusions and their exclusion radius in
-        the viewport. Exclusions are always visible on the level map
-        (access with X) regardless of the value of this option.
-        Exclusions are also visible in terrain-only mode (access with |).
-        This option has no effect in tiles builds, where exclusions are
-        always shown both in the viewport and on the level map.
+        trueの場合、旅行の除外とその除外範囲がビューポートに表示されます。この
+        オプションの値に関係なく、除外は常にレベルマップ上に表示されます(Xでア
+        クセス)。除外は地形のみモードでも表示されます(|でアクセス)。このオプシ
+        ョンは、除外が常にビューポートとレベルマップの両方に表示されるタイルの
+        ビルドでは効果がありません。
 
-3-f     Travel and Exploration.
+3-f旅行と探検。
 -------------------------------
 
-travel_delay = 20 (defaults to -1 for online servers)
-        How long travel waits after each move (milliseconds), and also
-        how long auto-explore waits after each move unless explore_delay
-        is set. Depends on platform. Setting to -1 will jump to end of
-        travel - you will not see the individual moves.
+travel_delay = 20 (オンラインサーバーではデフォルト-1)
+        explore_delayが設定されていない場合、各移動後に移動が待機する時間(ミリ
+        秒)、および各移動後に自動探索が待機する時間。プラットフォームに応じて
+        異なります。 -1に設定すると、移動の終わりにジャンプします。個々の移動
+        は表示されません。
 
 explore_delay = -1
-        How long auto-explore waits after each move (milliseconds). Depends on
-        platform. In particular, setting travel_delay = -1 and
-        explore_delay = 20 means you will see the individual moves of
-        autoexplore, but not the individual moves of other forms of travel.
-        Setting to -1 means the auto-explore delay will be the same as
-        travel_delay.
+        各移動後に自動探索が待機する時間(ミリ秒)。プラットフォームに応じて異な
+        ります。特に、travel_delay = -1およびexplore_delay = 20に設定すると、
+        自動探索の個々の移動は表示されますが、他の形式の移動の個々の移動は表示
+        されません。 -1に設定すると、自動探索遅延がtravel_delayと同じになるこ
+        とを意味します。
 
-rest_delay = 0 (defaults to -1 for online servers)
-        How long resting waits after each move (milliseconds). Depends on
-        platform. Setting rest_delay = -1 will prevent the display updating
-        during resting.
+rest_delay = 0 (オンラインサーバーではデフォルト-1)
+        各移動後に休憩が待機する時間(ミリ秒)。プラットフォームに応じて異なりま
+        す。 rest_delay = -1に設定すると、休止中に表示が更新されなくなります。
 
 travel_avoid_terrain = (shallow water | deep water)
-        Prevent travel from routing through shallow water. By default,
-        this option is disabled. For merfolk and/or characters with
-        permanent flight,
-             travel_avoid_terrain = shallow water, deep water
-        will prevent travel or explore from going through any water.
-        This option is not a true list option; in particular, it is not
-        possible to reset the option or to remove terrain types.
+        浅瀬を通って航行することを防ぎます。デフォルトでは、このオプションは無
+        効になっています。永久飛行を持つマーフォークおよび/またはキャラクター
+        の場合、travel_avoid_terrain =浅瀬、深海では、水域を通過した旅行や探索
+        ができなくなります。このオプションは真のリストオプションではありません。
+        特に、オプションをリセットしたり、地形タイプを削除したりすることはでき
+        ません。
 
 explore_greedy = true
-        Greedy explore travels to items that are eligible for
-        autopickup in addition to exploring the level, but is
-        otherwise identical to regular explore. Explore greed is
-        disabled if autopickup is off (Ctrl-A).
+        貪欲な探索は、レベルの探索に加えて自動ピックアップの対象となるアイテム
+        を移動しますが、それ以外の点は通常の探索と同じです。自動ピックアップが
+        オフになっている場合(Ctrl-A)、探索欲は無効になります。
 
 explore_stop  = items,stairs,shops,altars,portals,branches,runed_doors
 explore_stop += greedy_pickup_smart,greedy_visited_item_stack
 explore_stop += greedy_sacrificeable
-        (List option)
-        Explore will stop for one of these conditions. Whatever you
-        set this option to, anything that stops travel will also stop
-        explore.
+        (リストオプション)これらの条件のいずれかでExploreが停止します。このオ
+        プションをどのように設定しても、移動を停止するものは探索も停止します。
 
-        The "branches" condition stops for branch entrances but not for
-        other kinds of stairs or portals.
+        「分岐」条件は分岐の入り口では停止しますが、他の種類の階段やポータルで
+        は停止しません。
 
-        NOTE: runrest_ignore_message has no effect on explore_stop.
+        注: runrest_ignore_messageはexplore_stopには影響しません。
 
-        When using non-greedy explore, items causes explore to stop
-        when any new item comes into view. When using greedy explore,
-        the conditions act as follows:
+        非貪欲探索を使用する場合、アイテムによって新しいアイテムが表示されると
+        探索が停止します。貪欲探索を使用する場合、条件は次のように機能します。
 
-        items: stop when items that aren't eligible for autopickup come
-            into view.
+        items:自動ピックアップの対象外のアイテムが表示されると停止します。
 
-        greedy_items: stop when items that are eligible for autopickup
-            come into view.
+        greedy_items:自動ピックアップの対象となるアイテムが表示されると停止し
+        ます。
 
-        greedy_pickup: stop after you automatically pick up any item
-            eligible for autopickup, excluding gold, but including
-            items thrown/fired by the player. You can make certain items
-            *not* trigger this with the option explore_stop_pickup_ignore
+        greedy_pickup:ゴールドを除く、プレイヤーが投げた/発射したアイテムを含
+        む、自動ピックアップの対象となるアイテムを自動的に拾った後に停止します。
+        オプションexplore_stop_pickup_ignoreを使用して、特定のアイテムがこれを
+        トリガーしないようにすることができます。
 
-        greedy_pickup_gold: stop when automatically picking up gold during
-            greedy explore.
+        greedy_pickup_gold:貪欲な探索中に自動的にゴールドを拾うと停止します。
 
-        greedy_pickup_smart: Similar to greedy_pickup, but tries to be
-            smart about it, meaning only stopping for items which aren't
-            similar to any you already have in your inventory. It
-            doesn't stop for automatically picking up items which were
-            thrown/fired by the player; you can add "greedy_pickup_thrown"
-            if you want to stop for those.
+        greedy_pickup_smart: greedy_pickupに似ていますが、賢く利用しようとして
+        います。つまり、在庫に既にあるアイテムと類似していないアイテムの場合に
+        のみ停止します。プレイヤーが投げたり発射したアイテムを自動的に拾うため
+        に停止するわけではありません。これらを停止したい場合は、「
+        greedy_pickup_thrown」を追加できます。
 
-        greedy_pickup_thrown: Stops after you pick up any item you've
-            thrown/fired. greedy_pickup automatically does this, but
-            greedy_pickup_smart does not. explore_stop_pickup_ignore
-            does not affect this condition.
+        greedy_pickup_thrown:投げたり発射したアイテムを拾うと停止します。
+        greedy_pickupはこれを自動的に行いますが、greedy_pickup_smartは行いませ
+        ん。 explore_stop_pickup_ignoreはこの状態には影響しません。
 
-        greedy_visited_item_stack: Stop when visiting a stack of items
-            previously unknown to the player, even if the stack contains
-            nothing eligible for autopickup.
+        greedy_visited_item_stack:プレイヤーがこれまで知らなかったアイテムのス
+        タックを訪問すると、スタックに自動ピックアップの対象となるものが何も含
+        まれていない場合でも停止します。
 
-        greedy_sacrificeable: Visit and stop at stacks containing items which
-            can be sacrificed to your god.
+        greedy_sacrificeable:あなたの神に捧げることができるアイテムを含むスタ
+        ックを訪れ、立ち寄ってください。
 
-        glowing_items: like items, but only for items which are
-            glowing/runed/embroidered/etc.
+        glowing_items:アイテムに似ていますが、光る/ルーン/刺繍/などのアイテム
+        のみが対象です。
 
-        artefacts: like items, but only for artefacts.
+        アーティファクト:同様のアイテムですが、アーティファクト専用です。
 
-        runes: like items, but only for runes.
+        ルーン:アイテムと同様ですが、ルーン専用です。
 
 explore_stop_pickup_ignore += <regex>, <regex>, ...
-        (List option)
-        If explore_stop has greedy_pickup or greedy_pickup_smart set,
-        then picking up any items matching any of the regexes in the list
-        will *not* stop auto-explore.
+        (リストオプション) explore_stopにgreedy_pickupまたは
+        greedy_pickup_smartが設定されている場合、リスト内の正規表現のいずれか
+        に一致するアイテムを選択しても自動探索は停止しません。
 
-        This option has no effect on items which were thrown by the player.
+        このオプションは、プレイヤーが投げたアイテムには影響しません。
 
 explore_wall_bias = 0
-        Adjusts how much autoexplore favours attempting to discover room
-        perimeters and corners. At higher values, autoexplore will more
-        heavily favour visiting squares that are next to walls; at 0 it
-        will not favour them at all.
+        自動探索が部屋の周囲や隅の発見をどの程度優先するかを調整します。値を高
+        くすると、自動探索は壁に隣接する正方形を訪問することをより優先します。
+        0では、まったく有利になりません。
 
 explore_improved = false
-        If set to true explore will attempt to reduce zig-zagging during
-        auto-explore. On average it increases the number of turns taken
-        by about 0.9%, sometimes actually speeding it up slightly and
-        sometimes increasing the turns taken by up to 5%, with
-        pathological cases causing a 13% increase.
+        trueに設定すると、exploreは自動探索中のジグザグを軽減しようとします。
+        平均すると、ターン数が約0.9%増加し、場合によっては実際にわずかに速度が
+        向上し、ターン数が最大5%増加する場合もあり、病的なケースでは13%増加し
+        ます。
 
 auto_sacrifice = false
-       If set to true, eligible items will be automatically sacrificed during
-       auto-explore.
-       When set to "before_explore", if you are standing on items which can be
-       sacrificed when you start auto-explore, they will be automatically
-       sacrificed.
-       When set to "prompt", you will have a confirmation prompt before the
-       items are sacrificed.
-       When set to "prompt_ignore", items will not be automatically sacrificed,
-       but you will be reminded and asked whether to ignore them if you attempt
-       to continue exploring without sacrificing.
+        trueに設定すると、対象となるアイテムは自動探索中に自動的に犠牲になりま
+        す。 「before_explore」に設定すると、自動探索開始時に生贄にできるアイ
+        テムの上に立っている場合、自動的に生贄にされます。 「プロンプト」に設
+        定すると、アイテムが犠牲になる前に確認のプロンプトが表示されます。 「
+        prompt_ignore」に設定すると、アイテムは自動的に犠牲になりませんが、犠
+        牲にせずに探索を続行しようとすると、アイテムを無視するかどうかを尋ねる
+        メッセージが表示されます。
 
-       This option has no effect when explore_stop doesn't include
-       greedy_sacrificeable.
+       explore_stopにgreedy_sacrificeableが含まれていない場合、このオプション
+       は効果がありません。
 
 travel_key_stop = true
-        If set to true then travel will stop at any keypress.
+        trueに設定すると、キーを押すと移動が停止します。
 
 tc_reachable      = blue
 tc_dangerous      = cyan
 tc_disconnected   = darkgrey
 tc_excluded       = lightmagenta
 tc_exclude_circle = red
-        The above five settle the colouring of the level map ('X').
-        They are
-          reachable: all squares safely reachable (without leaving the
-                     level)
-          dangerous: squares which are only connected to you via traps,
-                     etc.
-          disconnected: squares which cannot be reached without leaving
-                        the level
-          excluded: the colour for the centre of travel exclusions ('e')
-          excluded_circle: the colour for travel exclusions apart from
-                           centre
+        以上の5つでレベルマップ('X')のカラーリングが決まります。到達可能:安全
+        に到達できるすべてのマス(レベルを離れることなく)危険:トラップなどでの
+        み接続されているマス切断されている:レベルから出ないと到達できないマス
+        除外:移動除外の中心の色('e') excluded_circle:中心から離れた移動除外の
+        色
 
 runrest_ignore_message += <regex>, <regex>, ...
 runrest_stop_message += <regex>, <regex>, ...
-        (List option)
-        Use these to force messages to interrupt travel and resting, or
-        not. These are matched against full message text. To limit a
-        substring match to a message channel, prefix the substring with
-        the channel name and a colon (see section 3-l below on Message
-        Channels). For instance, if you want travel to stop when you're
-        hit by divine retribution, you could use:
+        (リストオプション)これらを使用して、メッセージが移動や休憩を強制的に中
+        断するかどうかを決定します。これらはメッセージテキスト全体と照合されま
+        す。部分文字列の一致をメッセージチャネルに制限するには、部分文字列の前
+        にチャネル名とコロンを付けます(メッセージチャネルに関する下記のセクシ
+        ョン3-lを参照)。たとえば、天罰に見舞われたときに旅行を中止したい場合は、
+        次のように使用できます。
              runrest_stop_message += god:wrath finds you
-        Or to remind yourself to renew expiring spells:
+        または、有効期限が切れる呪文を更新するように自分に通知するには、次のよ
+        うにします。
              runrest_stop_message += Your transformation is almost over
              runrest_stop_message += You are starting to lose your buoyancy
-        Or you can explicitly ignore some messages:
+        または、一部のメッセージを明示的に無視することもできます。
              runrest_ignore_message += pleased with you,exalted
 
-        Note that monster talk and dungeon noises already do not
-        interrupt running or resting, by default.
+        デフォルトでは、モンスターの会話やダンジョンのノイズはすでに走行や休憩
+        を妨げないことに注意してください。
 
-        Multiple lines can be used. The earliest match among both
-        ignore and stop messages overrides later lines. The file
-        runrest_messages.txt contains a number of default settings.
+        複数の回線を使用することもできます。無視メッセージと停止メッセージの両
+        方で最も早く一致したものが、後の行をオーバーライドします。ファイル
+        runrest_messages.txtには、多数のデフォルト設定が含まれています。
 
-        Resetting either option has the effect of resetting both.
+        いずれかのオプションをリセットすると、両方のオプションがリセットされま
+        す。
 
-        Note also that runrest_ignore_message has no effect on what
-        explore_stop stops for.
+        runrest_ignore_messageは、explore_stopの停止内容には影響を与えないこと
+        にも注意してください。
 
-interrupt_<delay> += <activity_interrupt_type>, <activity_interrupt_type>, ...
-        (List option)
-        Use this option to not interrupt a delayed action on a certain trigger.
-        The list of delay types is in delay.cc in the delay_names string array,
-        and the list of interruption types is in activity_interrupt_names.
-        For example, use
+中断_<遅延> += <activity_interrupt_type>, <activity_interrupt_type>, ... (リス
+トオプション)特定のトリガーでの遅延アクションを中断しないようにするには、この
+オプションを使用します。遅延タイプのリストはdelay_names文字列配列のdelay.ccに
+あり、割り込みタイプのリストはactivity_interrupt_namesにあります。たとえば、次
+のように使用します。
             interrupt_travel -= sense_monster
-        to not interrupt autotravel when a monster is sensed but not seen.
+        モンスターが感知されても認識されない場合に自動走行を中断しないようにし
+        ます。
 
 runrest_safe_poison = <% of hp>:<% of mhp>
-        Poison damage will be ignored if it is projected to drop your hp
-        by less than x% of your current hp and less than y% of your max
-        hp if you have defined runrest_safe_poison = x:y. Running here
-        means shift-running and resting only. Only one runrest_safe_poison
-        line is considered. Note that for this to work, Crawl needs to
-        know to ignore the "You feel sick" messages as well as the
-        damage. For example,
-             runrest_ignore_message ^= You feel.*sick
-             runrest_safe_poison = 80:100
-        are the defaults.
+        毒ダメージは、runrest_safe_poison = x:yを定義した場合、hpが現在のhpのx
+        %未満、最大hpのy%未満減少すると予測される場合には無視されます。ここで
+        のランニングとは、シフトランニングと休憩のみを意味します。
+        runrest_safe_poison行は1つだけ考慮されます。これが機能するには、Crawl
+        がダメージだけでなく「気分が悪い」というメッセージも無視する必要がある
+        ことに注意してください。たとえば、runrest_ignore_message ^= You Feel.*
+        sick runrest_safe_poison = 80:100がデフォルトです。
 
 runrest_ignore_monster ^= <regex>:<distance>, <regex>:<distance>, ...
-        (Ordered list option)
-        Any monster matching the regular expression will only interrupt your
-        activity if the distance between you and the monster is less than the
-        specified number. E.g. with
-             runrest_ignore_monster ^= fish:3
-        big fish and giant goldfish will be considered safe for travel, explore
-        and resting as long as the distance is at least 3. If a monster matches
-        multiple expressions, its distance is compared with the first match.
+        (順序付きリストオプション)正規表現に一致するモンスターは、ユーザーとモ
+        ンスターの間の距離が指定された数値未満の場合にのみアクティビティを中断
+        します。例えば。 with runrest_ignore_monster ^= Fish:3つの大きな魚と巨
+        大な金魚は、距離が少なくとも3である限り、旅行、探索、休憩には安全とみ
+        なされます。モンスターが複数の式に一致する場合、その距離は最初に一致し
+        たものと比較されます。
 
 rest_wait_both = false
-        If rest_wait_both is set to true then resting will only stop
-        when both HP and MP are fully restored, not when either one of
-        them is restored.
+        rest_wait_bothがtrueに設定されている場合、休憩はHPとMPのどちらかが回復
+        した場合ではなく、両方が完全に回復した場合にのみ停止します。
 
 auto_exclude += <monster name>, <monster name>, ...
-        (List option)
-        Whenever you encounter a sleeping or stationary monster during
-        exploration that is included in this list, a travel exclusion is
-        automatically set centered on this monster, meaning autoexplore won't
-        ever bring you into its line of sight. If the monster dies or wakes up
-        while you are in sight, this exclusion is automatically removed again.
+        (リストオプション)このリストに含まれる探索中に、睡眠中または静止してい
+        るモンスターに遭遇すると、このモンスターを中心に移動除外が自動的に設定
+        されます。つまり、自動探索によってその視界に入ることはありません。モン
+        スターが死亡するか、視界に入っている間に起動した場合、この除外は再び自
+        動的に削除されます。
 
-3-g     Command Enhancements.
+3-gコマンドの機能強化。
 -----------------------------
 
 auto_switch = false
-        If you've got a melee weapon in slot a and a ranged weapon in
-        slot b (or the opposite), this option will allow you to
-        automatically switch to the appropriate weapon when firing or
-        attacking in melee.
+        スロットaに近接武器、スロットb (またはその逆)に遠隔武器がある場合、こ
+        のオプションを使用すると、近接で発砲または攻撃するときに適切な武器に自
+        動的に切り替えることができます。
 
 travel_open_doors = true
-        If this is set to false, autoexplore/travel will not open doors,
-        instead stopping in front of them.
+        これがfalseに設定されている場合、autoexplore/travelはドアを開けず、代
+        わりにドアの前で停止します。
 
 easy_unequip = true
-        Allows auto removal of armour and jewellery when dropping it.
+        防具や宝飾品をドロップしたときに自動的に削除できるようになります。
 
 equip_unequip = false
-        If this is true, 'W'ear will also allow you to 'T'ake off worn
-        armour, and vice versa, and the same is true for 'P'utting on/
-        'R'emoving jewellery.
+        これが本当であれば、'W'earを使用すると、摩耗した鎧を'T'脱ぐこともでき
+        ます。また、その逆も可能です。また、同じことが'P'utting on/ 'R'emoving
+        jewelryにも当てはまります。
 
 jewellery_prompt = false
-        If this is true, equipping rings will always prompt for the slot to
-        use, instead of automatically equipping the ring if there is an
-        available empty slot. Unequipping jewellery will also always prompt for
-        an item to remove, instead of skipping the prompt if only one item
-        of jewellery is equipped.
+        これがtrueの場合、リングを装備すると、利用可能な空のスロットがある場合
+        にリングを自動的に装備するのではなく、常に使用するスロットを要求するプ
+        ロンプトが表示されます。ジュエリーを装備解除すると、ジュエリーアイテム
+        が1つだけ装備されている場合はプロンプトがスキップされるのではなく、常
+        に削除するアイテムを求めるプロンプトが表示されます。
 
 show_uncursed = true
-        Whether items that are known to be uncursed will contain "uncursed"
-        as part of their displayed name.
+        呪われていないことがわかっているアイテムの表示名の一部に「呪われていな
+        い」が含まれるかどうか。
 
 easy_confirm = (none | safe | all)
-        Make confirmation questions easier to answer:
-           none = force capitals on Y/N questions
-           safe = force only on dangerous questions (default)
-            all = never force capitals
-        WARNING TO KEYPAD USERS: The number 7 is mapped to the letter
-        'y', which can result in accidentally answering yes to
-        questions.
+        確認の質問に答えやすくします: none = Y/Nの質問に大文字を強制する安全=
+        危険な質問にのみ強制します(デフォルト) all =大文字を強制しませんキーパ
+        ッドユーザーへの警告:数字の7は文字'y'にマッピングされているため、質問
+        に対して誤って「はい」と答える可能性があります。
 
 allow_self_target = (yes | no | prompt)
-        Allow targeting yourself with risky magic (e.g., the spell
-        Bolt of Fire or a wand of slowing.)
-        When set to 'yes', you are a valid target. When set to 'no',
-        you cannot target yourself with such spells. When set to
-        'prompt' (the default), you will be required to confirm
-        self-targeting. This option has no effect on area-effect
-        spells, such as Mephitic Cloud, where you are always a valid target.
+        危険な魔法(呪文ボルトオブファイアやスローダウンの杖など)で自分自身をタ
+        ーゲットにすることを許可します。 'yes'に設定すると、あなたは有効なター
+        ゲットになります。 'no'に設定すると、そのような呪文で自分自身をターゲ
+        ットにすることはできません。 'prompt' (デフォルト)に設定すると、セルフ
+        ターゲティングを確認する必要があります。このオプションは、メフィティッ
+        ククラウドなど、常に有効なターゲットとなるエリア効果呪文には影響しませ
+        ん。
 
 confirm_butcher = (always | never | auto)
-        If auto (default) you will be prompted for which corpses to butcher if
-        there are multiple corpses on the square, and not prompted otherwise.
-        If never, you will automatically butcher the first available corpse,
-        even if there are multiple corpses on the square. If always, you will
-        be prompted before butchering any number of corpses.
+        自動(デフォルト)の場合、広場に複数の死体がある場合はどの死体を解体する
+        かを尋ねられますが、それ以外の場合は尋ねられません。そうでない場合は、
+        広場に複数の死体がある場合でも、最初に利用可能な死体が自動的に解体され
+        ます。常に、任意の数の死体を解体する前にプロンプトが表示されます。
 
 easy_eat_chunks = false
-        If this is set to true then when using the (e)at command, the
-        game will automatically determine the oldest chunk that is safe
-        to eat, and eat it without prompting.
-        You will always be prompted to eat harmful chunks.
+        これをtrueに設定すると、(e)atコマンドを使用するときに、ゲームは食べて
+        も安全な最も古いチャンクを自動的に判断し、プロンプトを表示せずにそれを
+        食べます。有害な塊を食べるように常に促されます。
 
 auto_eat_chunks = false
-        Setting this option to true will allow you to automatically eat a chunk
-        if you get hungry while you are travelling, auto-exploring or resting.
+        このオプションをtrueに設定すると、旅行中、自動探索中、または休憩中にお
+        腹が空いた場合に、自動的に塊を食べることができます。
 
 easy_quit_item_prompts = true
-        Setting this option to true allows the quitting of item listing
-        with Space (as well as Escape, which always works). These lists
-        are essentially all of those that are requesting an inventory
-        item and accept '?' and '*'. The identify list will never easy
-        quit.
+        このオプションをtrueに設定すると、スペース(および常に機能するエスケー
+        プ)を使用して項目リストを終了できるようになります。これらのリストは基
+        本的に、在庫アイテムを要求し、'?'および'*'を受け入れるリストのすべてで
+        す。識別リストは決して簡単に終了することはできません。
 
 easy_exit_menu = false
-        In multidrop (and pickup) menus, paging past the end will drop
-        out of the menu if easy_exit_menu is true.
+        マルチドロップ(およびピックアップ)メニューでは、easy_exit_menuがtrueの
+        場合、末尾を超えたページングはメニューからドロップアウトされます。
 
 sort_menus = [menu:](true | false | auto:X)[:sort_order]
-        Controls if and how items are sorted in inventory and pickup
-        menus.
+        インベントリおよびピックアップメニューでアイテムを並べ替えるかどうか、
+        および並べ替える方法を制御します。
 
-        When sort_menus = false (the default), items are not sorted, and
-        will be ordered by inventory letter (or in the order they're
-        stacked for items on the floor).
+        sort_menus = false (デフォルト)の場合、アイテムは並べ替えられず、在庫
+        レターごとに(または床にアイテムが積み上げられている順序で)並べられます。
 
-        When sort_menus = true, items are sorted according to the specified
-        sort_order, with the default being:
-             equipped, basename, qualname, curse, qty
+        sort_menus = trueの場合、アイテムは指定されたsort_orderに従って並べ替
+        えられます。デフォルトは、quired、basename、qualname、curse、qtyです。
 
-        If sort_menus = auto:X, items are sorted if there are at least
-        X items in the same category. For instance:
+        sort_menus = auto:Xの場合、同じカテゴリに少なくともX個のアイテムがあれ
+        ば、アイテムは並べ替えられます。例えば：
              sort_menus = auto:5
-        will sort item classes that have at least 5 items. For instance,
-        having 4 kinds of potions would not sort them, but having 5
-        would.
+        少なくとも5つのアイテムを持つアイテムクラスを並べ替えます。たとえば、
+        ポーションが4種類ある場合はソートされませんが、5種類ある場合はソートさ
+        れます。
 
-        You can explicitly specify sort criteria in the sort_menus
-        option as:
+        sort_menusオプションでソート基準を次のように明示的に指定できます。
              sort_menus = true : art, basename, qualname, curse, qty
 
-        Two items will be compared based on the first sort criteria
-        where they differ. So with the sort_menus line given above,
-        if only one of two different items is a known artefact, it will be
-        listed first, else (if both or neither are artefacts) if their
-        basenames are different they will be alphabetically compared using
-        their basenames; if the basenames are the same but the qualified
-        names are different it will compare their qualified names, and so
-        on.
+        2つの項目が異なる場合、最初の並べ替え基準に基づいて比較されます。した
+        がって、上記のsort_menus行では、2つの異なる項目のうち1つだけが既知のア
+        ーティファクトである場合、それが最初にリストされます。そうでない場合(
+        両方またはどちらもアーティファクトでない場合)、ベース名が異なる場合は、
+        ベース名を使用してアルファベット順に比較されます。基本名が同じでも修飾
+        名が異なる場合は、それらの修飾名が比較されます。
 
-        The available sort criteria are:
+        利用可能な並べ替え基準は次のとおりです。
 
-        * basename:
-          This is the name of the item type. The basename for all of
-          "a +0 robe", "an embroidered robe" and "the cursed +2 robe of
-          Ponies" is just "robe". The basename for both of "a brass
-          ring" and "a ring of fire resistance" are "ring".
+        * Basename:これは項目タイプの名前です。 「+0ローブ」、
+          「刺繍入りローブ」、
+          「ポニーの呪われた+2ローブ」の基本名はすべて「ローブ」です。 「真鍮
+          の指輪」も「耐火の指輪」も基本名は「指輪」です。
 
-        * qualname:
-          The name of the item without articles (a/an/the), quantities,
-          enchantments, or curse-status. The qualified names for the
-          robes described above are "robe", "embroidered robe" and "robe
-          of Ponies", respectively. The qualified names for the rings
-          described above are "brass ring" and "ring of fire
-          resistance", respectively.
+        * qualname:冠詞(a/an/the)、数量、エンチャント、または呪いのステータス
+          を含まないアイテムの名前。上記のローブの修飾名は、それぞれ「ローブ」、
+          「刺繍ローブ」、「ポニーのローブ」です。上記リングの修飾名はそれぞれ
+          「真鍮リング」、「耐火リング」です。
 
-        * fullname:
-          This is the name of the item as displayed in menus (including
-          (quantities, curse-status, etc.)
+        * fullname:これはメニューに表示されるアイテムの名前です(数量、呪いのス
+          テータスなどを含む)
 
-        * dbname:
-          Sorts based on an item's unqiue internal name which is linked
-          to its description. Items with the same description will be
-          grouped together.
+        * dbname:説明にリンクされているアイテムの一意の内部名に基づいて並べ替
+          えます。同じ説明の項目はグループ化されます。
 
-        * curse:
-          Curse-status of the item (if known). Uncursed items show up
-          first.
+        * Curse:アイテムの呪いステータス(既知の場合)。呪われていないアイテムが
+          最初に表示されます。
 
-        * equipped:
-          Equipped items show up first.
+        * 装備：装備しているアイテムが最初に表示されます。
 
-        * art:
-          Identified artefacts show up first.
+        * art:特定されたアーティファクトが最初に表示されます。
 
-        * ego:
-          Identified ego items show up first.
+        * ego:識別されたエゴアイテムが最初に表示されます。
 
-        * glowing:
-          Unidentified glowing/shiny/runed/etc items show up first.
+        * 光る:未確認の光る/光沢のある/ルーンなどのアイテムが最初に表示されま
+          す。
 
-        * identified:
-          Identified items show up before unidentified ones of the
-          same type. An item is regarded as identified once you know
-          its subtype or ego.
+        * 識別済み:識別された項目は、同じ種類の未識別の項目の前に表示されます。
+          アイテムのサブタイプまたはエゴがわかると、そのアイテムは識別されたと
+          みなされます。
 
-        * qty:
-          The quantity for stackable items (such as scrolls, potions,
-          etc.)
+        * qty:スタック可能なアイテム(巻物、ポーションなど)の数量
 
-        * slot:
-          The inventory letter for items in inventory; irrelevant for
-          items on the floor.
+        * スロット:インベントリ内のアイテムのインベントリレター。床上のアイテ
+          ムには関係ありません。
 
-        * charged:
-          Makes wands known or assumed to have some charges left appear
-          before wands known to be empty; irrelevant for all other item
-          types.
+        * チャージ済み:ワンドが空であることが判明する前に、ワンドにチャージが
+          残っていることを知らせるか、またはそれを想定して表示されます。他のす
+          べてのアイテムタイプには関係ありません。
 
-        You can ask for a descending order sort by prefixing one or more
-        sort criteria with > as:
+        次のように1つ以上の並べ替え条件の前に>を付けることで、降順で並べ替える
+        ように要求できます。
              sort_menus = true : basename, >qty
 
-        You can also request sorting only for specific menus:
+        特定のメニューのみの並べ替えをリクエストすることもできます。
              sort_menus = pickup: true
         or
              sort_menus = inv: true
-        (Menu types must be specified as name:, with no space between
-        name and colon.)
+        (メニュータイプは、名前とコロンの間にスペースを入れずに、name:として指
+        定する必要があります。)
 
-        By default only pickup menus are sorted, and the sort criteria are:
-             "equipped, basename, qualname, curse, qty".
-        All other menus (drop, inv) will be sorted by inventory letter.
+        デフォルトではピックアップメニューのみがソートされ、ソート基準は「装備、
+        ベース名、修飾名、呪い、数量」です。他のすべてのメニュー (drop、inv)は、
+        インベントリレターによって並べ替えられます。
 
-        The menu selectors available are:
+        使用可能なメニューセレクターは次のとおりです。
 
-        pickup: All pickup menus, stash-search menus, etc. for items not
-                in your inventory.
-        drop:   The item drop menu.
-        inv:    Inventory listings for any command (but not for dropping
-                items).
-        any:    All menus; this is the default when unspecified.
+        ピックアップ:インベントリにないアイテムのすべてのピックアップメニュー、
+        スタッシュ検索メニューなど。 drop:アイテムドロップメニュー。 inv:任意
+        のコマンドのインベントリリスト(アイテムのドロップを除く)。任意:すべて
+        のメニュー。これが指定されていない場合のデフォルトです。
 
-        For example,
+        例えば、
              sort_menus = true : equipped, basename, qualname, curse, qty
-        will produce the same inventory and drop menus as by default,
-        with the exception that all worn/wielded items come first. This
-        can be convenient if you use the '.' command to select
-        subsequent items.
-        If you define sort_menus differently for two or more selectors,
-        the last one matching will always take precedence, i.e. "any"
-        as last setting would override any of the others.
+        すべての着用/使用アイテムが最初に来ることを除いて、デフォルトと同じイ
+        ンベントリとドロップメニューが生成されます。これは、'.'コマンドを使用
+        して後続の項目を選択する場合に便利です。 2つ以上のセレクターに対して
+        sort_menusを別々に定義した場合、最後に一致したものが常に優先されます。
+        つまり、最後の設定として「any」が他の設定をオーバーライドします。
 
 spell_slot ^= <regex>:<list of spell letters>
-        (Ordered list option, one value per line)
-        When you memorise any spell that matches the regex, it will
-        assign itself to the first available letter in the list. (If
-        all letters in the list are occupied for each regex the spell
-        matches, it will use the default ordering abc...xyzABC..XYZ.)
-        If a spell matches multiple expressions, only the first is
-        considered.
+        (順序付きリストオプション、1行に1つの値)正規表現に一致する呪文を記憶す
+        ると、リスト内の最初に使用可能な文字にそれ自体が割り当てられます。 (リ
+        スト内のすべての文字が、呪文が一致する正規表現ごとに占有されている場合、
+        デフォルトの順序abc...xyzABC..XYZが使用されます。)呪文が複数の式に一致
+        する場合、最初の式のみが考慮されます。
 
-        Examples:
-        * if you want Haste to be placed on H:
+        例: *ヘイストをHに配置したい場合:
             spell_slot ^= Haste:H
-        * if you want Deflect Missiles to be placed on r normally or R if
-          r is unavailable:
+        *通常は偏向ミサイルをrに配置するか、rが利用できない場合はRに配置したい
+        場合:
             spell_slot ^= Deflect:rR
-        * if you want to change the default spell slot assignment
-          to use capital letters: (place this after all other
-          spell_slot lines):
+        *デフォルトの呪文スロット割り当てを大文字を使用するように変更する場合:
+        (これを他のすべてのspell_slot行の後に配置します):
             spell_slot += .*:ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
 item_slot ^= <regex>:<inventory letter>
-        (Ordered list option, one value per line)
-        Uses the same interface as spell_slot.
-        Additionally, the item_slot option is applied on an item when it is
-        identified, so it can be moved to the right place even if it was
-        picked up unidentified.
-        Also, item_slot will cause items to be moved to their designated spot
-        even if there already is an item there, unlike spell_slot. However, if
-        that item matches the regex as well, it will try the next inventory
-        letter the player specified, and see if that slot is empty or has an
-        item that doesn't match the regex.
+        (順序付きリストオプション、1行に1つの値) spell_slotと同じインターフェ
+        イスを使用します。さらに、item_slotオプションはアイテムが識別されたと
+        きに適用されるため、識別されずに拾われた場合でも、適切な場所に移動でき
+        ます。また、item_slotでは、spell_slotとは異なり、そこにすでにアイテム
+        がある場合でも、アイテムが指定された場所に移動されます。ただし、そのア
+        イテムが正規表現にも一致する場合は、プレイヤーが指定した次のインベント
+        リ文字を試し、そのスロットが空かどうか、または正規表現と一致しないアイ
+        テムがあるかどうかを確認します。
 
 autofight_stop = 30
-        Autofight will not act if your HP is at or lower than this
-        percentage of your max HP. For example, to remove this stop
-        you would want:
-            autofight_stop = 0
+        HPが最大HPのこの割合以下の場合、オートファイトは機能しません。たとえば、
+        このストップを削除するには、次のようにします: autofight_stop = 0
 
 autofight_throw = false
-        If your quiver contains a throwable item, autofight will throw it
-        at enemies out of melee range. Without this option, only a wielded
-        launcher (a bow, crossbow, sling or blowgun) will be considered.
+        矢筒に投擲可能なアイテムが含まれている場合、オートファイトはそれを近接
+        射程外の敵に投げます。このオプションを使用しない場合、使用可能なランチ
+        ャー (弓、クロスボウ、スリング、または吹き矢)のみが考慮されます。
 
 autofight_throw_nomove = true
-        This works same as above, except only for ===hit_closest_nomove rather
-        than ===hit_closest; this is usually bound to shift-Tab.
+        これは、===hit_closestではなく===hit_closest_nomoveのみを除き、上記と
+        同じように機能します。これは通常、shift-Tabにバインドされます。
 
 autofight_fire_stop = false
-        When firing missiles or throwing objects using autofight, if this
-        option is true, shots will stop at the target (like "f.") rather than
-        continuing past. Note that this setting may be decidedly suboptimal
-        for missiles of penetration.
+        オートファイトを使用してミサイルを発射したりオブジェクトを投げたりする
+        場合、このオプションがtrueの場合、ショットは継続するのではなく、ターゲ
+        ット(「f.」など)で停止します。この設定は貫通ミサイルにとって明らかに最
+        適ではない可能性があることに注意してください。
 
 autofight_caught = false
-        If true, autofight will attempt to escape webs or nets that are
-        holding you, even if no enemies are in view.
+        trueの場合、自動戦闘は、敵が視界にいない場合でも、あなたを拘束している
+        クモの巣や網から逃れようとします。
 
 autofight_wait = false
-        If true, ===hit_closest_nomove while not in range of an enemy will
-        wait for a turn instead of aborting autofight.
+        trueの場合、===hit_closest_nomoveは敵の射程内にいない間、自動戦闘を中
+        止する代わりに1ターン待機します。
 
 automagic_enable = false
-        If true, the autofight function will resort to casting an assigned
-        spell at a target. Initial spell slot is a.
+        trueの場合、自動戦闘機能は、割り当てられた呪文をターゲットにキャストす
+        ることになります。初期の呪文スロットはaです。
 
 automagic_slot = a
-        Setting this changes the initial spell slot for automagic. Can be
-        changed for games in progress in-game by setting a macro to call
-        ===am_set_spell.
+        これを設定すると、automagicの初期呪文スロットが変更されます。 ===
+        am_set_spellを呼び出すマクロを設定することで、ゲーム内で進行中のゲーム
+        に対して変更できます。
 
 automagic_fight = false
-        Setting this to true causes melee combat when trying to cast a spell
-        that you either do not have enough magic points for, or are below
-        the set threshold. If false, a message will appear and no further
-        action is taken.
+        これをtrueに設定すると、十分なMPがないか、設定されたしきい値を下回って
+        いる呪文をキャストしようとすると、近接戦闘が発生します。 falseの場合、
+        メッセージが表示され、それ以上のアクションは実行されません。
 
 automagic_stop = 0
-        Similar to autofight_stop, if magic points are below this number
-        (percentage of total), casting is prevented. What happens depends
-        on automagic_fight setting.
+        autofight_stopと同様に、MPがこの数値(合計に対する割合)を下回っている場
+        合、キャストは禁止されます。何が起こるかは、automagic_fightの設定によ
+        って異なります。
 
 fail_severity_to_confirm = 3
-        Ask for confirmation when attempting to cast a spell where a miscast
-        would cause severe penalties. Prompt if the miscast severity of the
-        spell (the colour shown in the spellcasting menu) is greater than
-        or equal to the number specified:
+        ミスキャストすると重大なペナルティが発生する可能性がある呪文をキャスト
+        しようとするときは、確認を求めます。呪文(呪文詠唱メニューに表示される
+        色)のミスキャスト重大度が指定された数値以上であるかどうかを確認するプ
+        ロンプトを表示します。
 
-          3: dark red
-          2: light red or higher
-          1: yellow or higher
+          3：濃い赤色2：薄い赤色以上1：黄色以上
 
-        If the value 0 or -1 is given, never prompt about miscasts.
+        値0または-1が指定された場合、ミスキャストについてのプロンプトは表示さ
+        れません。
 
 easy_door = true
-        When (O)pening or (C)losing doors, do not prompt for a direction
-        if there is only one adjacent door. This option does not affect
-        opening doors by walking into them.
+        (O)ドアを開けるとき、または(C)ドアをなくすとき、隣接するドアが1つしか
+        ない場合は、方向を尋ねないでください。このオプションは、歩いてドアを開
+        けることには影響しません。
 
-3-h     Messages and Display Enhancements.
+3時間のメッセージと表示の強化。
 ------------------------------------------
 
 hp_warning = 10
-        hp_warning gives "* * * LOW HITPOINT WARNING * * *" on the
-        danger channel when the player takes damage and their hitpoints
-        are less than this percentage of their maximum (use 0 to turn
-        off these messages).
+        hp_warningは、プレイヤーがダメージを受け、ヒットポイントが最大値のこの
+        パーセンテージ未満である場合、危険チャンネルに「* * *低ヒットポイント
+        警告* * *」を表示します(これらのメッセージをオフにするには0を使用しま
+        す)。
 
 mp_warning = 0
-        mp_warning gives "* * * LOW MAGIC WARNING * * *" on the danger
-        channel when the player's magic points drop below this
-        percentage of their maximum (use 0 to turn off these messages).
+        プレイヤーのMPが最大値のこのパーセンテージを下回ると、mp_warningは危険
+        チャンネルに「* * * LOW MAGIC WARNING * * *」を表示します(これらのメッ
+        セージをオフにするには0を使用します)。
 
 hp_colour = 50:yellow, 25:red
-        (List option)
-        hp_colour colours your Health appropriately in the status
-        display. In the default setting, your health will appear in
-        red if at less than 25%, yellow if at less than 50%, and in
-        the default colour otherwise.
+        (リストオプション) hp_colourは、ステータス表示でヘルスを適切に色付けし
+        ます。デフォルト設定では、体力が25%未満の場合は赤、50%未満の場合は黄色、
+        それ以外の場合はデフォルトの色で表示されます。
 
 mp_colour = 50:yellow, 25:red
-        (List option)
-        mp_colour does to Magic what hp_colour does to Health.
+        (リストオプション) mp_colourは、hp_colourがヘルスに対して行うのと同じ
+        ことをマジックに対して行います。
 
 stat_colour = 1:lightred, 3:red
-        (List option)
-        stat_colour colours your stats if they drop below a given value,
-        in the order of their definition. This check takes place before
-        the ones for e.g. Might or degeneration.
-        For normal grey colouring, set it to
-           stat_colour = 7
+        (リストオプション) stat_colourは、統計情報が指定された値を下回った場合
+        に、定義順に色付けします。このチェックは、たとえば、力か退化か。通常の
+        グレーのカラーリングの場合は、stat_colour = 7に設定します。
 
 status_caption_colour = brown
-        Sets the colour that is used to display the captions in the status
-        area (for instance the "Health:" in "Health: 10/10").
+        ステータス領域のキャプションの表示に使用される色を設定します(たとえば、
+        「Health: 10/10」の「Health:」)。
 
 enemy_hp_colour = green green brown brown magenta red lightgrey
-        Colours enemy health appropriately in the monster pane. The
-        colourings correspond to full health, lightly wounded, moderately
-        wounded, heavily wounded, severely wounded, almost dead, and
-        undead (or otherwise unable to be determined).
+        モンスターペインで敵の体力を適切に色付けします。色は、完全な健康、軽傷、
+        中傷、重傷、重傷、ほぼ死亡、およびアンデッド(またはその他の方法で判断
+        できない)に対応します。
 
 clear_messages = false
-        Setting this option to true will cause messages to cleared
-        between player actions (default is false which will delay the
-        clearing of messages until the message space is full).
+        このオプションをtrueに設定すると、プレーヤーのアクション間でメッセージ
+        が消去されます(デフォルトはfalseで、メッセージスペースがいっぱいになる
+        までメッセージの消去が遅延します)。
 
 show_more = true
-        Setting this option to false will cause the game not to prompt
-        if more than a window-full of messages are output at once. This
-        option has no effect if clear_messages is set.
+        このオプションをfalseに設定すると、ウィンドウいっぱいに表示される以上
+        のメッセージが一度に出力された場合、ゲームはプロンプトを表示しません。
+        clear_messagesが設定されている場合、このオプションは効果がありません。
 
 small_more = false
-        With small_more = false (default), the --more-- prompt is on a
-        separate line at the bottom of the message window. With
-        small_more = true, it is just the bottom left character.
-        Note: This will overwrite the first letter of the last message
-              line if clear_messages is set.
+        small_more = false (デフォルト)の場合、 --more--プロンプトはメッセージ
+        ウィンドウの下部の別の行に表示されます。 small_more = trueの場合、これ
+        は左下の文字だけです。注: clear_messagesが設定されている場合、これによ
+        り最後のメッセージ行の最初の文字が上書きされます。
 
 show_newturn_mark = true
-        When set to false, this option disables the underscore (_) displayed in
-        front of the first line of a turn.
+        このオプションをfalseに設定すると、ターンの最初の行の前に表示されるア
+        ンダースコア(_)が無効になります。
 
 show_game_turns = true
-        By default, the turn counter in the stat area displays game turns, which
-        means absolute turns of constant duration. Most actions take one turn,
-        but some are quicker (putting a ring, wielding a weapon, ...) and
-        others are slower (ending a transformation, changing armour,...). The
-        duration of the last action is displayed in parenthesis, after the turn
-        count.
-        When set to false, the turn counter will display player turns instead,
-        which is the number of actions done, regardless of their duration. It
-        is this turn count which is used for scoring (and this turn count is
-        always visible on the % overview screen).
+        デフォルトでは、統計領域のターンカウンターにはゲームターンが表示されま
+        す。これは、一定期間の絶対ターンを意味します。ほとんどのアクションは1
+        ターンかかりますが、より速いもの(指輪をはめる、武器を振るうなど)もあれ
+        ば、遅いもの(変身を終了する、鎧を変更するなど)もあります。最後のアクシ
+        ョンの持続時間はターン数の後に括弧内に表示されます。 falseに設定すると、
+        ターンカウンターにはプレイヤーのターンが表示されます。これは、持続時間
+        に関係なく、実行されたアクションの数です。スコアリングに使用されるのは
+        このターン数です(このターン数は常に%概要画面に表示されます)。
 
 item_stack_summary_minimum = 4
-        If you step over a stack with this number or more of items in
-        it, the first description line will contain a summary of all the
-        items in the stack (up to 50 items), in a format which looks
-        like this:
-          Items here: !! """ % ( )))))) [[[
-        Known artefacts will be coloured in yellow; glowing or runed
-        items will be in white, unless you already know that they are
-        not ego items.
+        この数以上のアイテムが含まれるスタックをステップオーバーすると、最初の
+        説明行には、スタック内のすべてのアイテム(最大50アイテム)の概要が次のよ
+        うな形式で含まれます。 """ % ( )))))) [[[既知のアーティファクトは黄色
+        で表示されます。エゴアイテムではないことがすでにわかっている場合を除き、
+        光っているアイテムやルーンのアイテムは白色で表示されます。
 
 mlist_min_height = 4
-        If there is extra space available for the message area and
-        monster list, the monster list will expand to this height
-        before letting the message area get more.
-        (Note that the monster list is only available for ASCII.)
+        メッセージ領域とモンスターリストに使用できる余分なスペースがある場合、
+        メッセージ領域がそれ以上になる前に、モンスターリストがこの高さまで拡張
+        されます。 (モンスターリストはASCIIでのみ使用できることに注意してくだ
+        さい。)
 
 mlist_allow_alternate_layout = false
-        Display the monster list wherever Crawl may find space on
-        your console display, usually to the left of the map, rather
-        than using the fixed position below the stat area.
-        This option is not supported in the tiles build.
+        モンスターリストは、統計領域の下の固定位置を使用するのではなく、コンソ
+        ールディスプレイ上でCrawlがスペースを見つけられる場所(通常はマップの左
+        側)に表示します。このオプションはタイルのビルドではサポートされていま
+        せん。
 
 mlist_targeting = false
-        Using the monster list you can directly target monsters in targeting
-        mode. This can be toggled during a game with Ctrl-L while in targeting
-        mode, and this option controls the initial setting at game start or
-        reload.
+        モンスターリストを使用すると、ターゲティングモードでモンスターを直接タ
+        ーゲティングできます。これは、ターゲティングモード中にCtrl-Lを使用して
+        ゲーム中に切り替えることができ、このオプションはゲームの開始時またはリ
+        ロード時の初期設定を制御します。
 
 msg_min_height = 7
-        You can reduce this to give more space to the map display. The
-        minimum value is 5.
+        これを減らすと、マップ表示により多くのスペースを確保できます。最小値は
+        5です。
 
 msg_max_height = 10
-        In console, if there is extra space available after the monster list
-        has expanded, the message area will expand up to this height.
-        The monster list will get the rest.
-        In tiles, control the maximum size of the message area. The viewport
-        will get the rest.
+        コンソールでは、モンスターリストが拡張された後に使用可能な追加スペース
+        がある場合、メッセージ領域はこの高さまで拡張されます。モンスターリスト
+        が残りを取得します。タイルでは、メッセージ領域の最大サイズを制御します。
+        ビューポートが残りを取得します。
 
 messages_at_top = false
-        Put the message window at the top of the screen. This moves
-        the last message close to the center of the view when not
-        using clear_messages=true.
+        メッセージウィンドウを画面上部に配置します。 clear_messages=trueを使用
+        しない場合、これにより最後のメッセージがビューの中心近くに移動します。
 
 msg_condense_repeats = true
-        If the same message is repeated multiple times during the same
-        turn, then it will be output in a condensed format indicating
-        how many times it was repeated. If the same output (including the
-        counter) is repeated over several turns, the Show Previous Message
-        command (Ctrl-P) will likewise condense them into one. For example:
-            The killer bee misses you. x5
+        同一ターン内に同じメッセージが複数回繰り返された場合は、繰り返し回数を
+        示す要約形式で出力されます。同じ出力(カウンタを含む)が数ターンにわたっ
+        て繰り返される場合、「前のメッセージを表示」コマンド(Ctrl-P)も同様にそれ
+        らを1つに圧縮します。例:殺人蜂があなたがいなくて寂しいです。 ×5
 
 msg_condense_short = true
-        If set, short messages on the same channel don't all start a new
-        line.
+        設定すると、同じチャネル上の短いメッセージがすべて新しい行で始まるわけ
+        ではありません。
 
-show_travel_trail = false (defaults to true for online servers)
-        When set to true, the path taken during autoexplore or travel
-        will be highlighted. If a travel trail is currently being displayed,
-        the Clear Map command (Ctrl-C) clears the trail instead of the map
-        (pressing it a second time then clears the map as usual).
+show_travel_trail = false (オンラインサーバーではデフォルトtrue)
+        trueに設定すると、自動探索または移動中にたどったパスが強調表示されます。
+        旅行の軌跡が現在表示されている場合、地図のクリアコマンド(Ctrl-C)は、地
+        図の代わりに軌跡をクリアします(もう一度押すと、通常どおりマップがクリ
+        アされます)。
 
 skill_focus = true
-        When set to true, skills cycle between disabled, enabled and focus in
-        the skill screen. When set to false, they only toggle between enabled
-        and disabled. Setting the option to "toggle" adds a toggle to the skill
-        screen to change the behaviour in-game.
+        trueに設定すると、スキルは、スキル画面で無効、有効、フォーカスの間を循
+        環します。 falseに設定すると、有効と無効の間でのみ切り替わります。オプ
+        ションを「トグル」に設定すると、スキル画面にトグルが追加され、ゲーム内
+        の動作が変更されます。
 
 monster_list_colour += <key>:<colour>, <key>:<colour>
 monster_list_colour -= <key>
-        (List option)
-        Change the colours used to display monster names in the monster list.
-        Valid keys, and their default colours, are:
+        (リストオプション)モンスターリスト内のモンスター名の表示に使用される色
+        を変更します。有効なキーとそのデフォルトの色は次のとおりです。
 
-           Monster attitudes:
-             friendly       - green
-             neutral        - brown ("indifferent")
-             good_neutral   - brown ("peaceful")
-             strict_neutral - brown ("fellow slime")
+           モンスター態度:友好的-緑中立-茶色(「無関心」) good_neutral -茶色(「
+           平和的」) strict_neutral -茶色(「仲間のスライム」)
 
-           Threat levels for hostile monsters:
-             trivial        - darkgrey
-             easy           - lightgrey
-             tough          - yellow
-             nasty          - lightred
+           敵対的なモンスターの脅威レベル:軽微-ダークグレー簡単-ライトグレー厳
+           しい-黄色厄介-ライトレッド
 
-         Removing a key with -= currently has the same effect as setting its
-         colour to lightgrey.
+         -=を使用してキーを削除すると、現在、キーの色をライトグレーに設定する
+         のと同じ効果があります。
 
-         Note that, for TSO worshippers, monsters whom it is forbidden to
-         attack will appear in the "evil colour" (magenta by default)
-         regardless of this option.
+         TSO崇拝者の場合、このオプションに関係なく、攻撃が禁止されているモンス
+         ターが「邪悪な色」 (デフォルトではマゼンタ)で表示されることに注意して
+         ください。
 
 view_delay = 600
-        Controls the speed of animations from, e.g., ranged and magical
-        attacks and invocations with visual effects.
+        遠距離攻撃や魔法攻撃、視覚効果を伴う呼び出しなどのアニメーションの速度
+        を制御します。
 
 use_animations -= beam, range, hp, monster_in_sight, pickup, monster, player,
-                  branch_entry
-        Controls whether or not to run special animations, such as when being
-        banished. All animations are enabled by default, and the categories
-        that can be enabled/disabled independently are:
+        branch_entry追放時などの特別なアニメーションを実行するかどうかを制御し
+        ます。すべてのアニメーションはデフォルトで有効になっており、個別に有効
+        /無効にできるカテゴリは次のとおりです。
 
-          beam             - Animation for casting a beam spell or throwing a
-                             ranged weapon.
-          range            - Flashes the screen with an overlay indicating the
-                             actual range of an attempted spell, if there are
-                             no monsters within the spell's range.
-          hp               - Flashes the screen red whenever you take damage
-                             below the level indicated by the hp_warning
-                             option.
-          monster_in_sight - When attempting to rest, run, travel, or explore
-                             with dangerous monsters in view, flashes the parts
-                             of the screen where monsters aren't, in order to
-                             help make the monsters themselves more visible.
-          pickup           - Various animations that occur when picking up
-                             items. Currently only runes and the orb have
-                             animations.
-          monster          - Animations that run when a monster uses an ability
-                             or casts a spell.
-          player           - Animations that run when the player uses an
-                             ability or casts a spell.
-          branch_entry     - Animations that run when you enter a new branch.
-                             Currently only the Abyss and Zot have animations.
+          ビーム-ビーム呪文をキャストするか、遠距離武器を投げるアニメーション。
+          range -呪文の範囲内にモンスターがない場合、試行された呪文の実際の範
+          囲を示すオーバーレイを表示して画面を点滅させます。 hp - hp_warningオ
+          プションで指定されたレベルを下回るダメージを受けるたびに、画面が赤く
+          点滅します。 monster_in_sight -危険なモンスターが表示されている状態
+          で休憩、ランニング、旅行、または探索を行おうとすると、モンスター自体
+          をより目立つようにするために、モンスターが表示されていない画面の部分
+          が点滅します。ピックアップ-アイテムを拾うときに発生するさまざまなア
+          ニメーション。現在アニメーションがあるのはルーンとオーブのみです。モ
+          ンスター -モンスターがアビリティを使用するか、呪文をキャストするとき
+          に実行されるアニメーション。 player -プレイヤーがアビリティを使用す
+          るか、呪文をキャストするときに実行されるアニメーション。
+          branch_entry -新しいブランチに入ったときに実行されるアニメーション。
+          現在、アニメーションがあるのはアビスとZotのみです。
 
 force_more_message += <regex>, <regex>
-        (List option)
-        Any message that contains a regex specified here, will enforce a
-        -More- prompt, so it can be used to highlight really important
-        events.
-        The syntax is identical to that of runrest_ignore_message (3-g).
+        (リストオプション)ここで指定された正規表現を含むメッセージはすべて、
+        -More-プロンプトを強制するため、本当に重要なイベントを強調表示するため
+        に使用できます。構文はrunrest_ignore_message (3-g)と同じです。
 
 cloud_status = true
-        Whether to show the "Cloud" status light; defaults to true, except if
-        playing with tiles, where you can see the cloud on top of you, where it
-        defaults to false.
+        「クラウド」ステータスライトを表示するかどうか。デフォルトはtrueですが、
+        タイルで遊んでいる場合は例外で、上に雲が表示されます。タイルでプレイし
+        ている場合はデフォルトがfalseです。
 
-3-i     Colours (messages and menus)
+3-i Color（メッセージとメニュー）
 -----------------
 
 menu_colour ^= <match>:<colour>:<regex>, <colour>:<regex>, ...
-        (Ordered list option)
-        This prints a line (of the inventory, a menu, or the discoveries
-        screen) containing regex in the stated colour. There can be
-        several statements in a list, and also several menu_colour
-        lines. When using several menu_colour lines, the colour of the
-        _first_ matching regex is applied. For a list of colours, check
-        the colour option in 5-a.
+        (順序付きリストオプション)これにより、指定された色で正規表現を含む行(
+        インベントリ、メニュー、または検出画面の)が印刷されます。リストには複
+        数のステートメントを含めることができ、また、複数のmenu_colour行を含め
+        ることもできます。複数のmenu_colour行を使用する場合、_first_一致する正
+        規表現の色が適用されます。色のリストについては、5-aの色のオプションを
+        確認してください。
 
-        The match specifies which listings are affected by the
-        colouring. If you specify 'any', or completely skip the <match>:
-        part, then all listings are used. Possible values for match are:
-           ability       (the A screen)
-           description   (the \ screen)
-           equip         (the [, (, ), " screens)
-           help          (the manual)
-           inventory     (inventory and pickup menus)
-           pickup        (specific to pickup menus)
-           shop          (shop menus)
-           notes         (the ?: screen)
-           resists       (the % screen)
-           spell         (the Z and I screens)
-           stash         (the results from Ctrl-F)
-           stats         (the player stats panel)
+        一致により、どのリストが色付けの影響を受けるかを指定します。 'any'を指
+        定するか、<match>:部分を完全にスキップすると、すべてのリストが使用され
+        ます。一致する可能性のある値は次のとおりです。能力(A画面)説明(\画面)装
+        備([、(、)、"画面)ヘルプ(マニュアル)在庫(在庫およびピックアップメニュ
+        ー)ピックアップ(ピックアップメニューに固有)ショップ(ショップメニュー)
+        メモ(?:画面)レジスト(%画面)呪文(ZおよびI画面)スタッシュ(Ctrl-Fの結果)
+        統計(プレイヤー統計パネル)
 
-        Crawl has a couple of prefixes defined to make inventory colouring
-        easier. These are, in order of definition:
-           identified      (The item is fully identified.)
-           known           (You recognize the item's subtype.)
-           unidentified    (You don't recognize the item's subtype.)
+        Crawlには、在庫の色付けを容易にするために定義されたいくつかのプレフィ
+        ックスがあります。これらは定義順に次のとおりです。
+           identified      (アイテムを完全に識別済み)
+           known           (アイテムの種類を認識済み)
+           unidentified    (アイテムの種類を未認識)
 
-        Items are also prefixed with their base type (armour, weapon, wand,
-        etc.)
+        アイテムには、基本タイプ(鎧、武器、杖など)の接頭辞も付けられます。
 
-        The following only apply to items whose subtype is known.
-           forbidden       (Your god would hate it if you used this item.)
-           emergency_item  (This item is invaluable in emergencies.)
-           good_item       (This item is generally a good item.)
-           dangerous_item  (Using this item can be dangerous.)
-           bad_item        (This item is generally a bad item.)
-           useless_item    (This item is of no use to you.)
+        以下は、サブタイプがわかっているアイテムにのみ適用されます。禁止（この
+        アイテムを使用すると神様が嫌がるでしょう。） emergency_item（このアイ
+        テムは緊急時に非常に貴重なアイテムです。） good_item（このアイテムは通
+        常は良いアイテムです。） dangerous_item（このアイテムを使用すると危険
+        です。） bad_item（このアイテムは一般的には悪いアイテムです。）
+        useless_item（このアイテムは何の役にも立ちません）あなた。）
 
-        The following apply only to items of certain base types, whether
-        identified or not:
-           inedible        (You cannot eat this, or get no nutrition from it.)
-           preferred       (The food type your character prefers, for example
-                            for herbivores/carnivores.)
-           poisonous       (Chunks/corpses that are poisonous.)
-           mutagenic       (Chunks/corpses that are mutagenic.)
-           contaminated    (Chunks/corpses that give reduced nutrition.)
-           rot-inducing    (Chunks/corpses that cause rotting.)
+        以下は、識別されているか否かにかかわらず、特定の基本タイプのアイテムに
+        のみ適用されます:食用不可(これを食べることはできません。または栄養が得
+        られません。)優先(草食動物/肉食動物など、キャラクターが好む食品の種類。
+        )有毒(有毒な塊/死体。)変異原性(変異原性のある塊/死体。)汚染された(栄養
+        が減少する塊/死体。)腐敗誘発（腐敗の原因となる塊・死体）
 
-           equipped        (Equipped items.)
-           artefact        (For artefacts, whether identified or not.)
-           melee           (Melee weapons, including rods and magical staves.)
-           ranged          (Ranged weapons.)
+           装備(装備されたアイテム。)アーティファクト(識別されているかどうかに
+           関係なく、アーティファクトの場合。)近接(ロッドや魔法の杖を含む近接
+           武器。)射程(遠距離武器。)
 
-        When looking for menu_colour matches, these prefixes are prepended to
-        the actual item name, e.g. in the form of
-           identified forbidden wand of draining (4)
-           unidentified equipped artefact sparkling ring (left hand)
+        menu_colourの一致を検索する場合、これらのプレフィックスが実際のアイテ
+        ム名の前に追加されます。正体不明の禁断のドレイニング杖の形で(4)未確認
+        装備アーティファクトスパークリングリング(左手)
 
-        The same prefixes can also be used for highlighting prompts pertaining
-        to items matching the description, or to define autopickup_exceptions.
+        同じ接頭辞を使用して、説明に一致する項目に関するプロンプトを強調表示し
+        たり、autopickup_exceptionsを定義したりすることもできます。
 
-        If you want to colour all items that contain a certain prefix, use
+        特定の接頭辞を含むすべての項目に色を付けたい場合は、次を使用します。
           menu_colour ^= lightgreen:poisonous
 
-        To colour worn stuff and highlight cursed items (except where other,
-        presumably more important, message colours match), use
+        使い古されたものに色を付け、呪われたアイテムを強調表示するには(他の、
+        おそらくより重要なメッセージの色が一致する場合を除く)、次を使用します。
           menu_colour += inventory:lightred:equipped.* cursed
           menu_colour += inventory:green:equipped
           menu_colour += inventory:red: cursed
 
-        To colour identified artefacts, try
+        識別されたアーティファクトに色を付けるには、試してください。
           menu_colour ^= inventory:white:( [-+] the)
         or
           menu_colour ^= inventory:white:identified.*artefact
 
-        If you frequently die because you forget to use emergency items,
-        try
+        非常用品の使用を忘れて頻繁に死亡する場合は、次のことを試してください。
           menu_colour ^= inventory:cyan:emergency_item
           menu_colour ^= inventory:lightcyan:wand of (fire|cold|draining)
 
-        menu_colour can also be applied to colour the in-game notes (to
-        be read with '?:'). The following line will show level ups in
-        white:
+        menu_colourは、ゲーム内のメモの色付けにも適用できます('?:'で読み取られ
+        ます)。次の行では、レベルアップが白色で表示されます。
           menu_colour ^= notes:white:Reached XP level
 
 message_colour ^= <colour>:<channel>:<regex>, <colour>:<regex>, ...
-        (Ordered list option)
-        message_colour allows you to override colours for individual
-        messages. For instance, if you find the low hp warning to be
-        insufficiently attention grabbing, you could do something like
-             message_colour += yellow:LOW HITPOINT WARNING
-        You can also narrow the message match to a specific channel:
-             message_colour += lightred:god:xom
-        If you don't want to see a message at all, you can mute it:
-             message_colour += mute:You start resting
+        (順序付きリストオプション) message_colourを使用すると、個々のメッセー
+        ジの色をオーバーライドできます。たとえば、HP低下の警告が注意を引くのに
+        不十分であると判断した場合は、次のようなことを行うことができます。
+        message_colour += yellow:LOW HITPOINT WARNINGメッセージの一致を特定の
+        チャネルに絞り込むこともできます: message_colour += lightred:god:xomメ
+        ッセージをまったく表示したくない場合は、メッセージをミュートできます:
+        message_colour += mute:You startresting
 
-3-j     Missiles.
+3-jミサイル。
 -----------------
 
 fire_items_start = a
-        Sets the first inventory item to consider when selecting
-        missiles to fire. The default is a.
+        発射するミサイルを選択するときに考慮する最初のインベントリアイテムを設
+        定します。デフォルトはaです。
 
 fire_order  = launcher, return
 fire_order += javelin / tomahawk / stone / rock / net
 fire_order += inscribed
-        (Ordered list option)
-        Controls the order of items autoselected for firing. Items
-        should be separated by commas and items that appear first get
-        higher priority.
+        (順序付きリストオプション)起動用に自動選択される項目の順序を制御します。
+        項目はカンマで区切る必要があり、最初に表示される項目の優先順位が高くな
+        ります。
 
-        Items in any position may be slash-separated to indicate that
-        these are of equal priority. If this is the case, the first item
-        in your inventory that fits one of these will be picked for
-        firing.
+        任意の位置にある項目は、同じ優先順位であることを示すためにスラッシュで
+        区切ることができます。この場合、これらのいずれかに適合するインベントリ
+        内の最初のアイテムが選択されて起動されます。
 
-        'launcher' refers to firing the appropriate missile for the
-        wielded weapon (i.e. crossbow, bow, sling, blowgun). You'll almost
-        certainly want it first, as it'll be ignored when you're not
-        wielding a ranged weapon. 'return' refers to (identified)
-        weapons of returning.
+        'launcher'は、使用する武器(クロスボウ、弓、スリング、吹き矢など)に適し
+        たミサイルを発射することを指します。遠距離武器を装備していない場合は無
+        視されるため、ほぼ確実に最初に指定することになります。'return'は、帰還
+        の（特定された）武器を指します。
 
-        'inscribed' refers to any item with the "+f" inscription. See
-        the "Inscriptions" section of Crawl's manual for more information
-        about inscriptions.
+        'inscribed'は、「+f」の刻印が付いたアイテムを指します。刻印の詳細につ
+        いては、Crawlのマニュアルの「刻印」セクションを参照してください。
 
-(See also pickup_thrown in 3-a.)
+(3-aのpickup_thrownも参照してください。)
 
-3-k     Message Channels.
+3-kメッセージチャネル。
 -------------------------
 
-Crawl communicates to the players with its message window. Every message
-belongs to one of the so-called channels. The behaviour of each channel
-can be changed with the option
+Crawlは、メッセージウィンドウを使用してプレイヤーに通信します。すべてのメッセ
+ージは、いわゆるチャネルの1つに属します。各チャンネルの動作はオプションで変更
+できます
 
-     channel.CHANNEL_NAME = (COLOUR | mute | default | on | off | plain)
+     channel.CHANNEL_NAME = (カラー |ミュート|デフォルト|オン|オフ|プレーン)
 
-CHANNEL_NAME can currently be one of these:
-   plain           = regular text (and things "uncoloured")
-   prompt          = input prompts to the player
-   god             = messages from the gods
-   pray            = standard praying messages
-   duration        = messages about character spells/effects wearing off
-   danger          = serious threats to the character's existence
-   food            = warnings about food
-   warning         = various other warnings
-   recovery        = recovery from disease/stat loss/poison conditions
-   talk            = monsters talking
-   talk_visual     = monster performing some action that the player sees
-   timed_portal    = portal timeout messages
-   sound           = other sounds
-   intrinsic_gain  = level/stat/species power gains
-   mutation        = gain/lose mutations
-   monster_spell   = messages about monsters gesturing or casting spells
-   monster_enchant = messages pertaining to monster enchantments
-   monster_warning = monsters coming into view
-   friend_spell    = as monster_spell, but only for friendly monsters
-   friend_enchant  = as monster_enchant, but only for friendly monsters
-   friend_action   = other actions by friendly monsters
-   monster_damage  = messages telling how damaged a monster is
-   monster_target  = messages marking the monster as a target (unused)
-   banishment      = messages about banishing and being banished to the Abyss
-   rotten_meat     = messages about chunks/corpses/blood rotting away
-   equipment       = messages indicating worn/wielded equipment
-   floor           = messages when looking at or walking over a floor item
-   multiturn       = indicates long actions (wearing armour, dissecting etc.)
-   examine         = messages from examining your surroundings
-   examine_filter  = boring messages from examining your surroundings
-   diagnostic      = debugging messages
-   error           = error messages
-   tutorial        = messages from the tutorial
-   orb             = messages about the Orb of Zot
-   hell_effect     = messages about environmental effects of the Hells
-   dgl_message     = messages from watchers (online console games only)
+現在、CHANNEL_NAMEは次のいずれかになります。
+   plain           = 通常のテキスト
+   prompt          = プレイヤーへの入力要求
+   god             = 神からのメッセージ
+   pray            = 通常の祈りに関するメッセージ
+   duration        = 呪文や効果が切れるときのメッセージ
+   danger          = キャラクターの生存に関わる重大な脅威
+   food            = 食料に関する警告
+   warning         = その他の警告
+   recovery        = 病気、能力低下、毒からの回復
+   talk            = モンスターの発言
+   talk_visual     = 視界内のモンスターの行動
+   timed_portal    = ポータルの時間切れ
+   sound           = その他の音
+   intrinsic_gain  = レベル、能力値、種族能力の獲得
+   mutation        = 変異の獲得と消失
+   monster_spell   = モンスターの身振りや呪文詠唱
+   monster_enchant = モンスターへの魔法効果
+   monster_warning = モンスターが視界に入ったときの警告
+   friend_spell    = 友好的なモンスターのmonster_spell
+   friend_enchant  = 友好的なモンスターのmonster_enchant
+   friend_action   = 友好的なモンスターのその他の行動
+   monster_damage  = モンスターの負傷状態
+   monster_target  = 標的に指定されたモンスター(未使用)
+   banishment      = アビスへの追放
+   rotten_meat     = 肉、死体、血が腐るときのメッセージ
+   equipment       = 装備の着脱
+   floor           = 床のアイテムを見たときや踏んだときのメッセージ
+   multiturn       = 防具の着脱や解体など、時間のかかる行動
+   examine         = 周囲を調べたときのメッセージ
+   examine_filter  = 周囲を調べたときの重要でないメッセージ
+   diagnostic      = デバッグメッセージ
+   error           = エラーメッセージ
+   tutorial        = チュートリアルのメッセージ
+   orb             = ゾットのオーブに関するメッセージ
+   hell_effect     = 地獄の環境効果に関するメッセージ
+   dgl_message     = 観戦者からのメッセージ(オンラインコンソールのみ)
 
-The channel options are
-   mute      = show no messages from channel (dangerous, be careful!)
-   default   = turn channel on to its default scheme
-   alternate = turn channel on to its alternate "colourful" scheme
-   on        = same as default
-   plain     = make channel the same colour as the "plain" channel
-               (won't do anything silly like "mute" if plain == mute,
-               though)
-   off       = same as plain
+チャンネルオプションは、
+   mute      = このチャネルを表示しない(危険なので注意)
+   default   = デフォルトの配色で表示する
+   alternate = 別の色鮮やかな配色で表示する
+   on        = defaultと同じ
+   plain     = plainチャネルと同じ色にする
+               (ただし、プレーン==ミュートの場合は、「ミュート」のような愚かな
+               動作はしません)
+   off       = plainと同じ
 
-COLOUR can be any of the colours described in section 5-a (colour option).
+COLORには、セクション5-a (カラーオプション)で説明されている色のいずれかを指定
+できます。
 
-The only multi-colour channels currently are monster_damage and god. All
-other channels are defaulted to on.
+現在、マルチカラーチャネルはmonster_damageとgodのみです。他のすべてのチャンネ
+ルはデフォルトでオンになっています。
 
-3-l     Inscriptions.
+3-l碑文。
 ---------------------
 
-See the "Inscriptions" section of the crawl manual for more information
-about inscriptions.
+刻印の詳細については、Crawlマニュアルの「刻印」セクションを参照してください。
 
 autoinscribe += <regex>:<inscription>
-        (Ordered list option, one value per line)
-        Any item whose description contains the regex will be automatically
-        inscribed (if autopickup is toggled on).
+        (順序付きリストオプション、1行に1つの値)説明に正規表現が含まれる項目は
+        すべて、自動的に記録されます(自動ピックアップがオンになっている場合)。
 
-        For example, it can be used to avoid accidentally using charges of
-        important wands, as in
+        たとえば、次のように、重要な杖のチャージを誤って使用することを避けるた
+        めに使用できます。
              autoinscribe += wand of heal wounds:!V
 
-        The menu colour prefixes (forbidden etc.) can also be used here.
-        For example:
+        メニューの色の接頭語(禁止など)もここで使用できます。例えば：
              autoinscribe += (bad|dangerous)_item.*scroll:!r
-        will prevent accidentally reading any identified bad or
-        potentially dangerous scrolls.
+        特定された不良または潜在的に危険なスクロールを誤って読んでしまうことを
+        防ぎます。
 
-        Unlike most ordered list options, multiple matching entries all have
-        an effect: the order only determines the order of the inscriptions.
+        ほとんどの順序付きリストのオプションとは異なり、複数の一致するエントリ
+        がすべて影響します。順序は碑文の順序のみを決定します。
 
 show_god_gift = unident|yes|no
-        Appends {god gift} to items that originated as one. If set to
-        "unident", items will lose this tag once their properties are
-        fully known. Regardless of this setting, you can see the item's
-        origin in its description.
+        元は1つだったアイテムに{god Gift}を追加します。 「unident」に設定され
+        ている場合、アイテムのプロパティが完全に判明すると、アイテムはこのタグ
+        を失います。この設定に関係なく、説明でアイテムの出所を確認できます。
 
-3-m     Macro related Options.
+3-mマクロ関連のオプションです。
 ------------------------------
 
 flush.failure = true
 flush.command = false
 flush.message = false
-        These are useful when using macros. Setting one of these
-        sub-options to true will cause the entire input buffer to be
-        dumped and thus effectively stop the macro. The sub-options
-        currently are
-           failure -- when spells/abilities get miscast
-           command -- whenever the game is about to get the next command
-           message -- whenever the game outputs a non-mute message
+        これらはマクロを使用するときに便利です。これらのサブオプションの1つを
+        trueに設定すると、入力バッファ全体がダンプされ、マクロが効果的に停止さ
+        れます。現在のサブオプションは失敗です--呪文/能力がミスキャストコマン
+        ドを取得した場合--ゲームが次のコマンドメッセージを取得しようとしている
+        ときはいつでも--ゲームが非ミュートメッセージを出力するときは常に
 
 additional_macro_file = path/to/filename
-        Add an additional macro file to be loaded after macro.txt.
-        You can have multiple additional_macro_file lines.
+        macro.txtの後にロードするマクロファイルを追加します。複数の
+        additional_macro_file行を持つことができます。
 
 bindkey = [^D] CMD_BUTCHER
-        Change which key invokes which command at a lower level of
-        operation than macros. Useful in that macros cannot (yet)
-        invoke each other, but a macro can invoke a command whose
-        key has changed.
-        The syntax is always the same: [key] command
-        First, in square brackets, list the key you want to use, with
-        ^X meaning Ctrl-X. After that name the command to be bound to
-        that key. You can bind several commands to the same key, as long
-        as they take effect in different areas of the game, i.e. one
-        targeting command and one for the main game. Likewise, you can
-        bind the same command to different keys.
-        For a full list of possible commands, see keybind.txt.
+        マクロよりも低い操作レベルで、どのキーがどのコマンドを呼び出すかを変更
+        します。マクロは(まだ)相互に呼び出すことができませんが、マクロはキーが
+        変更されたコマンドを呼び出すことができるので便利です。構文は常に同じで
+        す: [key]コマンドまず、角括弧内に使用するキーをリストします。^Xは
+        Ctrl-Xを意味します。その後、そのキーにバインドされるコマンドに名前を付
+        けます。ゲームの異なる領域で有効である限り、複数のコマンドを同じキーに
+        バインドできます。つまり、1つはターゲットコマンド、もう1つはメインゲー
+        ム用です。同様に、同じコマンドを異なるキーにバインドできます。使用可能
+        なコマンドの完全なリストについては、keybind.txtを参照してください。
 
-3-n     Tiles Options.
+3-nタイルのオプション。
 ----------------------
-In non-tile games the tile options are ignored.
+非タイルゲームでは、タイルオプションは無視されます。
 
 tile_show_items = <glyphs>
-        This option controls the order of items in the tiles
-        inventory. By default, its value is: !?/%=([)X}:|\
-        Items with glyphs not in the list will be shown last.
+        このオプションは、タイルインベントリ内のアイテムの順序を制御します。デ
+        フォルトでは、その値は次のとおりです: !?/%=([)X}:|\リストにないグリフ
+        を持つ項目は最後に表示されます。
 
 tile_skip_title = false
-        When this is set to true, you won't be prompted for a key at the title
-        screen when the game has finished loading and will be taken directly to
-        the starting menu.
+        これをtrueに設定すると、ゲームのロードが完了したときにタイトル画面でキ
+        ーの入力を求められず、開始メニューに直接移動します。
 
 tile_menu_icons = true
-        Causes inventory menus and a few other ones to include tiled icons
-        and the menus to be displayed in up to two columns to make up for
-        the reduction of space.
-        If you would rather have the plain menus set this option to false.
+        インベントリーメニューと他のいくつかのメニューにタイル状のアイコンが含
+        まれ、スペースの減少を補うためにメニューが最大2列に表示されます。プレ
+        ーンなメニューを使用したい場合は、このオプションをfalseに設定します。
 
 tile_player_col       = white
 tile_monster_col      = #660000
@@ -1730,776 +1487,692 @@ tile_excluded_col     = #552266
 tile_excl_centre_col  = #552266
 tile_window_col       = #558855
 
-These options allow configuring the colours used for the minimap of the dungeon
-level. Using RGB hex codes is also allowed, such as #00ff00 for green.
-   tile_player_col       - colour of player position, as well as of
-                           map centre during level map mode ('X')
-   tile_monster_col      - colour of hostile monsters
-   tile_neutral_col      - colour of neutral monsters
-   tile_peaceful_col     - colour of peaceful monsters
-   tile_friendly_col     - colour of friendly monsters
-   tile_plant_col        - colour of zero xp monsters (plant and fungus)
-   tile_item_col         - colour of known or detected items
-   tile_unseen_col       - colour of unseen areas (usually stone)
-   tile_floor_col        - colour of floor
-   tile_mapped_floor_col - colour of floor detected via magic mapping
-   tile_wall_col         - colour of any wall type
-   tile_mapped_wall_col  - colour of walls detected via magic mapping
-   tile_door_col         - colour of known doors, open or closed
-   tile_downstairs_col   - colour of downstairs
-   tile_upstairs_col     - colour of upstairs, including branch exits
-   tile_branchstairs_col - colour of branch entrances
-   tile_portal_col       - colour of any portal
-   tile_feature_col      - colour of any non-stair, non-portal feature
-                           (altar, shop, fountain, ...)
-   tile_trap_col         - colour of known traps of any type
-   tile_water_col        - colour of shallow water
-   tile_deep_water_col   - colour of deep water
-   tile_lava_col         - colour of lava
-   tile_excluded_col     - colour of squares excluded for autotravel
-                           (will only override tile_floor_col colour)
-   tile_excl_centre_col  - colour of exclusion centre (overrides
-                           tile_floor_col and tile_item_col, only)
-   tile_window_col       - colour of the rectangular view window
+これらのオプションを使用すると、ダンジョンレベルのミニマップに使用される色を構
+成できます。緑の#00ff00など、RGB 16進コードの使用も許可されます。
+tile_player_col -プレイヤーの位置とレベルマップモード中のマップ中心の色('X')
+tile_monster_col -敵対的なモンスターの色tile_neutral_col -中立の色モンスター
+tile_peaceful_col -平和的なモンスター tile_friendly_col -フレンドリーなモンス
+ターの色tile_plant_col -ゼロXPの色モンスター (植物と菌類) tile_item_col -既知
+または検出されたアイテムの色tile_unseen_col -目に見えない領域(通常は石)の色
+tile_floor_col -床の色tile_mapped_floor_col -マジックマッピングで検出された床
+の色tile_wall_col -任意の壁タイプの色tile_mapped_wall_col -マジックマッピング
+で検出された壁の色tile_door_col -開閉済みの既知のドアの色tile_downstairs_col -
+下の階の色tile_upstairs_col -分岐出口を含む上の階の色tile_branchstairs_col -分
+岐入口の色tile_portal_col -任意のポータルの色tile_feature_col -非階段、非ポー
+タルの機能(祭壇、店舗、噴水など)の色tile_trap_col -任意のタイプの既知のトラッ
+プの色tile_water_col -浅瀬の色 tile_deep_water_col -深海の色tile_lava_col -溶
+岩の色tile_excluded_col -自動走行から除外される正方形の色(tile_floor_colの色の
+みをオーバーライドします) tile_excl_centre_col -除外中心の色(tile_floor_colお
+よびtile_item_colのみをオーバーライドします) tile_window_col -長方形のビューウ
+ィンドウの色
 
 tile_update_rate = 1000
-        The number of milliseconds that tick by before the screen is redrawn
-        without any input. If game response is slow, try increasing this
-        number. If, on the other hand, response time is fine but it takes too
-        long for redrawings to happen, set it to a lower value.
+        何も入力せずに画面が再描画されるまでの経過時間(ミリ秒)。ゲームの応答が
+        遅い場合は、この数値を増やしてみてください。一方、応答時間は問題ないが、
+        再描画に時間がかかりすぎる場合は、より低い値に設定します。
 
 tile_runrest_rate = 100
-        The number of milliseconds that tick by before the screen is redrawn
-        when running or resting. If Crawl is slow while running or resting,
-        increase this number.
+        実行中または休止中に画面が再描画されるまでのミリ秒数。実行中または休憩
+        中にCrawlが遅い場合は、この数値を増やしてください。
 
 tile_key_repeat_delay = 200
-        If you hold down a key, there's a delay until the pressed key will
-        take action. This option controls this delay, in milliseconds. If it
-        is set to 0 key presses will never repeat.
+        キーを押したままにすると、押されたキーが動作するまでに時間がかかります。
+        このオプションは、この遅延をミリ秒単位で制御します。 0に設定すると、キ
+        ーを押すことは繰り返されません。
 
 tile_tooltip_ms = 500
-        The number of milliseconds before a tooltip appears when hovering the
-        mouse over part of the screen. Setting this option to 0 will
-        deactivate the tooltips entirely.
+        マウスを画面の一部の上に置いたときにツールヒントが表示されるまでのミリ
+        秒数。このオプションを0に設定すると、ツールチップが完全に非アクティブ
+        になります。
 
 tile_tag_pref = (none| named | enemy | tutorial )
-        This option defaults to "enemy" normally and "tutorial" in tutorial
-        modes. This setting determines which monsters receive text tag
-            none     - turns off all tags.
-            named    - shows names of all named monsters, ally or enemy
-            enemy    - shows names of named enemy monsters
-            tutorial - shows names of all monsters not yet killed this game
-                       and of named enemy monsters
-        Examples for named monsters are uniques and ghosts.
+        このオプションのデフォルトは、通常は「敵」、チュートリアルモードでは「
+        チュートリアル」です。この設定は、どのモンスターがテキストタグを受信す
+        るかを決定します。なし-すべてのタグをオフにします。名前付き-味方または
+        敵のすべての名前付きモンスターの名前を表示します敵-名前付きの敵モンス
+        ターの名前を表示しますチュートリアル-このゲームをまだキルしていないす
+        べてのモンスターと名前付きの敵モンスターの名前を表示します名前付きモン
+        スターの例は、ユニークとゴーストです。
 
 tile_window_width  = 0
 tile_window_height = 0
-        The width and height of the window, in pixels. If set to zero, it
-        will auto-size the window.
+        ウィンドウの幅と高さ(ピクセル単位)。ゼロに設定すると、ウィンドウのサイ
+        ズが自動的に調整されます。
 
 tile_map_pixels = 0
-        The maximum number of pixels each minimap square should take up. If you
-        have a low resolution, and feel like the inventory is too small, you
-        can try setting this to 1 to get more space for the inventory. The
-        downside is that travelling by clicking on the minimap becomes much
-        harder. If set to zero, it will auto-size the minimap.
+        各ミニマップ正方形が占有する最大ピクセル数。解像度が低く、インベントリ
+        が小さすぎると感じる場合は、これを1に設定して、インベントリ用のスペー
+        スを増やすことができます。欠点は、ミニマップをクリックして移動するのが
+        はるかに困難になることです。ゼロに設定すると、ミニマップのサイズが自動
+        調整されます。
 
 tile_cell_pixels = 32
-        The width and height of tiles in the dungeon view. If you want
-        to see the tiles in all their glory and have a large
-        resolution, set this to 48 or even 64; but note that tiles
-        will be automatically scaled down to fit the visible area on
-        the screen.
+        ダンジョンビューのタイルの幅と高さ。タイルを最大限に美しく表示し、解像
+        度を高くしたい場合は、これを48または64に設定します。ただし、タイルは画
+        面上の表示領域に合わせて自動的に縮小されることに注意してください。
 
 tile_filter_scaling = false
-        Used in conjunction with tile_cell_pixels. Setting it to true filter
-        the textures resulting in a smoother but blurrier image.
+        tile_cell_pixelsと組み合わせて使用します。これをtrueに設定すると、テク
+        スチャがフィルタリングされ、より滑らかですがぼやけたイメージになります。
 
 tile_force_overlay = false
-        Setting this option to true will force the message window to appear as
-        an overlay on top of the screen. If you use this option, making your
-        tile_font_msg_size smaller will make the overlay smaller while retaining
-        the same number of lines. Increase the view_max_height option if you
-        find yourself with unused screen estate.
+        このオプションをtrueに設定すると、メッセージウィンドウが画面上部のオー
+        バーレイとして強制的に表示されます。このオプションを使用する場合、
+        tile_font_msg_sizeを小さくすると、同じ行数を維持したままオーバーレイが
+        小さくなります。使用されていない画面領域がある場合は、view_max_height
+        オプションを増やします。
 
 tile_full_screen = false
-        Setting this option to true will start Crawl in full screen mode.
+        このオプションをtrueに設定すると、Crawlが全画面モードで起動します。
 
 tile_font_crt_file  = VeraMono.ttf
 tile_font_stat_file = VeraMono.ttf
 tile_font_msg_file  = VeraMono.ttf
 tile_font_tip_file  = VeraMono.ttf
 tile_font_lbl_file  = Vera.ttf
-        Fonts used in various sections of the screen for local tiles. For
-        WebTiles use tile_font_*_family instead. If you want to use another
-        font, you'll have to place the corresponding *.ttf file into the
-        dat/tiles/ folder.
-        Screen regions are as follows:
-            crt  - non-map screens (menus, message history, etc.)
-            stat - stat area (hit points, AC, etc.)
-            msg  - message area
-            tip  - tooltips (mouseover information)
-            lbl  - item/monster names in inventory/main map
+        ローカルタイルの画面のさまざまなセクションで使用されるフォント。
+        WebTilesの場合は、代わりにtile_font_*_familyを使用してください。別のフ
+        ォントを使用したい場合は、対応する*.ttfファイルをdat/tiles/フォルダー
+        に配置する必要があります。画面領域は次のとおりです。 crt -非マップ画面
+        (メニュー、メッセージ履歴など) stat -統計領域(ヒットポイント、ACなど)
+        msg -メッセージ領域のヒント-ツールヒント(マウスオーバー情報) lbl -イン
+        ベントリ/メインマップ内のアイテム/モンスターの名前
 
 tile_font_crt_family  = monospace
 tile_font_stat_family = monospace
 tile_font_msg_family  = monospace
 tile_font_lbl_family  = monospace
-        Fonts used in various sections of the screen for WebTiles. For local
-        tiles use tile_font_*_file instead.
+        WebTilesの画面のさまざまなセクションで使用されるフォント。ローカルタイ
+        ルの場合は、代わりにtile_font_*_fileを使用してください。
 
 tile_font_crt_size  = 15
 tile_font_stat_size = 16
 tile_font_msg_size  = 14
 tile_font_tip_size  = 15
 tile_font_lbl_size  = 14
-        Font size for the screen regions listed above. If set to zero (default),
-        size will be based on screen size.
+        上記の画面領域のフォントサイズ。ゼロ(デフォルト)に設定すると、サイズは
+        画面サイズに基づきます。
 
 tile_font_ft_light = false
-        Selects 'light' font hinting.
+        'light'フォントのヒンティングを選択します。
 
 tile_show_minihealthbar = true
 tile_show_minimagicbar  = true
-        Will show health and magic bars on top of the player tile when the
-        player gets hurt or spends magic.
+        プレイヤーが怪我をしたり、魔法を消費したりすると、プレイヤータイルの上
+        に体力と魔法のバーが表示されます。
 
 tile_show_demon_tier = true
-        Will overlay demon tiles with an icon intended to represent their
-        tier (or difficulty rank) among demons, as is the case for non-Tiles
-        builds.
+        タイル以外のビルドの場合と同様に、悪魔のタイルに、悪魔の中での階層(ま
+        たは難易度のランク)を表すことを目的としたアイコンをオーバーレイします。
 
 tile_water_anim = true
-        If disabled, animation of liquids will be suppressed.
-        Defaults to false on WebTiles.
+        無効にすると、液体のアニメーションが抑制されます。 WebTilesのデフォル
+        トはfalseです。
 
 tile_misc_anim = true
-        If disabled, animation of miscellaneous things such as altars and
-        torches will be suppressed.
+        無効にすると、祭壇や松明などのさまざまなもののアニメーションが抑制され
+        ます。
 
 tile_realtime_anim = false
-        If enabled, tile animations will run in real time and will not be tied
-        to player actions.
-        This option is only available on WebTiles.
+        有効にすると、タイルアニメーションはリアルタイムで実行され、プレーヤー
+        のアクションに関連付けられません。このオプションはWebTilesでのみ使用で
+        きます。
 
 tile_show_player_species = false
-        If enabled, displays the player using the monster tile for her species,
-        instead of using the normal doll and showing equipment.
+        有効にすると、通常の人形を使用して装備を表示する代わりに、種族にモンス
+        タータイルを使用してプレーヤーが表示されます。
 
 tile_layout_priority = minimap, inventory, gold_turn, command, spell, monster
-        (Ordered list option)
-        This option allows you to control the order in which elements are
-        placed on the right of the screen, below the stat area. On small
-        resolution, there won't be enough room for everything, so only the
-        first items will be placed. You can also remove items you don't want
-        to be permanently displayed. The inventory tab will always be placed at
-        the bottom but is initialised at a minimum size (4 lines). If you put a
-        tab before it on the option line, the tab will still be placed above it,
-        but it will have priority over it so the inventory might not be able to
-        expand to its maximum size (6 lines). The minimap is always placed
-        between the stat area and the tabs. The memorisation and skill tabs can
-        be added to the list too, but are not by default.
+        (順序付きリストオプション)このオプションを使用すると、画面の右側、統計
+        領域の下に要素を配置する順序を制御できます。解像度が小さい場合、すべて
+        を入れるのに十分なスペースがないため、最初の項目のみが配置されます。永
+        久に表示したくない項目を削除することもできます。インベントリータブは常
+        に一番下に配置されますが、最小サイズ(4行)で初期化されます。オプション
+        行の前にタブを配置した場合、タブは引き続きその上に配置されますが、タブ
+        が優先されるため、インベントリが最大サイズ(6行)まで拡張できない可能性
+        があります。ミニマップは常に統計領域とタブの間に配置されます。記憶タブ
+        とスキルタブもリストに追加できますが、デフォルトでは追加されません。
 
 tile_display_mode = (tiles | glyphs | hybrid)
-        Controls how the dungeon is rendered. You can use normal tiles (default)
-        or make it look like the console version by using glyphs. Hybrid
-        overlays icons on top of the glyph view.
-        This option is only available on WebTiles.
+        ダンジョンのレンダリング方法を制御します。通常のタイル(デフォルト)を使
+        用することも、グリフを使用してコンソールバージョンのように見せることも
+        できます。グリフビューの上にアイコンをハイブリッドオーバーレイします。
+        このオプションはWebTilesでのみ使用できます。
 
 tile_level_map_hide_messages = true
 tile_level_map_hide_sidebar = false
-        Controls what screen elements are hidden when using the level map.
-        These options are only available on WebTiles.
+        レベルマップの使用時に非表示にする画面要素を制御します。これらのオプシ
+        ョンは、WebTilesでのみ使用できます。
 
 tile_player_tile = (normal | playermons | mons:<monster> | tile:<monster-tile>)
-        If set to playermons, displays the player using the monster tile for
-        her species, instead of using the normal doll.
+        playermonsに設定すると、通常の人形を使用する代わりに、種族のモンスター
+        タイルを使用してプレーヤーを表示します。
 
-        If set to a value of the form mons:<monster>, where <monster> is the
-        name of a monster, use the base tile of <monster> as the player
-        tile. For example a value of mons:ijyb will cause Ijyb's tile to be
-        used. Any spaces in the monster name should be included. For instance:
-        a value of mons:the royal jelly is valid.
+        mons:<モンスター>の形式の値に設定した場合(<モンスター>はモンスターの名
+        前)、<モンスター>のベースタイルをプレーヤータイルとして使用します。た
+        とえば、値がmons:ijybの場合、Ijybのタイルが使用されます。モンスター名
+        にはスペースを含める必要があります。例: mons:theローヤルゼリーの値は有
+        効です。
 
-        If set to a value of the form tile:<player-tile> where <player-tile> is
-        the name of a tile in the player tile sheet, use this tile as the
-        player tile. This form is most useful for using specific variant tiles
-        of monster with multiple tiles, such as hydra and large abominations,
-        or special tiles like Cigotuvi's Monster or player transformations that
-        don't have their own base monster. The tile name must be the full name,
-        e.g. mons_hydra_7. For example, to use the hydra tile with many heads,
-        use a value of tile:mons_hydra_7. The tile names can be found in the
-        source tree folder source/rltiles in the files dc-mon.txt,
-        dc-demon.txt, and dc-player.txt. In these files, the tile name is in
-        the second word in each entry after the file name of the image, and
-        case is ignored for matching. Monster tile names are usually of the
-        form mons_<monster-name>, but other tiles like transformations are
-        named differently, e.g. tran_tree for the tree transformation tile.
+        形式tile:<player-tile>の値に設定されている場合、<player-tile>はプレー
+        ヤータイルシート内のタイルの名前であり、このタイルをプレーヤータイルと
+        して使用します。この形式は、ヒドラや大型の忌まわしいタイルなどの複数の
+        タイルを持つモンスターの特定のバリアントタイル、またはCigotuviのモンス
+        ターや独自のベースモンスターを持たないプレイヤーの変換などの特殊なタイ
+        ルを使用する場合に最も役立ちます。タイル名はフルネームである必要があり
+        ます。 mons_hydra_7。たとえば、多くの頭を持つヒドラタイルを使用するに
+        は、tile:mons_hydra_7の値を使用します。タイル名は、ソースツリーフォル
+        ダーのsource/rltilesファイルdc-mon.txt、dc-demon.txt、および
+        dc-player.txtにあります。これらのファイルでは、タイル名は画像のファイ
+        ル名の後の各エントリの2番目の単語にあり、照合では大文字と小文字は無視
+        されます。モンスタータイル名は通常、mons_<モンスター-name>の形式ですが、
+        変換などの他のタイルは別の名前が付けられます。ツリー変換タイルの場合は
+        tran_tree。
 
 tile_weapon_offsets = (<x>,<y> | reset)
 tile_shield_offsets = (<x>,<y> | reset)
-        When using a custom tile with tile_player_tile, these option set the
-        pixel x (horizontal) and y (vertical) offsets for the location where
-        the weapon or shield will be drawn in the tile. The x and y offsets
-        must be integers between -32 and 32, inclusive. Negative x values will
-        adjust left, and Negative y values will adjust up. At 0,0, the weapon
-        is drawn on the left side of the tile, and at 0,0 the shield is drawn
-        on the right side. A weapon x offset of e.g. 10 to 20 (depending on the
-        tile) together with a shield x offset of -10 to -20 can therefore be
-        used to swap locations of weapon and shield.
+        tile_player_tileでカスタムタイルを使用する場合、これらのオプションは、
+        タイル内で武器または盾が描画される位置のピクセルx (水平)およびy (垂直)
+        オフセットを設定します。 xオフセットとyオフセットは、-32から32までの整
+        数である必要があります。負のx値は左に調整され、負のy値は上に調整されま
+        す。 0,0では、武器はタイルの左側に描画され、0,0では、盾が右側に描画さ
+        れます。武器のxオフセット。したがって、10 ～ 20 (タイルに応じて)と盾x
+        オフセット-10 ～ -20を使用して、武器と盾の位置を交換できます。
 
-        Using the value "reset" will clear any previously defined offset, which
-        is using for in-game tile changes via lua.
+        値「reset」を使用すると、luaを介したゲーム内タイルの変更に使用されてい
+        る、以前に定義されたオフセットがクリアされます。
 
-4-  Character Dump.
+4-キャラクターダンプ。
 ===================
 
-4-a     Saving.
+4-a保存。
 ---------------
 
 dump_on_save = true
-        If set to true, a character dump will automatically be created or
-        updated when the game is saved.
+        trueに設定すると、ゲームの保存時にキャラクターダンプが自動的に作成また
+        は更新されます。
 
-4-b     Items and Kills.
+4-bアイテムとキル。
 ------------------------
 
-The character dump or morgue files end with a list of all monsters that
-perished while the character was active. By default, dead monsters are
-grouped in three parts:
-   Vanquished Creatures    -- monsters killed by the character
-   Collateral Kills        -- kills of friendly monsters
-   Others                  -- all other casualties (e.g. traps, hostile
-                              monsters)
+キャラクターダンプまたは遺体安置所ファイルは、キャラクターがアクティブだった間
+に死亡したすべてのモンスターのリストで終わります。デフォルトでは、死んだモンス
+ターは3つの部分にグループ化されます:倒されたクリーチャー --キャラクターによっ
+て殺されたモンスターコラテラルキル--味方のモンスターの殺害その他--他のすべての
+死傷者(例:罠、敵対的なモンスター)
 
 kill_map = friend:you, other:you
-        will merge friendly and other kills into the main vanquished
-        creatures list. Note that the merging is only for display (the
-        game still maintains three separate lists internally) and that
-        kill places (see below) may be in the wrong order for merged
-        entries. The default is an empty list.
+        味方とその他のキルをメインの倒されたクリーチャーのリストにマージします。
+        マージは表示のみを目的としており(ゲームはまだ内部的に3つの別個のリスト
+        を保持しています)、マージされたエントリのキルプレイス(以下を参照)の順
+        序が間違っている可能性があることに注意してください。デフォルトは空のリ
+        ストです。
 
 dump_kill_places = (none | all | single)
-        In the Vanquished Creatures list, this option controls how the
-        locations of each kill are displayed. Use 'none' to suppress
-        place display altogether, 'all' to display all known (up to 5)
-        kill places, anything else to the default of showing kill places
-        only for single kills
+        このオプションは、Vanquished Creaturesリストで、各殺害場所の表示方法を
+        制御します。場所の表示を完全に抑制するには'none'を使用し、既知の(最大5
+        つ)のキルプレイスをすべて表示するには'all'を使用します。それ以外の場合
+        は、単一のキルについてのみキルプレイスを表示するデフォルトに設定します。
 
 dump_item_origins = artefacts, rods
-        The game remembers where you find items. If you want this item
-        origin memory listed in your dumps, use this option to select
-        which items get annotated. Available selectors are:
-                artefacts, ego_arm, ego_weap, jewellery, runes,
-                rods, staves, books, all, none.
-        If you use multiple dump_item_origins lines, the last line takes
-        effect; all preceding lines are ignored.
+        ゲームはアイテムを見つけた場所を記憶します。このアイテムの原点メモリを
+        ダンプにリストしたい場合は、このオプションを使用してどのアイテムに注釈
+        を付けるかを選択します。利用可能なセレクターは、アーティファクト、
+        ego_arm、ego_weap、ジュエリー、ルーン、ロッド、スタッフ、ブック、すべ
+        て、なしです。複数のdump_item_origins行を使用する場合は、最後の行が有
+        効になります。先行する行はすべて無視されます。
 
-        If you don't want any items to be annotated, set
-        dump_item_origins to none, and set dump_item_origin_price to -1.
+        どの項目にも注釈を付けたくない場合は、dump_item_originsをnoneに設定し、
+        dump_item_origin_priceを-1に設定します。
 
 dump_item_origin_price = -1
-        Item origins are dumped if the price of the item is greater than
-        or equal to this amount. Set this to -1 to prevent selection by
-        price.
+        アイテムの価格がこの金額以上の場合、アイテムの起源はダンプされます。価
+        格による選択を防ぐには、これを-1に設定します。
 
 dump_message_count = 20
-        The number of last messages to be displayed in character dump
-        files.
+        キャラクタダンプファイルに表示される最後のメッセージの数。
 
 dump_order  = header,hiscore,stats,misc,notes,inventory,
 dump_order += skills,spells,overview,mutations,messages,screenshot,
 dump_order += monlist,kills,action_counts
-        (Ordered list option)
-        Controls the order of sections in the dump.
+        (順序付きリストオプション)ダンプ内のセクションの順序を制御します。
 
-        Two optional dump sections are "turns_by_place" and
-        "kills_by_place", which add detailed statistics to where turns
-        were spent and monsters were killed. You can add them to your
-        dump as:
+        2つのオプションのダンプセクションは「turns_by_place」と「
+        kills_by_place」です。これらは、ターンが費やされた場所とモンスターがキ
+        ルされた場所に関する詳細な統計を追加します。それらを次のようにダンプに
+        追加できます。
              dump_order += turns_by_place, kills_by_place
 
-        Another optional dump section is "vaults", which will list the
-        locations and names of all the vaults that have been generated
-        in the game. This will only be included in the final dump
-        which happens when you die, quit or win (or in ordinary dumps
-        while in wizard mode).
+        もう1つのオプションのダンプセクションは「vaults」です。これには、ゲー
+        ム内で生成されたすべてのvaultの場所と名前がリストされます。これは、死
+        亡、終了、または勝利したときに発生する最終ダンプ(またはウィザードモー
+        ド中の通常のダンプ)にのみ含まれます。
 
 dump_book_spells = true
-        By default all randart spellbooks in inventory will have all their
-        spells listed in the dump. If this option is set to true, spells will
-        also be dumped for non-randart spellbooks.
+        デフォルトでは、インベントリ内のすべてのランダート呪文のすべての呪文が
+        ダンプにリストされます。このオプションがtrueに設定されている場合、呪文
+        は非ランダート魔法書に対してもダンプされます。
 
-4-c     Notes.
+4-c注記。
 --------------
 
-Crawl can automatically log certain events during play. You can read
-these in the dump or morgue files. Below are options for tweaking this behaviour.
-The following events are logged:
-        - Gaining or losing a level
-        - Entering a dungeon level for the first time
-        - Memorizing a spell of higher level than any learned before
-        - Becoming a worshipper of a god
-        - Abandoning a god
-        - Being put under penance and being forgiven
-        - Receiving a gift from a god (except Xom)
-        - Death of a named orcish ally (when worshipping Beogh)
-        - Being able to invoke a godly power for the first time
-        - Picking up a rune, the Orb of Zot, or an artefact for the first time.
-        - Identifying items.
-        - Killing OOD or unique monsters (see below)
-        - Reaching critical HP levels (see below)
-        - Gaining or losing mutations
-        - Reaching significant levels in a skill (see below)
-        - Dying
-You can use the command ':' for manually adding notes.
+Crawlは、プレイ中に特定のイベントを自動的に記録できます。これらはダンプファイ
+ルまたは遺体安置所ファイルで読み取ることができます。以下は、この動作を調整する
+ためのオプションです。以下のイベントが記録されます: -レベルの増減-初めてダンジ
+ョンレベルに入る-以前に学習したレベルよりも高いレベルの呪文を記憶する-神の崇拝
+者になる-神を捨てる-苦行と赦される-神からの贈り物の受け取り(Xomを除く) -名前付
+きオークの同盟者の死(Beoghを崇拝する場合) -神の力を呼び起こすことができる初め
+て-ルーン、ゾットのオーブ、またはアーティファクトを初めて拾います。 -アイテム
+の識別。 - OODまたはユニークなモンスターを倒す(下記を参照) -クリティカルHPレベ
+ルに到達する(下記を参照) -変異を獲得または失う-スキルで重要なレベルに到達する(
+下記を参照) -死亡メモを手動で追加するには、コマンド':'を使用できます。
 
 user_note_prefix = <string>
-        Prefixes manually added notes with the given string, to make
-        them easier to find. It is not currently possible to add a
-        space at the end of this or any option, but you can use the
-        Unicode non-breaking space character ' ' instead.
+        メモを見つけやすくするために、指定された文字列をプレフィックスとして手
+        動で追加しました。現在、このオプションやオプションの末尾にスペースを追
+        加することはできませんが、代わりにUnicodeの非改行スペース文字' 'を使用
+        できます。
 
 note_items += <regex>, <regex>, ...
-        (List option)
-        When an item is identified for the first time, it will be
-        noted if its short description matches a regex. E.g.
-             note_items += rod,book,acquirement
-        Artefacts (fixed, unrand, or random) will always be noted when
-        identified, regardless of note_items.
+        (リストオプション)項目が初めて識別されると、その短い説明が正規表現と一
+        致するかどうかが示されます。例えば。 note_items +=ロッド、ブック、獲得
+        アーティファクト(固定、アンランダム、またはランダム)は、note_itemsに関
+        係なく、識別されたときに常に記録されます。
 
-        The description matched against has the same prefixes as notes
-        for the menu_colour option (e.g., "emergency_item").
+        一致する説明には、menu_colourオプションのメモと同じプレフィックスが付
+        いています(例: 「emergency_item」)。
 
 note_monsters += <regex>, <regex>, ...
-        (List option)
-        Monsters whose name matches an item in this comma-separated list
-        are considered interesting. You can have multiple note_monsters
-        lines. E.g.
-             note_monsters += Klown,orb of fire
+        (リストオプション)このカンマ区切りリスト内の項目と名前が一致するモンス
+        ターは、興味深いとみなされます。複数のnote_monsters行を持つことができ
+        ます。例えば。 note_monsters +=クラウン、火の球
 
 note_hp_percent = 5
-        If your HP falls below a certain note_hp_percentage of your max
-        hit points, a note will be taken. There is some code to avoid
-        repetitions of notes based on the same incident.
+        HPが最大ヒットポイントのうち特定のnote_hp_percentageを下回った場合、メ
+        モが取られます。同じ出来事に基づいたメモの繰り返しを避けるためのコード
+        がいくつかあります。
 
 note_skill_levels = 1,5,10,15,27
-        This sets which skill levels are noteworthy. It's a single line,
-        although you can use += as a continuation.
+        これにより、注目すべきスキルレベルが設定されます。これは1行ですが、+=
+        を継続として使用できます。
 
 note_all_skill_levels = false
-        This is a shortcut for note_skill_levels = 1,2,..,27. If you set
-        this to true, all skill levels are considered noteworthy.
+        これは、note_skill_levels = 1,2,...,27のショートカットです。これをtrue
+        に設定すると、すべてのスキルレベルが注目に値するとみなされます。
 
 note_skill_max = true
-        Setting this option will cause a note whenever a new maximum in
-        skill levels is reached. If note_skill_max is true and
-        note_skill_levels is nonempty, notes will be taken whenever
-        either of the criteria are met.
+        このオプションを設定すると、スキルレベルの新しい最大値に達するたびにメ
+        モが表示されます。 note_skill_maxがtrueで、note_skill_levelsが空でない
+        場合、いずれかの基準が満たされるたびにメモが取られます。
 
 note_xom_effects = true
-        This will add a note whenever Xom does something.
+        これにより、Xomが何かを行うたびにメモが追加されます。
 
 note_messages += <regex>, <regex>, ...
-        (List option)
-        Messages which match an item in this comma-separated list are
-        considered interesting. You can have multiple note_messages
-        lines. E.g.
-             note_messages += Something interferes
-             note_messages += protects you from harm
-        If you want all banishments to the Abyss noted, use
-             note_messages += [bB]anish.*Abyss
-        If you want a note when your draconian scales turn <colour>, use
-             note_messages += Your scales start
+        (リストオプション)このカンマ区切りリストの項目に一致するメッセージは、
+        興味深いものとみなされます。複数のnote_messages行を持つことができます。
+        例えば。 note_messages +=何かが邪魔しますnote_messages +=あなたを危害
+        から守りますアビスへのすべての追放を記録したい場合は、note_messages +=
+        [bB]anish.*アビスを使用してください。厳重な鱗が<色>になったときにメモ
+        が必要な場合は、note_messages +=を使用してください。
 
 note_chat_messages = false
-        If set to false, this will disable logging of webtiles chat
-        messages from other players. (This setting only applies on the
-        online servers).
+        falseに設定すると、他のプレイヤーからのWebtileチャットメッセージのログ
+        が無効になります。 (この設定はオンラインサーバーにのみ適用されます)。
 
 note_dgl_messages = true
-        If set to false, this will disable logging of DGL messages
-        sent by other players. (This setting only applies on the online
-        servers).
+        falseに設定すると、他のプレーヤーから送信されたDGLメッセージのログが無
+        効になります。 (この設定はオンラインサーバーにのみ適用されます)。
 
 
-5-  Miscellaneous.
+5-その他。
 ==================
 
-5-a     All OS.
+5-aすべてのOS。
 ---------------
 
 mouse_input = false
-        When enabled, the mouse_input option allows the game to use
-        mouse input events on certain platforms (Windows and Unix).
-        Note that the extent of mouse support varies greatly across
-        platforms and is strongly influenced by your terminal settings.
+        mouse_inputオプションを有効にすると、ゲームで特定のプラットフォーム(
+        WindowsおよびUnix)でマウス入力イベントを使用できるようになります。マウ
+        スのサポート範囲はプラットフォームによって大きく異なり、端末の設定に大
+        きく影響されることに注意してください。
 
-        On Unixes, you're only likely to get mouse support working with
-        ncurses in xterms (specifically your $TERM probably needs to
-        contain "xterm" for ncurses to activate its mouse events;
-        if you're running Crawl in GNU screen in an xterm, the mouse
-        will probably not work).
+        Unixでは、xtermのncursesで動作するマウスサポートのみが得られる可能性が
+        あります(特に、マウスイベントをアクティブにするために、$TERMにncurses
+        の「xterm」が含まれている必要があります。xtermのGNU画面でCrawlを実行し
+        ている場合、マウスはおそらく機能しません)。
 
-        On Windows, you'll need to disable QuickEdit Mode on your
-        console for Crawl to use the mouse (QuickEdit is disabled by
-        default, so you shouldn't need to change anything if you're
-        using a stock console). You can disable QuickEdit by
-        right-clicking the titlebar of your command-prompt, selecting
-        Properties and disabling QuickEdit in the Options tab.
+        Windowsでは、Crawlがマウスを使用するには、コンソールのクイック編集モー
+        ドを無効にする必要があります(クイック編集はデフォルトで無効になってい
+        るため、標準のコンソールを使用している場合は何も変更する必要はありませ
+        ん)。 QuickEditを無効にするには、コマンドプロンプトのタイトルバーを右
+        クリックし、[プロパティ]を選択して、[オプション]タブでQuickEditを無効
+        にします。
 
 wiz_mode = (no | never | yes)
-        Wizard mode options (available only in WIZARD compiles):
-          yes   -- start games in wizard mode (game will not be scored)
-          no    -- still allows player to enter wizard mode after start
-                   of game
-          never -- never allow a wizard command to be used
+        ウィザードモードオプション(WIZARDコンパイルでのみ利用可能):はい--ウィ
+        ザードモードでゲームを開始します(ゲームは得点されません)いいえ--ゲーム
+        開始後もプレーヤーがウィザードモードに入ることができます決して--ウィザ
+        ードコマンドの使用を許可しません
 
 explore_mode = (no | never | yes)
-        Explore mode options (available only in WIZARD compiles):
-          yes   -- start games in explore mode (game will not be scored)
-          no    -- still allows player to enter explore mode after start
-                   of game
-          never -- never allow explore mode to be entered
+        探索モードオプション(WIZARDコンパイルでのみ利用可能):はい--探索モード
+        でゲームを開始します(ゲームは得点されません)いいえ--ゲーム開始後もプレ
+        イヤーが探索モードに入ることが許可されます決して--探索モードに入ること
+        は許可されません
 
 char_set = (default | ascii)
-        Chooses different pre-set character sets for the game play screen.
-        Unlike previous versions of Crawl, this does not select the I/O
-        encoding anymore.
+        ゲームプレイ画面用にさまざまなプリセット文字セットを選択します。 Crawl
+        の以前のバージョンとは異なり、これではI/Oエンコーディングが選択されな
+        くなりました。
 
-        You can also include ibm_glyphs.txt, dec_glyphs.txt, or old_unicode_
-        glyphs.txt to bring back some older character sets that are
-        no longer built-in.
+        ibm_glyphs.txt、dec_glyphs.txt、またはold_unicode_ glyphs.txtを含めて、
+        組み込まれなくなった古い文字セットを復活させることもできます。
 
-        Has negligible effect in the Tiles build.
+        タイルビルドへの影響は無視できます。
 
-colour.OLDCOLOUR = NEWCOLOUR
-        Useful for terminals where some colours are hard to read (and
-        cannot be adjusted), as well as for creating a custom scheme,
-        especially when used with the background option on a terminal
-        with a non-black background.
-        Format is colour.OLDCOLOUR = NEWCOLOUR, later rules take
-        precedence and the NEWCOLOUR is always literal (ie. it won't
-        re-evaluate to a different colour).
-        The colours are:
-                black, blue, green, cyan, red, magenta, brown, lightgrey,
-                darkgrey, lightblue, lightgreen, lightcyan, lightred,
-                lightmagenta, yellow, white
-        with lightgray = lightgrey, darkgray = darkgrey. Some examples:
+colour.OLDCOLOUR = NEWCOLOUR一部の色が読みにくい(調整できない)端末や、特に黒以
+外の職業を備えた端末で職業オプションとともに使用した場合にカスタムスキームを作
+成する場合に便利です。形式はcolour.OLDCOLOUR = NEWCOLOURで、後のルールが優先さ
+れ、NEWCOLOURは常にリテラルです(つまり、別の色に再評価されません)。色は次のと
+おりです:ブラック、ブルー、グリーン、シアン、レッド、マゼンタ、ブラウン、ライ
+トグレー、ダークグレー、ライトブルー、ライトグリーン、ライトシアン、ライトレッ
+ド、ライトマゼンタ、イエロー、白(ライトグレー =ライトグレー、ダークグレー =ダ
+ークグレー)。いくつかの例:
           colour.lightgrey = black
           colour.lightcyan = cyan
           colour.yellow    = brown
 
 display_char = <dungeon_character_name : symbol>
-        a list of these is allowed, as well.
+        これらのリストも同様に許可されます。
 
-        The possible entries for dungeon_character_name are:
-           wall, permawall, wall_magic, floor, floor_magic, door_open,
-           door_closed, trap, stairs_down, stairs_up, grate, altar, arch,
-           fountain, wavy, statue, invis_exposed, item_detected, item_orb,
-           item_rune, item_weapon, item_armour, item_wand, item_food,
-           item_scroll, item_ring, item_potion, item_missile, item_book,
-           item_staff, item_rod, item_miscellany, item_corpse, item_skeleton,
-           item_gold, item_amulet, cloud, tree, teleporter, space, fired_flask,
-           fired_bolt, fired_chunk, fired_book, fired_weapon, fired_zap,
-           fired_burst, fired_stick, fired_trinket, fired_scroll, fired_debug,
-           fired_armour, fired_missile, explosion, frame_horiz, frame_vert,
-           frame_top_left, frame_top_right, frame_bottom_left,
-           frame_bottom_right
-        Most of these are self-explanatory. "arch" is used for shops and
-        portals. "floor_magic" and "wall_magic" are used to display
-        magic-mapped squares on the level map. "invis_exposed" is the
-        character for water creatures submerged in shallow water, or
-        invisible creatures wading in shallow water. "wavy" is water and
-        lava.
+        dungeon_character_nameの可能なエントリは次のとおりです:壁、パーマウォ
+        ール、wall_magic、床、floor_magic、door_open、door_closed、トラップ、
+        stairs_down、stairs_up、格子、祭壇、アーチ、噴水、波状、彫像、
+        invis_exposed、item_detected、item_orb、item_rune、item_weapon、
+        item_armour、item_wand、item_food、item_scroll、item_ring、
+        item_potion、item_missile、item_book、item_staff、item_rod、
+        item_miscellany、item_corpse、item_skeleton、item_gold、item_amulet、
+        クラウド、ツリー、テレポーター、スペース、fired_flask、fired_bolt、
+        fired_chunk、fired_book、fired_weapon、fired_zap、fired_burst、
+        fired_stick、fired_trinket、fired_scroll、 fired_debug、fired_armour、
+        fired_missile、爆発、frame_horiz、frame_vert、frame_top_left、
+        frame_top_right、frame_bottom_left、frame_bottom_rightこれらのほとんど
+        は説明不要です。 「arch」は店舗やポータルに使用されます。 「
+        floor_magic」と「wall_magic」は、レベルマップ上にマジックマップされた
+        マス目を表示するために使用されます。 「invis_exposed」は、浅瀬に沈む水
+        の生き物、または浅瀬を歩く目に見えない生き物を表す文字です。 「波状」
+        は水と溶岩です。
 
-        Symbols can be specified using a letter, or by its ASCII/Unicode
-        code: a decimal number or a hexadecimal one (prefixed with x).
+        シンボルは文字、またはそのASCII/Unicodeコード(10進数または16進数(先頭
+        にxが付く))を使用して指定できます。
 
 feature += <regex> { <symbol>, <magicmap symbol>, <view colour>,
-                    <levelmap_magic_colour>, <levelmap_seen_colour>,
-                    <emphasised_colour>, <levelmap_emphasised_colour> } ;
-           <regex> { ... }
+                    <levelmap_magic_colour>、<levelmap_seen_colour>、<
+                    emphasised_colour>、<levelmap_emphasised_colour> } ; <正規
+                    表現> { ... }
 feature -= <regex> , <regex>
-        (List-like option)
-        where <regex> is a regular expression describing a dungeon
-        feature. This regex should match the description when using the
-        'x' command. In case the regex matches several descriptions, all
-        such features are affected.
+        (リストのようなオプション)ここで、<regex>はダンジョンの特徴を説明する
+        正規表現です。この正規表現は、'x'コマンドを使用するときの説明と一致す
+        る必要があります。正規表現が複数の説明に一致する場合、そのようなすべて
+        の機能が影響を受けます。
 
-        The list in {...} specifies the appearance of the dungeon
-        feature(s), and should be self-explanatory. <symbol> can be used
-        to override the above display_char options, or also to distinguish
-        among subtypes of a character.
+        {...}内のリストはダンジョンの特徴の外観を指定しており、一目瞭然です。
+        <symbol>は、上記のdisplay_charオプションをオーバーライドしたり、文字の
+        サブタイプを区別したりするために使用できます。
 
-        'magic' always refers to magic mapping. So the <magicmap symbol>
-        entry determines what symbol will be used for features only
-        detected via magic mapping.
+        'magic'は常にマジックマッピングを参照します。したがって、 <
+        magicmapsymbol>エントリは、マジックマッピングによってのみ検出されたフ
+        ィーチャにどのシンボルが使用されるかを決定します。
 
-        'emphasised_colour' refers to the colour used to highlight
-        unvisited stone stairs; for non-stair features, setting emphasis
-        colours does nothing useful.
+        'emphasised_colour'は、未訪問の石階段を強調表示するために使用される色
+        を指します。階段以外のフィーチャの場合、強調色を設定しても何も役に立ち
+        ません。
 
-        Leading parameters in the {...} list can be omitted by leaving
-        them blank and using placeholder commas. Trailing parameters can
-        be omitted without placeholder commas.
+        {...}リストの先頭のパラメータは、空白のままにし、プレースホルダのカン
+        マを使用することで省略できます。末尾のパラメータは、プレースホルダのカ
+        ンマを使用せずに省略できます。
 
-        Multiple feature option lines can be used, as can multiple
-        feature descriptions strung together on the same line separated
-        by semicolons.
+        複数の機能オプション行を使用でき、複数の機能の説明をセミコロンで区切っ
+        て同じ行に並べることもできます。
 
-        Feature overrides can be cleared using -=, providing a regex only
-        (and not an appearance). This will restore all features whose
-        descriptions match the regex to their default appearances.
+        機能のオーバーライドは-=を使用してクリアでき、正規表現のみを提供します
+        (外観は提供しません)。これにより、説明が正規表現と一致するすべての機能
+        がデフォルトの外観に復元されます。
 
-        Examples:
-         * Colour rock walls red:
+        例: *岩壁を赤に着色:
              feature += rock wall { , , red }
-         * Use # for metal walls in all character sets:
+         *すべての文字セットで金属壁には#を使用します。
              feature += metal wall {#}
-         * Colour upstairs green and downstairs red:
+         *色は上階が緑、下階が赤:
              feature += stone staircase leading up {,,,,green}
              feature += stone staircase leading down {,,,,red}
 
-        Symbols can be specified as with display_char:
+        シンボルは、display_charと同様に指定できます。
              feature += metal wall {#}
              feature += metal wall {35}
              feature += metal wall {x23}
-        all do the same thing.
+        全員が同じことをします。
 
 mon_glyph += <monster name or symbol> : (<colour> <glyph> | <monster name>) ,
-             <monster name or symbol> : <replacement>
+             <モンスターの名前または記号> : <置換>
 mon_glyph -= <monster name or symbol>
-        (List option)
-        The mon_glyph option allows you to customise the symbol and
-        colour used to display a monster.
+        (リストオプション) mon_glyphオプションを使用すると、モンスターの表示に
+        使用されるシンボルと色をカスタマイズできます。
 
-        You can customise symbols based on monster names or their
-        existing symbols. For instance, if you want to put elves on E
-        and elementals on e, you can do this:
+        モンスター名または既存のシンボルに基づいてシンボルをカスタマイズできま
+        す。たとえば、エルフをEに配置し、エレメンタルをeに配置したい場合は、次
+        のようにできます。
 
              mon_glyph += e : E
              mon_glyph += E : e
 
-        You can specify a different symbol, or a colour, or both, in any
-        order. Here are more examples:
+        別のシンボル、色、またはその両方を任意の順序で指定できます。さらに例を
+        示します。
 
              mon_glyph += deep elf annihilator : E lightmagenta
              mon_glyph += Xtahua : lightmagenta D
              mon_glyph += large zombie : darkgrey
              mon_glyph += small simulacrum : x
 
-        (The left hand side of the : is case-sensitive.)
+        (:の左側では大文字と小文字が区別されます。)
 
-        You can also specify another monster, so that it copies the base
-        symbol and colour of that monster (this is not transitive). For
-        example, if you think that slime creature colours are backwards:
+        別のモンスターを指定して、そのモンスターの基本シンボルと色をコピーする
+        こともできます(これは推移的ではありません)。たとえば、スライムのクリー
+        チャーの色が逆だと思う場合:
 
             mon_glyph += slime creature : merged slime creature
             mon_glyph += merged slime creature : slime creature
 
-        You can specify symbols using their code points using the syntax
-        as shown in the "feature" option. You can also use Unicode code
-        points:
+        「feature」オプションに示されている構文を使用して、コードポイントを使
+        用してシンボルを指定できます。 Unicodeコードポイントを使用することもで
+        きます。
 
              mon_glyph += draconian scorcher : x6e9
 
-        A single _ is treated as a space; if you want a real underscore,
-        put a \ in front of it like this:
+        単一の_はスペースとして扱われます。実際のアンダースコアが必要な場合は、
+        次のようにその前に\を置きます。
 
              mon_glyph += player ghost : \_
 
-        You can also redefine several "pseudo" monsters, them being:
+        また、次のようないくつかの「疑似」モンスターを再定義することもできます。
 
-             player
-             sensed monster
-             {trivial,easy,tough,nasty,friendly} sensed monster
-             merged slime creature
+             プレイヤーはモンスター {trivial、easy、tough、nasty、friends}を感
+             知しましたモンスターは融合したスライムクリーチャーを感知しました
 
-        Playable species that normally have no monster of the same name can
-        also be redefined, for use with show_player_species = true.
+        通常は同じ名前のモンスターがない再生可能な種族も、show_player_species
+        = trueで使用するために再定義できます。
 
-        Monster glyph overrides can be cleared using -=, which restores
-        the named monster (or all monsters of the given glyph) to its default
-        appearance. Specify only the monster name or glyph for -=, not the
-        replacement being removed.
+        モンスターグリフのオーバーライドは、-=を使用してクリアできます。これに
+        より、名前付きモンスター (または指定されたグリフのすべてのモンスター)
+        がデフォルトの外観に復元されます。 -=には、削除される置換ではなく、モ
+        ンスターの名前またはグリフのみを指定します。
 
 item_glyph ^= <regexp> : <colour> <glyph>
 item_glyph -= <regexp>
-        (Ordered list option)
-        Customizes the symbol and/or colour of all items matching the regexp.
-        Unlike mon_glyph, this is a partial name match.
+        (順序付きリストオプション)正規表現に一致するすべての項目の記号や色をカ
+        スタマイズします。 mon_glyphとは異なり、これは部分的な名前一致です。
 
-        Items are prefixed by tags, both those from stash tracking and from
-        menu colouring. Thus, you can colour {artefact} or useless_item.
+        アイテムには、隠し場所の追跡とメニューの色の両方からのタグが接頭辞とし
+        て付けられます。したがって、{アーティファクト}またはuseless_itemに色を
+        付けることができます。
 
-        Multiple rules can modify a single item, which is useful if you want
-        to change the colour and glyph separately:
+        複数のルールで1つの項目を変更できます。これは、色とグリフを個別に変更
+        する場合に便利です。
             item_glyph += corpse : x625
             item_glyph += poisonous.* corpse : lightgreen
 
-        Rules are applied in order, so later rules are higher priority.
+        ルールは順番に適用されるため、後のルールの優先順位が高くなります。
 
-        Removing a rule with -= removes all rules using the exact regexp
-        provided; do not specify a colour or glyph in that case.
+        -=を使用してルールを削除すると、指定された正確な正規表現を使用してすべ
+        てのルールが削除されます。その場合は、色やグリフを指定しないでください。
 
 pizza = <topping name>
-        A comma-separated list of the player's preferred pizza toppings.
+        プレイヤーが好むピザのトッピングのカンマ区切りのリスト。
 
 use_fake_player_cursor = true
-        Makes the main view highlight the player without using the
-        terminal cursor. This means it won't flicker when the cursor
-        is turned off to move elsewhere for drawing, and allows
-        turning the cursor off by default. Has no effect in the Tiles build.
+        ターミナルカーソルを使用せずに、メインビューでプレーヤーをハイライト表
+        示します。これは、描画のために別の場所に移動するためにカーソルをオフに
+        してもちらつきがなく、デフォルトでカーソルをオフにすることができること
+        を意味します。タイルビルドには影響しません。
 
 show_player_species = false
-        Displays your character as a member of its species. For example, if
-        you're a Hill Orc, you will be shown as an 'o' rather than '@'. Has
-        no effect in Tiles.
+        キャラクターを種族のメンバーとして表示します。たとえば、あなたがHill
+        Orcの場合、'@'ではなく'o'として表示されます。タイルでは効果がありませ
+        ん。
 
 fake_lang = <lang1>[,<lang2>[,...]]
-        Set one or more fake languages, applied in the order provided (order
-        does matter!) The same language can be set more than once, though it
-        may not end up making much sense... At most 3 fake langs can be set at
-        a time.
+        1つ以上の偽の言語を設定し、指定された順序で適用します(順序は重要です!)
+        同じ言語を複数回設定できますが、最終的にはあまり意味がなくなる可能性が
+        あります...一度に最大3つの偽の言語を設定できます。
 
-        Options are: (dwarven|jagerkin|kraut|runes|wide|grunt|butt:<n>)
-        Experiment to find out what they do!
+        オプションは次のとおりです: (dwarven|jagerkin|kraut|runes|wide|grunt|
+        butt:<n>)それらが何をするのか試してみてください。
 
-5-b     DOS and Windows.
+5-b DOSとWindows。
 ------------------------
 
 dos_use_background_intensity = false
-        On DOS and Windows, if you're using a console that can do
-        high-intensity background colours, set this option to true for
-        superior friend-branding. If your console doesn't like this
-        option, some friendly monsters will appear as blinking
-        characters (and setting this option to false may be advisable to
-        preserve your sanity in such cases).
+        DOSおよびWindowsで、高輝度の職業カラーを実行できるコンソールを使用して
+        いる場合は、優れたフレンドブランド化のためにこのオプションをtrueに設定
+        します。コンソールがこのオプションを好まない場合は、フレンドリーなモン
+        スターが点滅する文字として表示されます(そのような場合には、このオプシ
+        ョンをfalseに設定することをお勧めします)。
 
-5-c     Unix.
+5-cユニックス。
 -------------
 
 background_colour = black
-        Sets the default background colour by name (defaults to BLACK).
-        This may be useful if you're using a terminal with a background
-        colour other than black (such as an xterm), but this option is
-        still experimental and the results may not be very good.
+        デフォルトの職業カラーを名前で設定します(デフォルトはBLACK)。これは、
+        黒以外の職業色の端末(xtermなど)を使用している場合に便利かもしれません
+        が、このオプションはまだ実験段階にあるため、結果はあまり良くない可能性
+        があります。
 
 use_fake_cursor = true
-        If true, Crawl draws the cursor explicitly on the level-map and
-        targeting screens instead of relying on the term to draw the
-        cursor. Use this if your term cannot show a cursor over
-        darkgrey/black squares.
-        On non-Unix builds this option defaults to false.
+        trueの場合、Crawlは、用語に依存してカーソルを描画するのではなく、レベ
+        ルマップおよびターゲティング画面に明示的にカーソルを描画します。用語で
+        ダークグレー/黒の四角形の上にカーソルを表示できない場合は、これを使用
+        します。 Unix以外のビルドでは、このオプションのデフォルトはfalseです。
 
 
-6-  Lua.
+6-ルア。
 ========
 
-6-a  Including lua files.
+6-a luaファイルを含みます。
 -------------------------
 
-Lua files are scripts which can provide existing commands with a new
-meaning or create new commands (to be used in macros). To use Lua
-files, Crawl needs to be compiled with support for user Lua scripts.
-You can if your Crawl has Lua support by hitting ?V in-game. The list
-of features Crawl displays should include "Lua user scripts".
+Luaファイルは、既存のコマンドに新しい意味を与えたり、(マクロで使用する)新しい
+コマンドを作成したりできるスクリプトです。 Luaファイルを使用するには、ユーザー
+LuaスクリプトをサポートするようにCrawlをコンパイルする必要があります。 Crawlが
+Luaをサポートしている場合は、ゲーム内で?Vを押してください。 Crawlが表示する機
+能のリストには、「Luaユーザースクリプト」が含まれている必要があります。
 
-Lua files are included using the lua_file option (one file per line):
+Luaファイルは、lua_fileオプションを使用してインクルードされます(1行に1つのファ
+イル)。
 
 lua_file = <path/name.lua>
 
-Lua functions can be macroed in-game by setting the macro action to "===",
-followed by the function name.
+Lua関数は、マクロアクションを「===」に設定し、その後に関数名を続けることでゲー
+ム内でマクロ化できます。
 
-The wizard-mode Lua interpreter (&^T) will, the first time it's invoked,
-load all of the files that are specified with the terp_file option:
+ウィザードモードのLuaインタープリター (&^T)は、初めて呼び出されたときに、
+terp_fileオプションで指定されたすべてのファイルをロードします。
 
 terp_file = <path/name.lua>
 
-The Lua in these files will have access to all of the Crawl Lua internals
-(that is, will be run in the context of dlua, not clua).
+これらのファイル内のLuaは、すべてのCrawl Lua内部にアクセスできます(つまり、
+cluaではなくdluaのコンテキストで実行されます)。
 
-6-b     Executing inline lua.
+6-bインラインluaを実行します。
 -----------------------------
 
-Lua code can be used directly in your init.txt/.crawlrc. You can
-execute Lua code using the following syntax.
+Luaコードはinit.txt/.crawlrcで直接使用できます。次の構文を使用してLuaコードを
+実行できます。
 
-: Single line of lua code
+:単一行のluaコード
 
-< Possibly multi-line
-  Lua code >
+<複数行の可能性あり
+  Luaコード>
 
-{ Possibly multi-line
-  Lua code }
+{複数行の可能性あり
+  Luaコード}
 
-In the second and third cases, the restriction is that the delimiter
-characters appear at the beginning and end of a line, respectively.
-The difference between the <> and {} is when the code gets executed.
-Code {}, it is executed right away. Other Lua code is executed only
-after the entire init file is read in.
+2番目と3番目のケースでは、区切り文字がそれぞれ行の先頭と行末に出現するという制
+限があります。 <>と{}の違いは、コードがいつ実行されるかです。コード{}はすぐに
+実行されます。他のLuaコードは、initファイル全体が読み込まれた後にのみ実行され
+ます。
 
-Examples:
+例:
 
 # Print a welcome message
-: crawl.mpr("Hello " .. you.name())
+: Crawl.mpr("こんにちは" .. you.name())
 
-<
--- Another welcome message (lua code uses lua comments)
-crawl.mpr("Hi there")
->
+< --別のウェルカムメッセージ(luaコードはluaコメントを使用しています) Crawl.mpr
+("こんにちは") >
 
-{
-function ch_autopickup(it) [ ... body omitted ... ] end
+{ function ch_autopickup(it) [ ...本体省略... ] end
 }
 
-6-c     Conditional options.
+6-c条件付きオプション。
 ----------------------------
 
-You can use Lua to selectively include parts of your init.txt (based
-on character type, for instance) using the same syntax.
+Luaを使用すると、同じ構文を使用して(たとえば文字タイプに基づいて) init.txtの一
+部を選択的に含めることができます。
 
-Example:
+例：
 
-: if you.race() == "Mummy" then
+: if you.race() == "ママ" then
 autopickup = $?+"/
-: else
+：それ以外
 autopickup = $?+"/!%
-: end
+：終わり
 
-Options can be referenced by lua via "options.option_name". For
-example:
+オプションは、「options.option_name」を介してluaから参照できます。例えば：
 
-:if string.find(options.autopickup, "!") then
+:if string.find(options.autopicup, "!") then
 # Do something here if potions are included in autopickup
-:end
+：終わり
 
-"options.option_name" can even be used for options that crawl itself
-doesn't recognize. This can be combined with setting options on the
-command line (see section 0-b) to use the command line to control
-conditionalization of options in the options files. For example, on the
-command line you could set the option "foobar" with "-extra-opt-first
-foobar=true", and then do:
+「options.option_name」は、Crawl自体が認識しないオプションにも使用できます。こ
+れをコマンドラインでのオプションの設定(セクション0-bを参照)と組み合わせて、コ
+マンドラインを使用してオプションファイル内のオプションの条件付けを制御できます。
+たとえば、コマンドラインでオプション「foobar」を「-extra-opt-first foobar=true」
+で設定し、次のように実行できます。
 
 :if options.foobar then
 # Do things here
-:end
+：終わり
 
-6-d     Conditional option caveats.
+6-d条件付きオプションに関する注意事項。
 -----------------------------------
 
-Note that none of the options listed under "Starting Screen" (section 1)
-can be set conditionally. This is because the options files are
-actually read in twice: once before character creation with Lua turned
-off, and a second time after character creation with Lua turned on. If
-you attempt to set a starting-screen option conditionally then the value
-furthest down in the options file will be used regardless of what
-conditions you set.
+「開始画面」(セクション1)にリストされているオプションはいずれも条件付きで設定
+できないことに注意してください。これは、オプションファイルが実際には2回読み込
+まれるためです。1回目はLuaをオフにしてキャラクター作成前に、2回目はLuaをオンに
+してキャラクター作成後に読み込まれます。開始画面オプションを条件付きで設定しよ
+うとすると、設定した条件に関係なく、オプションファイルの一番下にある値が使用さ
+れます。
 
-The above caveat applies to the "wiz_mode" option as well. Instead of
-conditionalized wiz_mode, you can add to the command line
-"-extra-opt-last wiz_mode=yes" to make any new game start in wizard
-mode.
+上記の注意事項は、「wiz_mode」オプションにも適用されます。条件付きwiz_modeの代
+わりに、コマンドラインに「-extra-opt-last wiz_mode=yes」を追加して、新しいゲー
+ムをウィザードモードで開始することができます。
