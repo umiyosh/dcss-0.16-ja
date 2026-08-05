@@ -24,10 +24,14 @@ jobs:
           fetch-depth: 0
 
       - name: Test translation checker
-        run: python3 crawl-ref/source/util/test-check-jtrans
+        run: |
+          python3 crawl-ref/source/util/test-check-jtrans
+          python3 crawl-ref/source/util/test-check-lua-jtrans
 
       - name: Check player-visible messages
-        run: python3 crawl-ref/source/util/check-jtrans --all
+        run: |
+          python3 crawl-ref/source/util/check-jtrans --all
+          python3 crawl-ref/source/util/check-lua-jtrans
 
   build:
     name: ${{ matrix.compiler.name }} / ${{ matrix.variant.name }}

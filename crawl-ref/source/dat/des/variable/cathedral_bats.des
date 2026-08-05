@@ -26,7 +26,7 @@ function callback.cathedral_bats (data, triggerable, triggerer, marker, ev)
   data.bat_count = data.bat_count + 1
 
   if you.see_cell(x, y) then
-    crawl.mpr("A bat flies out of a crevice!")
+    crawl.mpr(crawl.jtrans("A bat flies out of a crevice!"))
   end
 end
 }}

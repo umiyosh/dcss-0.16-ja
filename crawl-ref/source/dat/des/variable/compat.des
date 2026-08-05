@@ -69,7 +69,7 @@ function callback.grunt_zot_stairs_roulette_door_open(data, triggerable,
 
   data.triggered = true
 
-  crawl.mpr("Several panes of glass retract into the floor.")
+  crawl.mpr(crawl.jtrans("Several panes of glass retract into the floor."))
   for p in iter.slave_iterator("hidden_door", 1) do
     dgn.terrain_changed(p.x, p.y, "floor", false, false, false)
   end
@@ -79,9 +79,9 @@ function callback.grunt_zot_stairs_roulette_teleport(data, triggerable,
                                                      triggerer, marker, ev)
   slave = dgn.find_marker_positions_by_prop("dest", data.dest)
   if you.teleport_to(slave[1].x, slave[1].y) then
-      crawl.mpr("Your surroundings suddenly seem different.")
+      crawl.mpr(crawl.jtrans("Your surroundings suddenly seem different."))
   else
-      crawl.mpr("There is a strange hissing noise.")
+      crawl.mpr(crawl.jtrans("There is a strange hissing noise."))
   end
 end
 
@@ -93,9 +93,9 @@ function teleporter_serial_action_fn
 
   -- third parameter is whether to teleport whatever is on the reciving pad
   if you.teleport_to(my_slaves[1].x, my_slaves[1].y, false) then
-    crawl.mpr("Your surroundings suddenly seem different!")
+    crawl.mpr(crawl.jtrans("Your surroundings suddenly seem different!"))
   else
-    crawl.mpr("There is a strange hissing noise.")
+    crawl.mpr(crawl.jtrans("There is a strange hissing noise."))
   end
 end
 
@@ -111,7 +111,7 @@ function callback.amethyst_srp_altar(data, triggerable, triggerer, marker, ev)
   local slaves = dgn.find_marker_positions_by_prop("teleport_spot",
                                                    data.teleport_spot)
   you.teleport_to(slaves[1].x, slaves[1].y)
-  crawl.mpr("Your surroundings suddenly seem different.")
+  crawl.mpr(crawl.jtrans("Your surroundings suddenly seem different."))
 end
 
 }}

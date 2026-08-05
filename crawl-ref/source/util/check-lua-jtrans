@@ -1,0 +1,336 @@
+#!/usr/bin/env python3
+
+import argparse
+import ast
+from dataclasses import dataclass
+from pathlib import Path
+import re
+import sys
+
+
+SOURCE_ROOT = Path(__file__).resolve().parents[1]
+DATABASE_ROOT = SOURCE_ROOT / "dat/database/ja"
+STRING_PATTERN = r'(?:"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\')'
+STRING = re.compile(STRING_PATTERN, re.DOTALL)
+OUTPUT_CALL = re.compile(
+    r"crawl\.(?P<name>mpr|god_speaks|yesno)\s*\("
+)
+TRANSLATION_CALL = re.compile(
+    r"crawl\.(?P<name>jtrans|jtransln|tagged_jtrans)\s*\("
+)
+NON_MESSAGE_CALL = re.compile(r"dgn\.feature_desc_at\s*\(")
+PURE_STRING_EXPRESSION = re.compile(
+    rf"\s*(?P<strings>{STRING_PATTERN}"
+    rf"(?:\s*\.\.\s*{STRING_PATTERN})*)\s*",
+    re.DOTALL,
+)
+ENGLISH = re.compile(r"[A-Za-z]{3,}")
+MARKUP = re.compile(r"<[^>]+>")
+
+
+# These paths only report level-generation diagnostics or test output. They
+# are not reachable as player-facing messages in a normal game.
+DEVELOPER_ONLY_PATHS = {"dat/des/test.des"}
+DEVELOPER_ONLY_PREFIXES = (
+    "dat/des/builder/",
+    "dat/dlua/layout/",
+)
+
+# These messages are limited to dry-run, portal-debug, broken-marker, or
+# internal consistency paths in files that also contain player output.
+DEVELOPER_MESSAGE_PREFIXES = {
+    "dat/des/branches/pan.des": ("Error: someone stolen",),
+    "dat/des/variable/ancient_champions.des": (
+        "Couldn't find a slave!",
+    ),
+    "dat/dlua/lm_door.lua": ("Got ", " runes"),
+    "dat/dlua/lm_mon_prop.lua": ("No monster for ",),
+    "dat/dlua/lm_trig.lua": ("ERROR: ",),
+    "dat/dlua/lm_trove.lua": (
+        "Accepting ",
+        "Artefact name ",
+        " and added to queue.",
+        " instead?",
+        "on the trove tile.",
+        " versus ",
+        ", got ",
+        "Checking item:",
+        "Ego type ",
+        "Ignoring ",
+        "Item not identified.",
+        "It's a nopiety trove.",
+        "Make this portal take your piety?",
+        "Nil plus1 ",
+        "No ",
+        "Pluses do not match:",
+        "Quantity ",
+        "Run diagnostic ",
+        "Run diagonstic ",
+        "Sub and base types ",
+        "Switch Trove to ",
+        "Switched to a new item.",
+        "This trove is too buggy to enter!",
+        "To change the item ",
+        "Try making this Trove ",
+        "Unwanted ",
+        "Wanted ",
+    ),
+    "dat/dlua/sprint.lua": ("marker [", "] not found"),
+}
+
+
+@dataclass(frozen=True)
+class Issue:
+    line: int
+    message: str
+    kind: str
+
+
+def normalize_key(key):
+    """Apply the same normalization as database.cc:jtrans()."""
+    return key.strip().replace("\n", r"\n").lower()
+
+
+def load_dictionary_keys(database_root=DATABASE_ROOT):
+    keys = set()
+    for path in sorted(database_root.glob("jtrans*.txt")):
+        for block in path.read_text(errors="ignore").split("%%%%"):
+            lines = [
+                line
+                for line in block.splitlines()
+                if line.strip() and not line.lstrip().startswith("#")
+            ]
+            if len(lines) >= 2:
+                keys.add(normalize_key(lines[0]))
+    return keys
+
+
+def _mask_range(result, start, end):
+    for offset in range(start, end):
+        if result[offset] != "\n":
+            result[offset] = " "
+
+
+def mask_comments(source):
+    result = list(source)
+    i = 0
+    quote = None
+    while i < len(source):
+        char = source[i]
+        if quote:
+            if char == "\\":
+                i += 2
+                continue
+            if char == quote:
+                quote = None
+            i += 1
+            continue
+        if char in {'"', "'"}:
+            quote = char
+            i += 1
+            continue
+        if source.startswith("--[[", i):
+            end = source.find("]]", i + 4)
+            end = len(source) if end == -1 else end + 2
+            _mask_range(result, i, end)
+            i = end
+            continue
+        if source.startswith("--", i):
+            end = source.find("\n", i + 2)
+            end = len(source) if end == -1 else end
+            _mask_range(result, i, end)
+            i = end
+            continue
+        if char == "#" and not source[:i].split("\n")[-1].strip():
+            end = source.find("\n", i + 1)
+            end = len(source) if end == -1 else end
+            _mask_range(result, i, end)
+            i = end
+            continue
+        i += 1
+    return "".join(result)
+
+
+def call_end(source, opening):
+    depth = 1
+    quote = None
+    i = opening + 1
+    while i < len(source):
+        char = source[i]
+        if quote:
+            if char == "\\":
+                i += 2
+                continue
+            if char == quote:
+                quote = None
+        elif char in {'"', "'"}:
+            quote = char
+        elif char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0:
+                return i
+        i += 1
+    raise ValueError(f"unterminated call at offset {opening}")
+
+
+def argument_ranges(source, start, end):
+    ranges = []
+    arg_start = start
+    depths = {"(": 0, "[": 0, "{": 0}
+    pairs = {")": "(", "]": "[", "}": "{"}
+    quote = None
+    i = start
+    while i < end:
+        char = source[i]
+        if quote:
+            if char == "\\":
+                i += 2
+                continue
+            if char == quote:
+                quote = None
+        elif char in {'"', "'"}:
+            quote = char
+        elif char in depths:
+            depths[char] += 1
+        elif char in pairs:
+            depths[pairs[char]] -= 1
+        elif char == "," and all(depth == 0 for depth in depths.values()):
+            ranges.append((arg_start, i))
+            arg_start = i + 1
+        i += 1
+    ranges.append((arg_start, end))
+    return ranges
+
+
+def literal_value(expression):
+    match = PURE_STRING_EXPRESSION.fullmatch(expression)
+    if not match:
+        return None
+    return "".join(
+        ast.literal_eval(literal)
+        for literal in STRING.findall(match.group("strings"))
+    )
+
+
+def _line_number(source, offset):
+    return source.count("\n", 0, offset) + 1
+
+
+def find_issues(source, dictionary_keys):
+    masked = mask_comments(source)
+    issues = []
+    for output in OUTPUT_CALL.finditer(masked):
+        end = call_end(masked, output.end() - 1)
+        args = argument_ranges(masked, output.end(), end)
+        message_index = 1 if output.group("name") == "god_speaks" else 0
+        if len(args) <= message_index:
+            continue
+        start, stop = args[message_index]
+        expression = source[start:stop]
+        masked_expression = masked[start:stop]
+        protected_ranges = []
+
+        for nested in NON_MESSAGE_CALL.finditer(masked_expression):
+            nested_end = call_end(masked_expression, nested.end() - 1)
+            protected_ranges.append((nested.start(), nested_end + 1))
+
+        for translation in TRANSLATION_CALL.finditer(masked_expression):
+            translation_end = call_end(
+                masked_expression, translation.end() - 1
+            )
+            protected_ranges.append((translation.start(), translation_end + 1))
+            translation_args = argument_ranges(
+                masked_expression, translation.end(), translation_end
+            )
+            key_index = 1 if translation.group("name") == "tagged_jtrans" else 0
+            if len(translation_args) <= key_index:
+                continue
+            key_start, key_stop = translation_args[key_index]
+            key = literal_value(expression[key_start:key_stop])
+            if (
+                key
+                and ENGLISH.search(MARKUP.sub("", key))
+                and normalize_key(key) not in dictionary_keys
+            ):
+                issues.append(
+                    Issue(
+                        _line_number(source, start + translation.start()),
+                        key,
+                        "missing-key",
+                    )
+                )
+
+        for literal in STRING.finditer(expression):
+            if any(
+                range_start <= literal.start() < range_stop
+                for range_start, range_stop in protected_ranges
+            ):
+                continue
+            value = ast.literal_eval(literal.group())
+            if ENGLISH.search(MARKUP.sub("", value)):
+                issues.append(
+                    Issue(
+                        _line_number(source, start + literal.start()),
+                        value,
+                        "raw",
+                    )
+                )
+
+    return sorted(issues, key=lambda issue: (issue.line, issue.kind))
+
+
+def is_excluded(path, issue):
+    relative = path.relative_to(SOURCE_ROOT).as_posix()
+    if relative in DEVELOPER_ONLY_PATHS:
+        return True
+    if relative.startswith(DEVELOPER_ONLY_PREFIXES):
+        return True
+    return any(
+        issue.message.startswith(prefix)
+        for prefix in DEVELOPER_MESSAGE_PREFIXES.get(relative, ())
+    )
+
+
+def source_paths():
+    roots = (
+        SOURCE_ROOT / "dat/clua",
+        SOURCE_ROOT / "dat/dlua",
+        SOURCE_ROOT / "dat/des",
+    )
+    for root in roots:
+        for suffix in ("*.lua", "*.des"):
+            yield from root.rglob(suffix)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Check player-facing Lua messages for Japanese coverage."
+    )
+    parser.parse_args()
+
+    dictionary_keys = load_dictionary_keys()
+    failures = []
+    for path in sorted(set(source_paths())):
+        issues = find_issues(
+            path.read_text(errors="ignore"), dictionary_keys
+        )
+        for issue in issues:
+            if is_excluded(path, issue):
+                continue
+            relative = path.relative_to(SOURCE_ROOT)
+            failures.append(
+                f"{relative}:{issue.line}: {issue.kind}: {issue.message}"
+            )
+
+    if failures:
+        print("Japanese Lua translation coverage failures:", file=sys.stderr)
+        print("\n".join(failures), file=sys.stderr)
+        return 1
+    print("No raw player-facing Lua messages or missing keys found.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+
+from importlib.machinery import SourceFileLoader
+from importlib.util import module_from_spec, spec_from_loader
+from pathlib import Path
+import unittest
+
+
+CHECKER_PATH = Path(__file__).with_name("check-lua-jtrans")
+LOADER = SourceFileLoader("check_lua_jtrans", str(CHECKER_PATH))
+SPEC = spec_from_loader(LOADER.name, LOADER)
+CHECKER = module_from_spec(SPEC)
+LOADER.exec_module(CHECKER)
+
+
+class CheckLuaJtransTest(unittest.TestCase):
+    def issues(self, source, keys=()):
+        normalized = {CHECKER.normalize_key(key) for key in keys}
+        return CHECKER.find_issues(source, normalized)
+
+    def issue_pairs(self, source, keys=()):
+        return [
+            (issue.kind, issue.message)
+            for issue in self.issues(source, keys)
+        ]
+
+    def test_detects_raw_mpr_message(self):
+        self.assertEqual(
+            self.issue_pairs('crawl.mpr("Translate this message.")'),
+            [("raw", "Translate this message.")],
+        )
+
+    def test_accepts_translated_mpr_message(self):
+        source = 'crawl.mpr(crawl.jtrans("Translated message."))'
+
+        self.assertEqual(self.issues(source, {"Translated message."}), [])
+
+    def test_detects_missing_translation_key(self):
+        source = 'crawl.mpr(crawl.jtrans("Missing translation."))'
+
+        self.assertEqual(
+            self.issue_pairs(source),
+            [("missing-key", "Missing translation.")],
+        )
+
+    def test_joins_literal_key_fragments(self):
+        source = (
+            'crawl.mpr(crawl.jtrans("Translated " ..\n'
+            '                         "message."))'
+        )
+
+        self.assertEqual(self.issues(source, {"Translated message."}), [])
+
+    def test_checks_second_god_speaks_argument(self):
+        source = 'crawl.god_speaks("Trog", "Translate this speech.")'
+
+        self.assertEqual(
+            self.issue_pairs(source),
+            [("raw", "Translate this speech.")],
+        )
+
+    def test_ignores_comments(self):
+        source = """
+-- crawl.mpr("Commented message.")
+--[[ crawl.god_speaks("Trog", "Block comment.") ]]
+# crawl.mpr("Map comment.")
+"""
+
+        self.assertEqual(self.issues(source), [])
+
+    def test_ignores_markup_names_but_checks_visible_text(self):
+        self.assertEqual(self.issues('crawl.mpr("<lightred>")'), [])
+        self.assertEqual(
+            self.issue_pairs('crawl.mpr("<red>Translate me.</red>")'),
+            [("raw", "<red>Translate me.</red>")],
+        )
+
+    def test_accepts_translated_fragment_in_dynamic_message(self):
+        source = (
+            'crawl.mpr("日本語" .. '
+            'crawl.jtrans("Translated fragment.") .. value)'
+        )
+
+        self.assertEqual(
+            self.issues(source, {"Translated fragment."}), []
+        )
+
+    def test_ignores_feature_description_grammar_argument(self):
+        source = (
+            'crawl.mpr(dgn.feature_desc_at(x, y, "The") .. '
+            '"は消滅した！")'
+        )
+
+        self.assertEqual(self.issues(source), [])
+
+    def test_detects_raw_yesno_prompt(self):
+        source = 'crawl.yesno("Translate this prompt?", true, "n")'
+
+        self.assertEqual(
+            self.issue_pairs(source),
+            [("raw", "Translate this prompt?")],
+        )
+
+    def test_developer_message_exclusion_is_path_scoped(self):
+        issue = CHECKER.Issue(1, "marker [missing] not found", "raw")
+        path = CHECKER.SOURCE_ROOT / "dat/dlua/sprint.lua"
+
+        self.assertTrue(CHECKER.is_excluded(path, issue))
+
+
+if __name__ == "__main__":
+    unittest.main()

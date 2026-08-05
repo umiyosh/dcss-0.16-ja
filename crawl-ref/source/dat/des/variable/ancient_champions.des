@@ -24,9 +24,11 @@ function callback.ancient_champions_mu_skele_death(data, triggerable,
   dgn.terrain_changed(wall_pos.x, wall_pos.y, "floor", false, false, false)
 
   if you.see_cell(wall_pos.x, wall_pos.y) then
-    crawl.mpr("As the champion is destroyed, a metal wall slides away!")
+    crawl.mpr(crawl.jtrans(
+        "As the champion is destroyed, a metal wall slides away!"))
   else
-    crawl.mpr("As the champion is destroyed, you hear a distant grinding noise.")
+    crawl.mpr(crawl.jtrans(
+        "As the champion is destroyed, you hear a distant grinding noise."))
   end
 end
 }}

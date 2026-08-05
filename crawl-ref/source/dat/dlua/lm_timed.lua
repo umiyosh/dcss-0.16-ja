@@ -92,7 +92,8 @@ function TimedMarker:timeout(marker, verbose, affect_player)
       crawl.mpr( util.expand_entity(self.props.entity, self.props.disappear) or
                  dgn.feature_desc_at(x, y, "The") .. "は消滅した！")
     else
-      crawl.mpr("The walls and floor vibrate strangely for a moment.")
+      crawl.mpr(crawl.jtrans(
+          "The walls and floor vibrate strangely for a moment."))
     end
   end
 

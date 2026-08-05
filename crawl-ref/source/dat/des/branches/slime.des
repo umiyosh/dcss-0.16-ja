@@ -23,16 +23,18 @@ function fixup_slime_vaults(data, triggerable, triggerer, marker, ev)
 
   if you.god() == "Jiyva" and you.piety_rank() >= 6 then
     if you.silenced() then
-        crawl.mpr("An unexplained breeze blows through the dungeon.", "god")
+        crawl.mpr(crawl.jtrans(
+            "An unexplained breeze blows through the dungeon."), "god")
     else
-        crawl.mpr("You hear the sound of toppling stones.", "god")
+        crawl.mpr(crawl.jtrans("You hear the sound of toppling stones."), "god")
     end
   else
     if seen then
-        crawl.mpr("Suddenly, all colour oozes out of the stone walls.",
+        crawl.mpr(crawl.jtrans(
+            "Suddenly, all colour oozes out of the stone walls."),
                   "monster_enchant")
     else
-        crawl.mpr("You feel a strange vibration for a moment.",
+        crawl.mpr(crawl.jtrans("You feel a strange vibration for a moment."),
                   "monster_enchant")
     end
   end
@@ -674,7 +676,8 @@ LFLAGS:  no_tele_control
 -- when it dies through means other than being banished.
 local function monster_die(monster, killer_type, killer_index, silent, wizard)
     if killer_type == "banished" then
-      crawl.mpr("You feel a great sense of loss, and a brush of the Abyss.")
+      crawl.mpr(crawl.jtrans(
+          "You feel a great sense of loss, and a brush of the Abyss."))
     else
       dgn.persist.fix_slime_vaults = true
     end

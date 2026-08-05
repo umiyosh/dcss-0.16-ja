@@ -23,12 +23,15 @@ function callback.beogh_warn_stepped(data, triggerable, triggerer, marker, ev)
 -- you get a positive message but if you don't, Beogh warns you that you should not
 -- continue towards his altar.
   if you.god() == "Beogh" or (bt_you_are_orcish() and you.god() == "No God") then
-     crawl.god_speaks("Beogh" , "Your presence is welcomed at the altar of Beogh.")
+     crawl.god_speaks("Beogh" , crawl.jtrans(
+         "Your presence is welcomed at the altar of Beogh."))
      dgn.grid(x, y, "floor")
   elseif bt_you_are_orcish() then
-     crawl.god_speaks("Beogh" , "The orc god booms: Stay away, heretic!")
+     crawl.god_speaks("Beogh" , crawl.jtrans(
+         "The orc god booms: Stay away, heretic!"))
   else
-     crawl.god_speaks("Beogh" , "The orc god booms: Stay away, mortal!")
+     crawl.god_speaks("Beogh" , crawl.jtrans(
+         "The orc god booms: Stay away, mortal!"))
   end
 end
 
@@ -42,7 +45,8 @@ function callback.beogh_trap_stepped(data, triggerable, triggerer, marker, ev)
   elseif you.god() == "Beogh" or (bt_you_are_orcish() and you.god() == "No God") then
     dgn.grid(x, y, "floor")
   else
-    crawl.god_speaks("Beogh", "Beogh's servants are called upon to defend the altar!")
+    crawl.god_speaks("Beogh", crawl.jtrans(
+        "Beogh's servants are called upon to defend the altar!"))
     for slave in iter.slave_iterator("bridge", 1) do
       dgn.terrain_changed(slave.x, slave.y, "floor", false, false, false)
     end

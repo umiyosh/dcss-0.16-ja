@@ -61,7 +61,8 @@ function callback.badplayer_boxes_open_up(data, triggerable, triggerer, marker,
   for slave in iter.slave_iterator("disappearing_wall", 1) do
     dgn.terrain_changed(slave.x, slave.y, "floor", false, false, false)
   end
-  crawl.mpr("There is a click, and some walls slide away!", 'warning')
+  crawl.mpr(crawl.jtrans(
+      "There is a click, and some walls slide away!"), 'warning')
 end
 }}
 
@@ -806,7 +807,7 @@ ITEM:    any scroll / any potion / nothing
 KITEM:   x = any scroll / any potion
 KMONS:   x = wraith
 : ossuary_setup_features(_G)
-: crawl.mpr("You feel the presence of a powerful and evil guardian...", "warning")
+: crawl.mpr(crawl.jtrans("You feel the presence of a powerful and evil guardian..."), "warning")
 MAP
 ccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccc

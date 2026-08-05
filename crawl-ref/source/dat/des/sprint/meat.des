@@ -193,7 +193,8 @@
       crawl.jtransln("--                        </red><lightred>You will die a champion.</lightred><red>                          --\n") ..
       "" .. border_bottom .. "</red>")
       crawl.more()
-      crawl.mpr("The Orb of Zot has appeared underneath you.", "orb")
+      crawl.mpr(crawl.jtrans(
+          "The Orb of Zot has appeared underneath you."), "orb")
       dgn.create_item(you_x, you_y, "orb of zot")
       crawl.more()
       return
@@ -206,10 +207,14 @@
     if triggerer.type == "monster_dies" then
       crawl.more()
       crawl.mpr("<red>" .. border_top .. "" ..
-      "--                    </red><lightred>You have destroyed The Unspeakable.</lightred><red>                   --\n" ..
+      crawl.jtransln("--                    </red><lightred>You have " ..
+                     "destroyed The Unspeakable.</lightred><red>" ..
+                     "                   --\n") ..
       "" .. border_bottom .. "</red>")
       crawl.more()
-      crawl.mpr("<lightgreen>The slimy rune of Zot has appeared underneath you.</lightgreen>")
+      crawl.mpr(crawl.jtrans(
+          "<lightgreen>The slimy rune of Zot has appeared underneath " ..
+          "you.</lightgreen>"))
       dgn.create_item(you_x, you_y, "slimy rune of zot")
       return
     end
@@ -299,7 +304,8 @@
           dgn.create_monster(m_x, m_y, meatlord)
           crawl.more()
           crawl.mpr("<red>" .. border_top .. "" ..
-          "--                      </red><lightred>The Meatlord has descended...</lightred><red>                       --\n" ..
+          "--                    </red><lightred>肉の王が降臨した……</lightred>" ..
+          "<red>                    --\n" ..
           "" .. border_bottom .. "</red>")
           crawl.more()
     elseif data.spawn_count == 300 then
@@ -376,36 +382,36 @@ NSUBST:    ' = 1:& / *:.
     "------------------------------------------------------------------------------\n" ..
     "------------------------------------------------------------------------------\n" ..
     "--                                                                          --\n" ..
-    "--                            The Arena Of Blood                            --\n" ..
+    "--                              血の闘技場                                  --\n" ..
     "--                                                                          --\n" ..
     "--                                                                          --" ..
     "</red>")
   crawl.more()
   crawl.mpr("<red>" ..
     "--                                                                          --\n" ..
-    "--                You descend into the pit of gibs and meat,                --\n" ..
-    "--                    The sunken abyss of the depraved,                     --\n" ..
-    "--                       The mill of turgid gutspawn.                       --\n" ..
-    "--                The writhen instruments serve in adoration,               --\n" ..
-    "--                     Immured beneath a rotten throne.                     --" ..
+    "--                  あなたは肉片と血肉の穴へと降りていく、                  --\n" ..
+    "--                    堕落した者どもの沈んだ深淵、                          --\n" ..
+    "--                    膨れた臓物が挽かれる場所へ。                          --\n" ..
+    "--                  身悶える楽器は崇拝の音を奏で、                          --\n" ..
+    "--                腐った玉座の下に閉じ込められている。                      --" ..
     "</red>")
   crawl.more()
   crawl.mpr("<red>" ..
     "--                                                                          --\n" ..
-    "--                  Before you lies the servitor of chaos,                  --\n" ..
-    "--                           The cleaver,                                   --\n" ..
-    "--                             The blasphemer,                              --\n" ..
-    "--                              The destroyer,                              --\n" ..
-    "--                               The Axe of Woe.                            --" ..
+    "--                      眼前には混沌に仕える者、                            --\n" ..
+    "--                            切り裂く者、                                  --\n" ..
+    "--                            冒涜する者、                                  --\n" ..
+    "--                            破壊する者、                                  --\n" ..
+    "--                      災いの斧が横たわる。                                --" ..
     "</red>")
   crawl.more()
   crawl.mpr("<red>" ..
     "--                                                                          --\n" ..
-    "--                            Vessel of Makhleb,                            --\n" ..
-    "--                           You are the unmaker,                           --\n" ..
-    "--                          You bring the rapture,                          --\n" ..
-    "--                     The murmurs of the thralls rise...                   --\n" ..
-    "--                       The theatre of blood begins.                       --\n" ..
+    "--                          マクレブの器よ、                                --\n" ..
+    "--                      あなたは万物を壊す者、                              --\n" ..
+    "--                        歓喜をもたらす者、                                --\n" ..
+    "--                    隷属者のざわめきが高まり……                          --\n" ..
+    "--                      血の劇場が幕を開ける。                              --\n" ..
     "--                                                                          --\n" ..
     "------------------------------------------------------------------------------\n" ..
     "------------------------------------------------------------------------------" ..

@@ -2547,9 +2547,9 @@ local function swineherd_die(monster, killer_type, killer_index, silent, wizard)
   end
   dgn.grid(p.x, p.y, "floor")
   if (you.see_cell(p.x, p.y)) then
-    crawl.mpr("The grate goes up!")
+    crawl.mpr(crawl.jtrans("The grate goes up!"))
   else
-    crawl.mpr("You hear a sound of rusty metal sliding.")
+    crawl.mpr(crawl.jtrans("You hear a sound of rusty metal sliding."))
   end
 end
 }}

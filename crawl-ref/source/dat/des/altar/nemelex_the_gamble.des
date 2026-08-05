@@ -10,7 +10,8 @@ function callback.grunt_nemelex_gamble_announce(data,triggerable,triggerer,marke
         }
         crawl.god_speaks("Nemelex Xobeh", crawl.jtrans("Nemelex Xobeh says, ") ..
                          crawl.jtrans(msg[crawl.random_range(1, 4)]) .. "と言った。")
-        crawl.god_speaks("Nemelex Xobeh", "\"Beware! This is a limited time offer!\"")
+        crawl.god_speaks("Nemelex Xobeh", crawl.jtrans(
+            "\"Beware! This is a limited time offer!\""))
     end
 end
 
@@ -24,25 +25,27 @@ function callback.grunt_nemelex_gamble_start(data,triggerable,triggerer,marker,e
     if crawl.coinflip() then
         slave = dgn.find_marker_positions_by_prop("prize", 1)
         you.teleport_to(slave[1].x, slave[1].y)
-        crawl.god_speaks("Nemelex Xobeh", "Nemelex Xobeh says, \"You win!\"")
+        crawl.god_speaks("Nemelex Xobeh", crawl.jtrans(
+            "Nemelex Xobeh says, \"You win!\""))
     else
         slave = dgn.find_marker_positions_by_prop("peril", 1)
         you.teleport_to(slave[1].x, slave[1].y)
-        crawl.god_speaks("Nemelex Xobeh", "Nemelex Xobeh says, \"You lose!\"")
+        crawl.god_speaks("Nemelex Xobeh", crawl.jtrans(
+            "Nemelex Xobeh says, \"You lose!\""))
     end
-    crawl.mpr("Your surroundings suddenly seem different.")
+    crawl.mpr(crawl.jtrans("Your surroundings suddenly seem different."))
 end
 
 function callback.grunt_nemelex_gamble_finish1(data,triggerable,triggerer,marker,ev)
     slave = dgn.find_marker_positions_by_prop("exit", 1)
     you.teleport_to(slave[1].x, slave[1].y)
-    crawl.mpr("Your surroundings suddenly seem different.")
+    crawl.mpr(crawl.jtrans("Your surroundings suddenly seem different."))
 end
 
 function callback.grunt_nemelex_gamble_finish2(data,triggerable,triggerer,marker,ev)
     slave = dgn.find_marker_positions_by_prop("exit", 1)
     you.teleport_to(slave[1].x, slave[1].y)
-    crawl.mpr("Your surroundings suddenly seem different.")
+    crawl.mpr(crawl.jtrans("Your surroundings suddenly seem different."))
 end
 
 function callback.grunt_nemelex_gamble_expire(data,triggerable,triggerer,marker,ev)
@@ -60,7 +63,9 @@ function callback.grunt_nemelex_gamble_expire(data,triggerable,triggerer,marker,
     slave = dgn.find_marker_positions_by_prop("start_tele", 1)
     dgn.terrain_changed(slave[1].x, slave[1].y, "floor", false, false, false)
     if (you.see_cell(slave[1].x, slave[1].y)) then
-        crawl.mpr("<white>The teleporter glows with a rainbow of weird colours and disappears.</white>")
+        crawl.mpr(crawl.jtrans(
+            "<white>The teleporter glows with a rainbow of weird colours " ..
+            "and disappears.</white>"))
     end
 end
 }}

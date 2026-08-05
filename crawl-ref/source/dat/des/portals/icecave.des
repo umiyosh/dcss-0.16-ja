@@ -79,7 +79,7 @@ function callback.ice_cave_statue_garden_teleporter(data, triggerable,
     data.teleport_spot)
 
   you.teleport_to(my_slaves[1].x, my_slaves[1].y)
-  crawl.mpr("Your surroundings suddenly seem different!")
+  crawl.mpr(crawl.jtrans("Your surroundings suddenly seem different!"))
 end
 
 -- For destination (not entry) vaults, use the following line after all
