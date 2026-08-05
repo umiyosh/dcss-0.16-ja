@@ -100,6 +100,12 @@ static void _add_file_to_scroller(FILE* fp, formatted_scroller& m,
 
 static string _get_version_changes()
 {
+    if (Options.language == LANG_JA)
+    {
+        return jtrans("For a list of changes, see changelog.txt in the docs/ "
+                      "directory.") + "\n";
+    }
+
     // Attempts to print "Highlights" of the latest version.
     FILE* fp = fopen_u(datafile_path("changelog.txt", false).c_str(), "r");
     if (!fp)
