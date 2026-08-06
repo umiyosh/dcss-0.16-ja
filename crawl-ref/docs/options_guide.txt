@@ -303,7 +303,8 @@ remember_name = true
         再利用されます。
 
 weapon += (short sword |...| unarmed | random | viable), <weapon>, ...
-        （リストオプション）武器オプションを指定すると武器選択画面を省略できま
+        （リストオプション）
+        武器オプションを指定すると武器選択画面を省略できま
         す。トライデント、フレイル、カトラス、ロングソード、ウォーアックスは戦
         闘機と剣闘士のみに制限され、クォーターステーブは剣闘士に制限され、非武
         装は爪を持つ種族に制限されます。選択した職業に不正な選択が指定された場
@@ -314,21 +315,24 @@ weapon += (short sword |...| unarmed | random | viable), <weapon>, ...
         します(また、このオプションによってオーバーライドされます)。
 
 species += (Human |...| Vampire | random | viable), <species>, ...
-        (リストオプション)通常の略語(Hu、HEなど)が機能します。「viable」は、職
+        (リストオプション)
+        通常の略語(Hu、HEなど)が機能します。「viable」は、職
         業が最初に選択された場合、特定の職業に対して実行可能な種族を選択しま
         す。複数の種族を指定すると、指定された種族からランダムに1つが選択され
         ます。コンボオプションはこのオプションをオーバーライドします(また、こ
         のオプションによってオーバーライドされます)。
 
 background += (Fighter |...| Wanderer | random | viable), <background>, ...
-        (リストオプション)ここでも略語(Fi、Wz、AKなど)を使用できます。同じ注意
+        (リストオプション)
+        ここでも略語(Fi、Wz、AKなど)を使用できます。同じ注意
         が「実行可能」にも当てはまります。実際に意味があるのは、種族オプション
         も設定されている場合のみです。複数の職業を指定すると、指定された種族か
         らランダムに1つが選択されます。コンボオプションはこのオプションをオー
         バーライドします(また、このオプションによってオーバーライドされます)。
 
 combo += (HuFi . short sword | Human Monk | ...), <combo>, ...
-        (リストオプション)種族、職業、および(該当する場合)武器の完全なセットを
+        (リストオプション)
+        種族、職業、および(該当する場合)武器の完全なセットを
         指定します。コンボに武器の選択が必要で、武器が指定されていない場合は、
         武器の選択を求めるプロンプトが表示されます。コンボは省略することも、完
         全に指定することもできます。複数のコンボが指定された場合、指定されたコ
@@ -387,7 +391,8 @@ macro_dir = settings/
         もここに格納されます。パス区切り文字で終わる必要があります。
 
 sound ^= <regex>:<path to sound file>, <regex>:<path>, ...
-        （順序付きリストオプション）メッセージが正規表現に一致した場合にサウン
+        （順序付きリストオプション）
+        メッセージが正規表現に一致した場合にサウン
         ドファイルを再生します。正規表現にはコンマやコロンを含めないで
         ください。例:
              sound += LOW HITPOINT WARNING:sound\sounds2\danger3.wav
@@ -421,7 +426,8 @@ autopickup = $?!+"/%
         るマスへテレポートや瞬間移動をしても、自動では拾いません。
 
 autopickup_exceptions ^= <pickup-regex, >don't-pickup-regex, ...
-        (順序付きリストオプション)一致する項目を強制的に選択するか(先頭に<が付
+        (順序付きリストオプション)
+        一致する項目を強制的に選択するか(先頭に<が付
         いている場合)、または決して選択されない(>が付いている場合)を指定する正
         規表現のセット。除外(>)は包含(<)よりも優先されるため、同じアイテムが除
         外と包含の両方に一致する場合、自動ピックアップの対象にはなりません。
@@ -483,7 +489,8 @@ pickup_menu_limit = 1
         意してください。
 
 drop_filter += <regex>, <regex>, ...
-        (リストオプション)マルチドロップメニューでグローバル(解除)選択キー (',
+        (リストオプション)
+        マルチドロップメニューでグローバル(解除)選択キー (',
         'または'-')を使用して項目を選択する場合、このオプションを使用して検索
         正規表現に一致する項目のみを選択することを選択できます。
 
@@ -694,7 +701,8 @@ explore_greedy = true
 explore_stop  = items,stairs,shops,altars,portals,branches,runed_doors
 explore_stop += greedy_pickup_smart,greedy_visited_item_stack
 explore_stop += greedy_sacrificeable
-        (リストオプション)これらの条件のいずれかでExploreが停止します。このオ
+        (リストオプション)
+        これらの条件のいずれかでExploreが停止します。このオ
         プションをどのように設定しても、移動を停止するものは探索も停止します。
 
         branches条件は分岐の入口で停止しますが、ほかの階段やポータルでは停
@@ -748,7 +756,8 @@ explore_stop += greedy_sacrificeable
             itemsと同様ですが、ルーンだけを対象にします。
 
 explore_stop_pickup_ignore += <regex>, <regex>, ...
-        (リストオプション) explore_stopにgreedy_pickupまたは
+        (リストオプション)
+        explore_stopにgreedy_pickupまたは
         greedy_pickup_smartが設定されている場合、リスト内の正規表現のいずれか
         に一致するアイテムを選択しても自動探索は停止しません。
 
@@ -796,7 +805,8 @@ tc_exclude_circle = red
 
 runrest_ignore_message += <regex>, <regex>, ...
 runrest_stop_message += <regex>, <regex>, ...
-        (リストオプション)これらを使用して、メッセージが移動や休憩を強制的に中
+        (リストオプション)
+        これらを使用して、メッセージが移動や休憩を強制的に中
         断するかどうかを決定します。これらはメッセージテキスト全体と照合されま
         す。部分文字列の一致をメッセージチャネルに制限するには、部分文字列の前
         にチャネル名とコロンを付けます(メッセージチャネルに関する下記のセクシ
@@ -824,7 +834,8 @@ runrest_stop_message += <regex>, <regex>, ...
         にも注意してください。
 
 interrupt_<delay> += <activity_interrupt_type>, <activity_interrupt_type>, ...
-        （リストオプション）特定のきっかけで遅延中の行動を中断しないよう設定し
+        （リストオプション）
+        特定のきっかけで遅延中の行動を中断しないよう設定し
         ます。delayの一覧はdelay.ccのdelay_names、割り込み種別は
         activity_interrupt_namesにあります。たとえば次の設定では、モンスターを
         感知しただけでまだ認識していない場合、自動移動を中断しません。
@@ -841,7 +852,8 @@ runrest_safe_poison = <% of hp>:<% of mhp>
         が既定値です。
 
 runrest_ignore_monster ^= <regex>:<distance>, <regex>:<distance>, ...
-        （順序付きリストオプション）正規表現に一致するモンスターは、プレイヤー
+        （順序付きリストオプション）
+        正規表現に一致するモンスターは、プレイヤー
         との距離が指定値未満の場合だけ行動を中断します。たとえば、
              runrest_ignore_monster ^= fish:3
         とすると、big fishとgiant goldfishは距離が3以上なら移動、探索、休憩を
@@ -852,7 +864,8 @@ rest_wait_both = false
         した場合ではなく、両方が完全に回復した場合にのみ停止します。
 
 auto_exclude += <monster name>, <monster name>, ...
-        (リストオプション)このリストに含まれる探索中に、睡眠中または静止してい
+        (リストオプション)
+        このリストに含まれる探索中に、睡眠中または静止してい
         るモンスターに遭遇すると、このモンスターを中心に移動除外が自動的に設定
         されます。つまり、自動探索によってその視界に入ることはありません。モン
         スターが死亡するか、視界に入っている間に起動した場合、この除外は再び自
@@ -1031,7 +1044,8 @@ sort_menus = [menu:](true | false | auto:X)[:sort_order]
         つまり、最後の設定として「any」が他の設定をオーバーライドします。
 
 spell_slot ^= <regex>:<list of spell letters>
-        (順序付きリストオプション、1行に1つの値)正規表現に一致する呪文を記憶す
+        (順序付きリストオプション、1行に1つの値)
+        正規表現に一致する呪文を記憶す
         ると、リスト内の最初に使用可能な文字にそれ自体が割り当てられます。(リ
         スト内のすべての文字が、呪文が一致する正規表現ごとに占有されている場
         合、デフォルトの順序abc...xyzABC..XYZが使用されます。)呪文が複数の式に
@@ -1047,7 +1061,8 @@ spell_slot ^= <regex>:<list of spell letters>
             spell_slot += .*:ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
 item_slot ^= <regex>:<inventory letter>
-        (順序付きリストオプション、1行に1つの値) spell_slotと同じインターフェ
+        (順序付きリストオプション、1行に1つの値)
+        spell_slotと同じインターフェ
         イスを使用します。さらに、item_slotオプションはアイテムが識別されたと
         きに適用されるため、識別されずに拾われた場合でも、適切な場所に移動でき
         ます。また、item_slotでは、spell_slotとは異なり、そこにすでにアイテム
@@ -1134,16 +1149,19 @@ mp_warning = 0
         セージをオフにするには0を使用します)。
 
 hp_colour = 50:yellow, 25:red
-        (リストオプション) hp_colourは、ステータス表示でヘルスを適切に色付けし
+        (リストオプション)
+        hp_colourは、ステータス表示でヘルスを適切に色付けし
         ます。デフォルト設定では、体力が25%未満の場合は赤、50%未満の場合は黄
         色、それ以外の場合はデフォルトの色で表示されます。
 
 mp_colour = 50:yellow, 25:red
-        (リストオプション) mp_colourは、hp_colourがヘルスに対して行うのと同じ
+        (リストオプション)
+        mp_colourは、hp_colourがヘルスに対して行うのと同じ
         ことをマジックに対して行います。
 
 stat_colour = 1:lightred, 3:red
-        （リストオプション）能力値が指定値を下回った場合、定義順に色を付けま
+        （リストオプション）
+        能力値が指定値を下回った場合、定義順に色を付けま
         す。たとえば腕力が低下しているかを確認しやすくなります。通常の灰色表
         示にする場合:
            stat_colour = 7
@@ -1252,7 +1270,8 @@ skill_focus = true
 
 monster_list_colour += <key>:<colour>, <key>:<colour>
 monster_list_colour -= <key>
-        (リストオプション)モンスターリスト内のモンスター名の表示に使用される色
+        (リストオプション)
+        モンスターリスト内のモンスター名の表示に使用される色
         を変更します。有効なキーとそのデフォルトの色は次のとおりです。
 
            モンスターの態度:
@@ -1298,7 +1317,8 @@ use_animations -= beam, range, hp, monster_in_sight, pickup, monster, player,
                              現在はアビスとZotのみ。
 
 force_more_message += <regex>, <regex>
-        (リストオプション)ここで指定された正規表現を含むメッセージはすべて、
+        (リストオプション)
+        ここで指定された正規表現を含むメッセージはすべて、
         -More-プロンプトを強制するため、本当に重要なイベントを強調表示するため
         に使用できます。構文はrunrest_ignore_message (3-g)と同じです。
 
@@ -1311,7 +1331,8 @@ cloud_status = true
 -----------------
 
 menu_colour ^= <match>:<colour>:<regex>, <colour>:<regex>, ...
-        (順序付きリストオプション)これにより、指定された色で正規表現を含む行(
+        (順序付きリストオプション)
+        これにより、指定された色で正規表現を含む行(
         インベントリ、メニュー、または検出画面の)が印刷されます。リストには複
         数のステートメントを含めることができ、また、複数のmenu_colour行を含め
         ることもできます。複数のmenu_colour行を使用する場合、_first_一致する正
@@ -1396,7 +1417,8 @@ menu_colour ^= <match>:<colour>:<regex>, <colour>:<regex>, ...
           menu_colour ^= notes:white:Reached XP level
 
 message_colour ^= <colour>:<channel>:<regex>, <colour>:<regex>, ...
-        （順序付きリストオプション）個々のメッセージの色を上書きします。たとえ
+        （順序付きリストオプション）
+        個々のメッセージの色を上書きします。たとえ
         ば、HP低下の警告を目立たせるには次のようにします。
              message_colour += yellow:LOW HITPOINT WARNING
         一致対象を特定のチャンネルへ絞ることもできます。
@@ -1414,7 +1436,8 @@ fire_items_start = a
 fire_order  = launcher, return
 fire_order += javelin / tomahawk / stone / rock / net
 fire_order += inscribed
-        (順序付きリストオプション)射撃／投擲用に自動選択される項目の順序を制御
+        (順序付きリストオプション)
+        射撃／投擲用に自動選択される項目の順序を制御
         します。項目はカンマで区切る必要があり、先に記述した項目ほど優先順位が
         高くなります。
 
@@ -1501,7 +1524,8 @@ COLORには、セクション5-a (カラーオプション)で説明されてい
 刻印の詳細については、Crawlマニュアルの「刻印」セクションを参照してください。
 
 autoinscribe += <regex>:<inscription>
-        (順序付きリストオプション、1行に1つの値)説明に正規表現が含まれる項目は
+        (順序付きリストオプション、1行に1つの値)
+        説明に正規表現が含まれる項目は
         すべて、自動的に記録されます(自動ピックアップがオンになっている場合)。
 
         たとえば、次のように、重要な杖のチャージを誤って使用することを避けるた
@@ -1745,7 +1769,8 @@ tile_show_player_species = false
         タータイルを使用してプレーヤーが表示されます。
 
 tile_layout_priority = minimap, inventory, gold_turn, command, spell, monster
-        (順序付きリストオプション)このオプションを使用すると、画面の右側、統計
+        (順序付きリストオプション)
+        このオプションを使用すると、画面の右側、統計
         領域の下に要素を配置する順序を制御できます。解像度が小さい場合、すべて
         を入れるのに十分なスペースがないため、最初の項目のみが配置されます。永
         久に表示したくない項目を削除することもできます。インベントリータブは常
@@ -1856,7 +1881,8 @@ dump_message_count = 20
 dump_order  = header,hiscore,stats,misc,notes,inventory,
 dump_order += skills,spells,overview,mutations,messages,screenshot,
 dump_order += monlist,kills,action_counts
-        (順序付きリストオプション)ダンプ内のセクションの順序を制御します。
+        (順序付きリストオプション)
+        ダンプ内のセクションの順序を制御します。
 
         2つのオプションのダンプセクションは「turns_by_place」と「
         kills_by_place」です。これらは、ターンが費やされた場所とモンスターがキ
@@ -1906,7 +1932,8 @@ user_note_prefix = <string>
         用できます。
 
 note_items += <regex>, <regex>, ...
-        （リストオプション）アイテムを初めて識別したとき、その短い説明が正規表
+        （リストオプション）
+        アイテムを初めて識別したとき、その短い説明が正規表
         現に一致すれば記録します。例:
              note_items += rod,book,acquirement
         アーティファクト（固定、unrand、randart）は、note_itemsに関係なく識別
@@ -1916,7 +1943,8 @@ note_items += <regex>, <regex>, ...
         いています(例: 「emergency_item」)。
 
 note_monsters += <regex>, <regex>, ...
-        （リストオプション）名前がカンマ区切りの正規表現に一致するモンスターを
+        （リストオプション）
+        名前がカンマ区切りの正規表現に一致するモンスターを
         記録対象にします。複数行を指定できます。例:
              note_monsters += Klown,orb of fire
 
@@ -1942,7 +1970,8 @@ note_xom_effects = true
         これにより、Xomが何かを行うたびにメモが追加されます。
 
 note_messages += <regex>, <regex>, ...
-        （リストオプション）カンマ区切りの正規表現に一致するメッセージを記録対
+        （リストオプション）
+        カンマ区切りの正規表現に一致するメッセージを記録対
         象にします。複数行を指定できます。例:
              note_messages += Something interferes
              note_messages += protects you from harm
@@ -2092,7 +2121,8 @@ feature -= <regex>, <regex>
 mon_glyph += <monster name or symbol> : (<colour> <glyph> | <monster name>) ,
              <monster name or symbol> : <replacement>
 mon_glyph -= <monster name or symbol>
-        (リストオプション) mon_glyphオプションを使用すると、モンスターの表示に
+        (リストオプション)
+        mon_glyphオプションを使用すると、モンスターの表示に
         使用されるシンボルと色をカスタマイズできます。
 
         モンスター名または既存のシンボルに基づいてシンボルをカスタマイズできま
@@ -2148,7 +2178,8 @@ mon_glyph -= <monster name or symbol>
 
 item_glyph ^= <regexp> : <colour> <glyph>
 item_glyph -= <regexp>
-        (順序付きリストオプション)正規表現に一致するすべての項目の記号や色をカ
+        (順序付きリストオプション)
+        正規表現に一致するすべての項目の記号や色をカ
         スタマイズします。 mon_glyphとは異なり、これは部分的な名前一致です。
 
         アイテムには、隠し場所の追跡とメニューの色の両方からのタグが接頭辞とし
