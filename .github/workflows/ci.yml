@@ -94,11 +94,13 @@ jobs:
 
       - name: Test translation checker
         run: |
+          python3 crawl-ref/source/util/test-check-description-coverage
           python3 crawl-ref/source/util/test-check-jtrans
           python3 crawl-ref/source/util/test-check-lua-jtrans
 
       - name: Check player-visible messages
         run: |
+          python3 crawl-ref/source/util/check-description-coverage
           python3 crawl-ref/source/util/check-jtrans --all
           python3 crawl-ref/source/util/check-lua-jtrans
 
