@@ -13,8 +13,59 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    name: Select CI scope
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    outputs:
+      scope: ${{ steps.classify.outputs.scope }}
+      linux_matrix: ${{ steps.classify.outputs.linux_matrix }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Test change classifier
+        run: >-
+          python3 -m unittest discover
+          -s .github/scripts
+          -p 'test_*.py'
+
+      - name: Classify changed files
+        id: classify
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          scope="$(
+            git diff --name-only -z "$BASE_SHA" "$HEAD_SHA" |
+              python3 .github/scripts/classify_ci_changes.py --null
+          )"
+          case "$scope" in
+            docs)
+              matrix_scope=data
+              ;;
+            data|full)
+              matrix_scope="$scope"
+              ;;
+            *)
+              echo "Unknown CI scope: $scope" >&2
+              exit 1
+              ;;
+          esac
+          linux_matrix="$(
+            jq --compact-output ".${matrix_scope}" .github/ci-matrices.json
+          )"
+          printf 'scope=%s\n' "$scope" >> "$GITHUB_OUTPUT"
+          printf 'linux_matrix=%s\n' "$linux_matrix" >> "$GITHUB_OUTPUT"
+          printf 'Selected CI scope: %s\n' "$scope"
+
   translation-check:
     name: Japanese message coverage
+    needs: changes
+    if: ${{ needs.changes.outputs.scope != 'docs' }}
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
@@ -35,79 +86,13 @@ jobs:
 
   build:
     name: ${{ matrix.compiler.name }} / ${{ matrix.variant.name }}
+    needs: changes
+    if: ${{ needs.changes.outputs.scope != 'docs' }}
     runs-on: ubuntu-22.04
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:
-        compiler:
-          - name: GCC
-            cc: gcc
-            cxx: g++
-          - name: Clang
-            cc: clang
-            cxx: clang++
-        variant:
-          - name: Console
-            full_debug: ""
-            tiles: ""
-            webtiles: ""
-            use_dgamelaunch: ""
-            build_all: ""
-          - name: Console (debug)
-            full_debug: "1"
-            tiles: ""
-            webtiles: ""
-            use_dgamelaunch: ""
-            build_all: ""
-          - name: Tiles
-            full_debug: ""
-            tiles: "1"
-            webtiles: ""
-            use_dgamelaunch: ""
-            build_all: ""
-          - name: Tiles (debug)
-            full_debug: "1"
-            tiles: "1"
-            webtiles: ""
-            use_dgamelaunch: ""
-            build_all: ""
-          - name: Webtiles
-            full_debug: ""
-            tiles: ""
-            webtiles: "1"
-            use_dgamelaunch: ""
-            build_all: ""
-          - name: Webtiles (debug)
-            full_debug: "1"
-            tiles: ""
-            webtiles: "1"
-            use_dgamelaunch: ""
-            build_all: ""
-          - name: DGL
-            full_debug: ""
-            tiles: ""
-            webtiles: ""
-            use_dgamelaunch: "1"
-            build_all: ""
-          - name: DGL Webtiles
-            full_debug: ""
-            tiles: ""
-            webtiles: "1"
-            use_dgamelaunch: "1"
-            build_all: ""
-          - name: Tiles (bundled dependencies)
-            full_debug: ""
-            tiles: "1"
-            webtiles: ""
-            use_dgamelaunch: ""
-            build_all: "1"
-          - name: Webtiles (bundled dependencies)
-            full_debug: ""
-            tiles: ""
-            webtiles: "1"
-            use_dgamelaunch: ""
-            build_all: "1"
+      matrix: ${{ fromJSON(needs.changes.outputs.linux_matrix) }}
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
@@ -201,6 +186,8 @@ jobs:
 
   build-macos:
     name: macOS / ${{ matrix.variant.name }}
+    needs: changes
+    if: ${{ needs.changes.outputs.scope == 'full' }}
     runs-on: macos-latest
     timeout-minutes: 60
     strategy:
@@ -330,3 +317,34 @@ jobs:
           if (( ${#crash_reports[@]} > 0 )); then
             cat "${crash_reports[@]}"
           fi
+
+  ci-result:
+    name: CI result
+    if: always()
+    needs:
+      - changes
+      - translation-check
+      - build
+      - build-macos
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    steps:
+      - name: Check required jobs
+        shell: bash
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          TRANSLATION_RESULT: ${{ needs.translation-check.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          MACOS_RESULT: ${{ needs.build-macos.result }}
+        run: |
+          for result in \
+            "$CHANGES_RESULT" \
+            "$TRANSLATION_RESULT" \
+            "$BUILD_RESULT" \
+            "$MACOS_RESULT"
+          do
+            if [[ "$result" != success && "$result" != skipped ]]; then
+              echo "Required CI job result: $result" >&2
+              exit 1
+            fi
+          done
