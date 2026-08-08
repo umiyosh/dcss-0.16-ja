@@ -18,6 +18,7 @@
 #include "ctest.h"
 
 #include <algorithm>
+#include <chrono>
 #include <vector>
 
 #include "clua.h"
@@ -65,6 +66,17 @@ static int nsuccess = 0;
 
 typedef pair<string, string> file_error;
 static vector<file_error> failures;
+
+typedef std::chrono::steady_clock test_clock;
+
+static void _report_test_duration(const string &name,
+                                  const test_clock::time_point &started)
+{
+    const long long elapsed = std::chrono::duration_cast<
+        std::chrono::milliseconds>(test_clock::now() - started).count();
+    fprintf(stderr, "TEST_DURATION_MS %s %lld\n", name.c_str(),
+            elapsed > 0 ? elapsed : 1);
+}
 
 static void _reset_test_data()
 {
@@ -158,6 +170,7 @@ static void run_test(const string &file)
     if (!_is_test_selected(file))
         return;
 
+    const test_clock::time_point started = test_clock::now();
     ++ntests;
     mprf(MSGCH_DIAGNOSTICS, "Running %s %d: %s",
          activity, ntests, file.c_str());
@@ -173,6 +186,10 @@ static void run_test(const string &file)
         ++nsuccess;
     else
         failures.emplace_back(file, lua.error);
+
+    const char *extension = _test_extension(file);
+    _report_test_duration(
+        file.substr(0, file.length() - strlen(extension)), started);
 }
 
 static bool _has_test(const string& test)
@@ -192,6 +209,7 @@ static void _run_test(const string &name, void (*func)())
     if (!_has_test(name))
         return;
 
+    const test_clock::time_point started = test_clock::now();
     try
     {
         (*func)();
@@ -200,6 +218,7 @@ static void _run_test(const string &name, void (*func)())
     {
         failures.emplace_back(name, E.msg);
     }
+    _report_test_duration(name, started);
 }
 
 static void _equip_slot_name_tests()
