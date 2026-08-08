@@ -630,3 +630,331 @@ A sealed gate
 A huge sealed gate
 
 <A sealed door>
+%%%%
+########################
+### Vault redefinitions
+########################
+# wizlabs
+A portal leading out of this place
+
+揺らめく魔法の門だ。これを通れば、来た場所へ戻ることができる。
+一度通り抜けると、ここへは戻れない。
+%%%%
+# wizlab: Wucad Mu
+An autumnal tree
+
+この大木は、永遠に秋の一瞬へ閉じ込められているようだ。
+赤や金に色づいた葉が枝から離れ、優雅に床へ舞い落ちてゆく。
+だが地に届く前に影がよぎり、揺らめきが収まると、葉は再び枝に戻って次の落下を待っている。
+%%%%
+A crumbled stone wall
+
+崩れかけたまま時の中に封じられた石壁だ。
+荒廃し、今にも崩れそうでありながら、決して崩れることができない。
+%%%%
+A strange statue
+
+異様で、この世ならぬ面立ちの像だ。
+風化して元の姿を見分けられなくなっただけなのか、それとも、かたどられたものが邪悪な悪魔だったのだろうか。
+%%%%
+# wizlab: Tukima
+A crystal clear mirror
+
+周囲のすべてを映し出す、きらめく鏡だ。
+%%%%
+A strange generator
+
+シューシュー、ポンポンと音を立てる奇妙な機械仕掛けだ。
+今にも踊る武器を吐き出しそうに見える。
+%%%%
+A glistening fountain
+
+水は涸れているが、眩くきらめく噴水だ。
+%%%%
+A black marble wall
+
+きらめく黒大理石の壁だ。
+実に美しい！
+%%%%
+The marble floor
+
+白と銀を基調とし、ところどころに淡紅色が差す大理石の床だ。
+%%%%
+# wizlab: Eringya
+A rose-covered archway
+
+美しい薔薇に覆われたアーチだ！
+%%%%
+A vine-covered statue
+
+蔓草だけで形作られた怪物のようにも見える像だ。
+%%%%
+A crumbling stone wall
+
+ひどく古び、崩れかけた石壁だ。
+%%%%
+The grass-covered ground
+
+落ち葉と小枝が散らばり、踏むたび高く音を立てる、瑞々しく張りのある草地だ。
+%%%%
+# wizlab: Doroklohe
+A strange rock wall
+
+墓所で目にするような図像で飾られた、奇妙な岩壁だ。
+%%%%
+A highly decorated stone wall
+
+不穏で恐ろしい図像に覆われた石壁だ。
+%%%%
+The rough-hewn floor
+
+荒く削り出され、ところどころに凹凸のある床だ。
+%%%%
+# wizlab: Cigotuvi
+Viscous fluid
+
+近くの壁から滲み出たらしい、粘り気のある液体だ。
+見るからに気味が悪い。
+%%%%
+A sinewy wall
+
+奇妙に生物めいて筋張っているが、恐ろしく強靭な壁だ。
+%%%%
+A thin membrane
+
+向こう側が透けて見えるほど薄い、奇妙な膜だ。
+%%%%
+The pulsating floor
+
+ぬめる床が、得体の知れない律動に合わせて脈打っているように見える。
+%%%%
+# wizlab: Zonguldrok
+Zonguldrok's gravestone
+
+墓石だ。「ゾングルドロック」の名が金文字で刻まれている。
+%%%%
+A gravestone
+
+名もなき者の墓だ。
+%%%%
+# wizlab: Golubria
+The dimension's edge
+
+孤立した小さな次元の縁で、空間そのものが虚無へ溶け落ちている。
+この黒い虚空へ入り込むことも、何らかの影響を及ぼすこともできない。
+%%%%
+A wall of crystal
+
+<A wall of green crystal>
+%%%%
+# wizlab: Cloud Mage
+The damp floor
+
+湿気のためか、絶えず雲が流れているためか、ここの床はいつまでも湿っている。
+%%%%
+A wall of white crystal
+
+乳白色の輝きを帯びた、質の低い水晶で造られた壁だ。
+%%%%
+# wizlab: Hellbinder
+A black wall
+
+石か、固めた木炭か、あるいは地獄の最深部にしかない物質でできているらしい黒い壁だ。
+%%%%
+A carved rock wall
+
+死と破壊の図像が刻まれた岩壁だ。
+%%%%
+# evilmike_haunted_forest (Crypt:5)
+A dead tree
+
+この場所のほかのすべてと同じく、完全に枯れ果てた木だ。
+%%%%
+# Dis:7
+An iron statue
+
+口のない鉄像だ。不気味だ！
+%%%%
+# Geh:7
+Ashen ground
+
+灰に覆われた地面だ。
+暖かく、意外なほど心地よい。
+%%%%
+A tempered metal wall
+
+熱を放つ、鍛えられた金属の壁だ。
+%%%%
+# Coc:7
+An ice-covered rock wall
+
+厚い氷に覆われた岩壁だ。
+%%%%
+An ice-covered stone wall
+
+厚い氷に覆われた石壁だ。
+%%%%
+Frost-covered floor
+
+霜に覆われた床だ。
+踏みしめると小気味よい音がする。
+%%%%
+# Pan: the holy level
+A golden statue
+
+聖人をかたどった純金の像だ。
+%%%%
+A silver wall
+
+純銀で造られた壁だ。
+%%%%
+# Slime:$
+A rune carved stone wall
+
+無数の神秘的なルーンを刻まれた、不思議なほど粘液の付いていない石壁だ。
+繰り返し現れる一組のルーンは「ロイヤルジェリー」を指しているように見える。
+%%%%
+# Tomb:1
+A sarcophagus
+
+古代の石棺だ。中は空のようだ。
+%%%%
+# Vaults:$
+A heavily etched metal wall
+
+宝物庫で盗みを働いて捕らえられた者がどうなるのかを、凄惨な細部まで描いた壁画が刻まれた金属壁だ。
+眺めていると吐き気を催す。
+%%%%
+A heavily etched wall of green crystal
+
+宝物庫で盗みを働いて捕らえられた者がどうなるのかを、凄惨な細部まで描いた壁画が刻まれた緑水晶の壁だ。
+眺めていると吐き気を催す。
+%%%%
+# moated_graveyard_entry (D:1)
+An adventurer's gravestone
+
+あと一歩で勝利へ届かなかった冒険者の墓だ。
+%%%%
+# minmay_entry_shattered_statue (D:1)
+A granite stump
+
+花崗岩の残骸だ。かつては像だったのだろう。
+%%%%
+# Ice Cave
+An ice choked empty arch of ancient stone
+
+氷塊にほとんど埋め尽くされ、力を失ったポータルだ。
+%%%%
+An ice covered gate leading back out of this place
+
+来た場所へ戻るポータルだ。
+門を塞がぬよう、その魔力が氷を押し留めている。
+一度通り抜けると、ここへは戻れない。
+%%%%
+An ice covered rock wall
+
+厚い霜と氷に覆われた岩壁だ。
+%%%%
+Some ice crusted deep water
+
+砕けた氷塊が浮かぶ深い水だ。
+%%%%
+Some ice crusted shallow water
+
+砕けた氷塊が浮かぶ浅瀬だ。
+%%%%
+# sewer_minmay_treatment (Sewer)
+A large window
+
+巨大な金属管の側面にはめ込まれた窓だ。
+中を流れる水を眺めることができる。
+%%%%
+A glass window
+
+表面に無数のくぼみがある、極めて硬い硝子窓だ。
+%%%%
+# due_jungle_book (Lair:8)
+An elephant-shaped statue
+
+番をする象をかたどった、風化した花崗岩の像だ。
+%%%%
+# pan_disco_hall (Pan)
+A weirdly glowing ball
+
+空中に浮かび、揺らめく光を放つ球体だ。
+%%%%
+# ragdoll_tomb_raider
+A sealed sarcophagus
+
+固く封じられた古代の石棺だ。
+%%%%
+###########################
+### Portal vault entrances
+###########################
+A flagged portal
+
+ベイリーへ通じるポータルだ。
+軍旗が地に降ろされる前に入った方がよさそうだ。
+%%%%
+# timed bazaar
+A flickering gateway to a bazaar
+
+行商人が品物を売るために集うバザールへ通じるポータルだ。
+彼らは一つの場所に長く留まることがない。
+%%%%
+# permanent bazaar
+A gateway to a bazaar
+
+行商人が品物を売るために集うバザールへ通じるポータルだ。
+彼らはあなたを待ってくれるが、一度品揃えを見る機会を得れば、ほかの客を求めて旅立つだろう。
+%%%%
+A frozen archway
+
+氷の洞窟へ通じるポータルだ。
+凍てついたアーチは少しずつ融けている。
+%%%%
+A sand-covered staircase
+
+納骨堂へ通じる階段だ。
+周囲の砂が絶えず階段へ流れ込み、間もなく完全に埋め尽くしてしまうだろう。
+%%%%
+A glowing drain
+
+下水道へ通じる通路だ。
+急速に錆びつき、詰まりつつあるようだ。
+%%%%
+A portal to a secret trove of treasure
+
+秘密の宝物庫へ通じるポータルだ。
+%%%%
+A dark tunnel
+
+火山の中心へ通じるポータルだ。
+隧道の天井や側面から岩が落ち、入口を埋めつつある。
+%%%%
+A magical portal
+
+魔術師の研究所へ通じるポータルだ。
+その姿は次第に薄れつつある。
+%%%%
+###########
+### Sprint
+###########
+# sprint_mu
+An open sea?
+
+あなたの知る物理と幾何のあらゆる法則に真っ向から逆らっているが、この小部屋に途方もなく広大で恐ろしい海があることは否定できない。
+
+さもなくば、ただの青い壁だ。
+%%%%
+# arena_sprint
+A spawn point
+
+敵が現れる入口の一つだ。
+%%%%
+############
+### Tutorial
+############
+An exit from the tutorial
+
+ダンジョンから外へ出て、この教練を終えるための出口だ。
