@@ -116,7 +116,6 @@ jobs:
       CXX: ccache ${{ matrix.compiler.cxx }}
       FORCE_CC: ccache ${{ matrix.compiler.cc }}
       FORCE_CXX: ccache ${{ matrix.compiler.cxx }}
-      CCACHE_DIR: ${{ runner.temp }}/ccache
       # Normalize the checkout path so objects remain reusable across runners.
       CCACHE_BASEDIR: ${{ github.workspace }}
       # Runner image updates can replace a compiler without changing its name.
@@ -180,7 +179,11 @@ jobs:
           sudo apt-get install --yes "${packages[@]}"
 
       - name: Initialize compiler cache statistics
-        run: ccache --zero-stats
+        env:
+          CCACHE_DIR: ${{ runner.temp }}/ccache
+        run: |
+          printf 'CCACHE_DIR=%s\n' "$CCACHE_DIR" >> "$GITHUB_ENV"
+          ccache --zero-stats
 
       - name: Check out bundled dependencies
         if: matrix.variant.build_all != ''
