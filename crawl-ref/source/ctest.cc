@@ -267,6 +267,14 @@ static void _macos_crawl_dir_tests()
     if (Options.morgue_dir != catpath(startup_base, "morgue/"))
         fail("macOS startup morgue_dir did not follow crawl_dir.");
 
+    const string versioned_cache_dir =
+        catpath(Options.save_dir, string("cache.") + Version::Long);
+    if (savedir_versioned_path("des")
+        != catpath(versioned_cache_dir, "des"))
+    {
+        fail("macOS data cache was not isolated by Crawl version.");
+    }
+
     const string custom_base = "/crawl/test-data";
     SysEnv.crawl_dir = custom_base;
     game_options options;
