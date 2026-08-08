@@ -4,10 +4,15 @@ on:
   pull_request:
     branches:
       - develop
+  schedule:
+    # 03:17 JST. Avoid the start of the hour, when scheduled workflows are
+    # more likely to be delayed.
+    - cron: '17 18 * * *'
+  workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -36,31 +41,43 @@ jobs:
         id: classify
         shell: bash
         env:
+          EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          scope="$(
-            git diff --name-only -z "$BASE_SHA" "$HEAD_SHA" |
-              python3 .github/scripts/classify_ci_changes.py --null
-          )"
-          case "$scope" in
-            docs)
-              matrix_scope=data
-              ;;
-            data|full)
-              matrix_scope="$scope"
-              ;;
-            *)
-              echo "Unknown CI scope: $scope" >&2
-              exit 1
-              ;;
-          esac
+          if [[ "$EVENT_NAME" == pull_request ]]; then
+            scope="$(
+              git diff --name-only -z "$BASE_SHA" "$HEAD_SHA" |
+                python3 .github/scripts/classify_ci_changes.py --null
+            )"
+            case "$scope" in
+              docs)
+                matrix_scope=data
+                ;;
+              data)
+                matrix_scope=data
+                ;;
+              full)
+                # Six non-Linux jobs plus these 14 builds keep a full PR at
+                # the repository's 20-job concurrency limit.
+                matrix_scope=pr
+                ;;
+              *)
+                echo "Unknown CI scope: $scope" >&2
+                exit 1
+                ;;
+            esac
+          else
+            scope=full
+            matrix_scope=full
+          fi
           linux_matrix="$(
             jq --compact-output ".${matrix_scope}" .github/ci-matrices.json
           )"
           printf 'scope=%s\n' "$scope" >> "$GITHUB_OUTPUT"
           printf 'linux_matrix=%s\n' "$linux_matrix" >> "$GITHUB_OUTPUT"
-          printf 'Selected CI scope: %s\n' "$scope"
+          printf 'Selected CI scope: %s (%s matrix)\n' \
+            "$scope" "$matrix_scope"
 
   translation-check:
     name: Japanese message coverage

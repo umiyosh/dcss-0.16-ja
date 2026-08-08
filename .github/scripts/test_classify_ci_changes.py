@@ -80,6 +80,47 @@ class CiMatrixTest(unittest.TestCase):
             self._names(matrix, "variant"),
         )
 
+    def test_pr_matrix_has_fourteen_unique_builds(self):
+        builds = self.matrices["pr"]["include"]
+        full_matrix = self.matrices["full"]
+        pairs = {
+            (build["compiler"]["name"], build["variant"]["name"])
+            for build in builds
+        }
+        self.assertEqual(14, len(builds))
+        self.assertEqual(14, len(pairs))
+        for build in builds:
+            self.assertIn(build["compiler"], full_matrix["compiler"])
+            self.assertIn(build["variant"], full_matrix["variant"])
+
+    def test_pr_matrix_runs_every_variant_with_gcc(self):
+        builds = self.matrices["pr"]["include"]
+        gcc_variants = {
+            build["variant"]["name"]
+            for build in builds
+            if build["compiler"]["name"] == "GCC"
+        }
+        self.assertEqual(
+            self._names(self.matrices["full"], "variant"), gcc_variants
+        )
+
+    def test_pr_matrix_runs_representative_variants_with_clang(self):
+        builds = self.matrices["pr"]["include"]
+        clang_variants = {
+            build["variant"]["name"]
+            for build in builds
+            if build["compiler"]["name"] == "Clang"
+        }
+        self.assertEqual(
+            {
+                "Console (debug)",
+                "Tiles (debug)",
+                "DGL Webtiles",
+                "Webtiles (bundled dependencies)",
+            },
+            clang_variants,
+        )
+
     def test_data_matrix_uses_one_debug_console_build(self):
         matrix = self.matrices["data"]
         self.assertEqual({"GCC"}, self._names(matrix, "compiler"))
