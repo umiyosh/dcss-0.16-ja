@@ -92,11 +92,11 @@ Press one of the following keys to\nobtain more information on a certain\naspect
 %%%%
 <w>!</w>: Read Me!
 
-<w>!</w>: はじめに(未訳)
+<w>!</w>: はじめに
 %%%%
 <w>^</w>: Quickstart Guide
 
-<w>^</w>: クイックスタート(未訳)
+<w>^</w>: クイックスタート
 %%%%
 <w>:</w>: Browse character notes
 
@@ -104,27 +104,27 @@ Press one of the following keys to\nobtain more information on a certain\naspect
 %%%%
 <w>~</w>: Macros help
 
-<w>~</w>: マクロ機能ヘルプ(未訳)
+<w>~</w>: マクロ機能ヘルプ
 %%%%
 <w>&</w>: Options help
 
-<w>&</w>: オプション設定ヘルプ(未訳)
+<w>&</w>: オプション設定ヘルプ
 %%%%
 <w>%</w>: Table of aptitudes
 
-<w>%</w>: 種族のスキル適性一覧(未訳)
+<w>%</w>: 種族のスキル適性一覧
 %%%%
 <w>/</w>: Lookup description
 
-<w>/</w>: 解説文閲覧(未訳)
+<w>/</w>: 解説文閲覧
 %%%%
 <w>Q</w>: FAQ
 
-<w>Q</w>: FAQ(未訳)
+<w>Q</w>: FAQ
 %%%%
 <w>V</w>: Version information
 
-<w>V</w>: バージョン情報(未訳)
+<w>V</w>: バージョン情報
 %%%%
 <w>Home</w>: This screen
 
@@ -141,83 +141,83 @@ Press one of the following keys to\nobtain more information on a certain\naspect
 %%%%
 <w>A</w>.      Overview
 
-<w>A</w>.      概要(未訳)
+<w>A</w>.      概要
 %%%%
 <w>B</w>.      Starting Screen
 
-<w>B</w>.      起動画面(未訳)
+<w>B</w>.      起動画面
 %%%%
 <w>C</w>.      Attributes and Stats
 
-<w>C</w>.      能力値(未訳)
+<w>C</w>.      能力値
 %%%%
 <w>D</w>.      Exploring the Dungeon
 
-<w>D</w>.      ダンジョンの探索(未訳)
+<w>D</w>.      ダンジョンの探索
 %%%%
 <w>E</w>.      Experience and Skills
 
-<w>E</w>.      経験レベルおよびスキル(未訳)
+<w>E</w>.      経験レベルおよびスキル
 %%%%
 <w>F</w>.      Monsters
 
-<w>F</w>.      モンスター(未訳)
+<w>F</w>.      モンスター
 %%%%
 <w>G</w>.      Items
 
-<w>G</w>.      アイテム(未訳)
+<w>G</w>.      アイテム
 %%%%
 <w>H</w>.      Spellcasting
 
-<w>H</w>.      呪文の詠唱(未訳)
+<w>H</w>.      呪文の詠唱
 %%%%
 <w>I</w>.      Targeting
 
-<w>I</w>.      照準合わせ(未訳)
+<w>I</w>.      照準合わせ
 %%%%
 <w>J</w>.      Religion
 
-<w>J</w>.      信仰(未訳)
+<w>J</w>.      信仰
 %%%%
 <w>K</w>.      Mutations
 
-<w>K</w>.      突然変異(未訳)
+<w>K</w>.      突然変異
 %%%%
 <w>L</w>.      Licence, Contact, History
 
-<w>L</w>.      ライセンス、連絡先および歴史(未訳)
+<w>L</w>.      ライセンス、連絡先および歴史
 %%%%
 <w>M</w>.      Macros, Options, Performance
 
-<w>M</w>.      マクロおよびオプション設定(未訳)
+<w>M</w>.      マクロおよびオプション設定
 %%%%
 <w>N</w>.      Philosophy
 
-<w>N</w>.      ゲームの方向性(未訳)
+<w>N</w>.      ゲームの方向性
 %%%%
 <w>1</w>.      List of Character Species
 
-<w>1</w>.      種族一覧(未訳)
+<w>1</w>.      種族一覧
 %%%%
 <w>2</w>.      List of Character Backgrounds
 
-<w>2</w>.      ゲーム開始時の職業一覧(未訳)
+<w>2</w>.      ゲーム開始時の職業一覧
 %%%%
 <w>3</w>.      List of Skills
 
-<w>3</w>.      スキル一覧(未訳)
+<w>3</w>.      スキル一覧
 %%%%
 <w>4</w>.      List of Keys and Commands
 
-<w>4</w>.      コマンド詳細一覧(未訳)
+<w>4</w>.      コマンド詳細一覧
 %%%%
 <w>5</w>.      List of Enchantments
 
-<w>5</w>.      ステータス表記一覧(未訳)
+<w>5</w>.      ステータス表記一覧
 %%%%
 <w>6</w>.      Inscriptions
 
-<w>6</w>.      アイテムへの銘の効果(未訳)
+<w>6</w>.      アイテムへの銘の効果
 %%%%
 <h>Movement:
 

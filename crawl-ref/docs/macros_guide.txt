@@ -1,142 +1,128 @@
-Macros and Keymaps
+マクロとキーマップ
 ==================
 
-What are macros and keymaps? The simple explanation is:
+マクロとキーマップとは何ですか?簡単な説明は次のとおりです。
 
-Command macros make keys into commands.
-Keymaps make keys into other keys.
+コマンドマクロはキーをコマンドにします。キーマップはキーを別のキーにします。
 
-Or a bit more verbose:
+または、もう少し冗長に:
 
-For the most part, people will probably want command macros. They allow
-for things like making a key run a sequence of commands (e.g.
-associating a key stroke to the casting of a certain spell) without
-having to worry about messing up what that key does at prompts (e.g.
-you can macro a number or letter without worrying about it making the
-substitution when you're trying to drop an item).
+ほとんどの場合、ユーザーはおそらくコマンドマクロを必要とするでしょう。プロンプ
+トでのキーの動作を台無しにすることを心配することなく、キーに一連のコマンドを実
+行させる(例:特定の呪文の詠唱にキーストロークを関連付ける)ことができます(例
+:アイテムをドロップしようとしているときに置換されることを気にせずに数字や文字
+をマクロ化できます)。
 
-Keymaps are for when you want to fix layout and behavioural problems on
-your keyboard (i.e. unrecognised numpad sequences can by mapped into
-their numbers, foreign keyboard layouts can be modified to be more
-comfortable). There are also special sets of keymaps for the level map,
-the targeting mode and confirmation prompts, which allow for mappings
-that are restricted to just those situations.
+キーマップは、キーボードのレイアウトと動作の問題を修正したい場合に使用します(
+つまり、認識されないテンキーシーケンスをその番号にマッピングすることで、外国の
+キーボードレイアウトをより快適になるように変更できます)。レベルマップ、ターゲ
+ティングモード、確認プロンプト用の特別なキーマップセットもあり、これらの状況に
+のみ制限されたマッピングが可能です。
 
 
-How to create macros and keymaps?
+マクロとキーマップを作成するにはどうすればよいですか?
 =================================
 
-The simplest way is in-game: Press either the '~' key or Ctrl-D, select
-'m' to define a macro, then choose a key to assign for your macro and
-enter the command sequence. For some keys (or key combinations), Crawl
-will display a strange number (for example \{13} for the Return key).
-These numbers are the key codes for certain non-alphanumeric keys and
-can vary between different systems.
+最も簡単な方法はゲーム内です。'~'キーまたはCtrl-Dを押し、'm'を選択してマクロを
+定義し、マクロに割り当てるキーを選択してコマンドシーケンスを入力します。一部の
+キー (またはキーの組み合わせ)では、Crawlに奇妙な数字が表示されます(たとえば、
+Returnキーの場合は\{13})。これらの番号は、特定の非英数字キーのキーコードであり、
+システムによって異なる場合があります。
 
-By default, most upper- and lowercase alphanumeric keys are already
-assigned functions in Crawl. While you are free to remap those keys as
-well, it might be best to start with some of the currently unused keys,
-such as Ins or the function keys (F1 to F12), possibly combined with
-Ctrl, Shift or both. On some systems, it may also be possible to
-incorporate the Alt (Meta) key.
+デフォルトでは、ほとんどの大文字と小文字の英数字キーには、Crawlの機能がすでに
+割り当てられています。これらのキーを自由に再マップすることもできますが、Insや
+ファンクションキー (F1 ～ F12)などの現在使用されていないキーから開始し、Ctrl、
+Shift、またはその両方と組み合わせることをお勧めします。一部のシステムでは、Alt
+(メタ)キーを組み込むこともできる場合があります。
 
-Defining keymaps works in exactly the same way. Just press 'k'
-(default), 'x' (level-map), 't' (targeting) or 'c' (confirmation)
-instead of 'm' after pressing '~'.
+キーマップの定義もまったく同じように機能します。 '~'を押した後、'm'の代わりに、
+'k' (デフォルト)、'x' (レベルマップ)、't' (ターゲティング)または'c' (確認)を押
+すだけです。
 
-After defining such a macro or keymap, you should test it. If you are
-comfortable with it, you should then save the macro. To save all macros
-and keymaps, press '~' and then 's' to save macros at the tilde prompt).
+このようなマクロまたはキーマップを定義した後、それをテストする必要があります。
+慣れている場合は、マクロを保存してください。すべてのマクロとキーマップを保存す
+るには、'~'を押してから、チルダプロンプトで's'を押してマクロを保存します)。
 
 
-The macro.txt file
+macro.txtファイル
 ==================
 
-Macros and keymaps are stored in a file called macro.txt in your
-settings/ directory. You can change where the file is read from and
-written to by specifying an alternate directory with the macro_dir
-option in your init file (see options_guide.txt for details). The
-macro.txt file is human readable and editable, but you might have to
-figure out the key codes for non-alphanumeric keys through in-game
-experimentation or external utilities.
+マクロとキーマップは、settings/ディレクトリ内のmacro.txtというファイルに保存さ
+れます。 initファイルのmacro_dirオプションで代替ディレクトリを指定することで、
+ファイルの読み取りおよび書き込み先を変更できます(詳細については、
+options_guide.txtを参照)。 macro.txtファイルは人間が読み取ったり編集したりでき
+ますが、ゲーム内の実験や外部ユーティリティを通じて、英数字以外のキーのキーコー
+ドを把握する必要がある場合があります。
 
-Lines beginning with the '#' are comments and will be ignored. Note
-that Crawl won't necessarily preserve your comments when saving macros
-and keymaps to the macro.txt file.
+'#'で始まる行はコメントなので無視されます。マクロとキーマップをmacro.txtファイ
+ルに保存するときに、Crawlは必ずしもコメントを保存するとは限らないことに注意し
+てください。
 
-Each macro definition consists of exactly two lines. The first one
-describes the macro trigger key and consists of "M:" followed by the
-character or keycode of that key (for example 'a', 'A' or \{9} for
-the A, Shift-A or Tab keys). The second one describes the macro action
-and consists of "A:" followed by the command sequence to be associated
-with the above key (for example "zap" for zapping the spell in slot a
-at the previous target). Individual macro definitions should be
-separated by empty lines.
+各マクロ定義は正確に2行で構成されます。最初のものはマクロトリガーキーを記述し、
+「M:」とそれに続くそのキーの文字またはキーコードで構成されます(たとえば、A、
+Shift-A、またはTabキーの場合は'a'、'A'、または\{9})。 2番目のものはマクロアク
+ションを記述し、「A:」とそれに続く上記のキーに関連付けられるコマンドシーケンス
+で構成されます(たとえば、前のターゲットのスロットaで呪文をザッピングする場合の
+「zap」)。個々のマクロ定義は空行で区切る必要があります。
 
-For keymaps just replace the "M:" on the first line of the definition
-with one of the following:
-"K:"  default,
-"K1:" level-map,
-"K2:" targeting or
-"K3:" confirmation.
+キーマップの場合は、定義の最初の行の「M:」を次のいずれかに置き換えます。
+「K:」  デフォルト
+「K1:」 レベルマップ
+「K2:」 ターゲティング
+「K3:」 確認
 
 
-Examples
+例
 ========
 
-This section contains some examples to give you an idea what macros and
-keymaps can be used for. Note that for the sake of completeness, both
-key line and command line are given, but that you should probably
-substitute your own keys here as these may not always work for you.
+このセクションには、マクロとキーマップを何に使用できるかを示すいくつかの例が含
+まれています。完全を期すために、キーラインとコマンドラインの両方が示されていま
+すが、これらが常に機能するとは限らないため、ここでは独自のキーに置き換える必要
+があることに注意してください。
 
 
-'@' is a character that may not work by default on some keyboard
-layouts. The following should remedy that by mapping '@' to '@'.
+'@'は、一部のキーボードレイアウトではデフォルトでは機能しない文字です。以下で
+は、'@'を'@'にマッピングすることでこの問題を解決する必要があります。
 
 # @: display character status
 K:\{17}
 A:@
 
 
-Playing a summoner can be annoying because you often need to cast the
-same spells multiple times in a row, each casting requiring multiple
-keystrokes. This macro allows casting the spell in slot 'a' with a
-single keystroke. Note that you can redefine spell slots with the '='
-key. We emphasise again that the F1 key may get a different code on
-your system.
+召喚術師は同じ呪文を連続して唱えることが多く、詠唱のたびに複数のキーを押すのは
+手間がかかります。このマクロを使えば、1回のキー入力で'a'スロットの呪文を唱えら
+れます。
+'='キーを使用して呪文スロットを再定義できることに注意してください。 F1キーはシ
+ステム上で異なるコードを取得する可能性があることを再度強調します。
 
 # F1: cast spell 'a'
 M:\{368}
 A:za
 
 
-Now that we've taken care of summoning, we still need to command our
-summoned creatures. The following macro should make that easier as
-well. Note that this macro assumes that the default_target option is
-set to true (it is by default; see crawl_options.txt for details).
+召喚の準備ができたので、召喚されたクリーチャーに命令する必要があります。次のマ
+クロを使用すると、これも簡単になります。このマクロは、default_targetオプション
+がtrueに設定されていることを前提としていることに注意してください(デフォルトで
+す。詳細については、crawl_options.txtを参照してください)。
 
 # Tab: Order allies to attack your previous or the nearest target
 M:\{9}
 A:ta.
 
 
-Conjurers need a slightly different macros for casting, such as this
-one, as they need to press '.' or Return to confirm firing at a target.
-Again, this macro assumes that the default_target option is set to
-true.
+妖術師は、標的への詠唱を確定するために'.'またはReturnを押す必要があるため、少し
+異なるマクロを使います。繰り返しますが、
+このマクロは、default_targetオプションがtrueに設定されていることを前提としてい
+ます。
 
 # F1: cast spell 'a' at your previous or the nearest target
 M:\{368}
 A:za.
 
 
-However, even conjurers might not always want to fire at their previous
-target, so the following set of macros allows them to cast the spell
-in slot 'a' and then cycle through the available targets with the same
-key and then confirming with the same key we used for firing in the
-previous macro. This example also tries to illustrate how to take
-advantage of the fact that keys can have different functions in the
-different keymaps.
+妖術師でも、常に直前の標的へ唱えたいとは限りません。次のマクロでは'a'スロット
+の呪文を選び、同じキーで標的を順に切り替え、前のマクロと同じキーで確定できま
+す。また、キーマップごとに同じキーへ異なる機能を割り当てる方法も示しています。
 
 # Shift-F1: cast spell 'a'
 M:\{1392}
