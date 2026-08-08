@@ -2446,6 +2446,57 @@ static void _read_map_cache(map_def &map, reader &inf, long cache_offset,
 }
 
 #ifdef DEBUG_TESTS
+void mapdef_epilogue_tests()
+{
+    const char *counter = "dgn.mapdef_epilogue_test_count";
+    if (dlua.execstring(make_stringf("%s = 0", counter).c_str(),
+                        "mapdef epilogue test"))
+    {
+        fail("Could not initialise map epilogue test: %s",
+             dlua.error.c_str());
+    }
+
+    map_def map;
+    map.name = "epilogue_validation_test_map";
+    map.tags = " dummy ";
+    map.epilogue.set_chunk(make_stringf("%s = %s + 1", counter, counter));
+
+    const depth_ranges default_depths;
+    map.validate_map_def(default_depths);
+
+    if (dlua.execstring(make_stringf("return %s", counter).c_str(),
+                        "mapdef epilogue test", 1))
+    {
+        fail("Could not read map epilogue test result: %s",
+             dlua.error.c_str());
+    }
+    const int validation_count = lua_tointeger(dlua, -1);
+    lua_pop(dlua, 1);
+    if (validation_count != 0)
+    {
+        fail("Map validation ran its epilogue %d time(s)",
+             validation_count);
+    }
+
+    map.run_lua_epilogue(true);
+    if (dlua.execstring(make_stringf("return %s", counter).c_str(),
+                        "mapdef epilogue test", 1))
+    {
+        fail("Could not read map epilogue test result: %s",
+             dlua.error.c_str());
+    }
+    const int placement_count = lua_tointeger(dlua, -1);
+    lua_pop(dlua, 1);
+    if (placement_count != 1)
+    {
+        fail("Placed map epilogue ran %d time(s), expected once",
+             placement_count);
+    }
+
+    dlua.execstring(make_stringf("%s = nil", counter).c_str(),
+                    "mapdef epilogue test");
+}
+
 void mapdef_tests()
 {
     const vector<unsigned char> truncated_cache(1, TAG_MAJOR_VERSION);

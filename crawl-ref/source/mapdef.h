@@ -54,6 +54,7 @@ private:
 
 #ifdef DEBUG_TESTS
 void mapdef_tests();
+void mapdef_epilogue_tests();
 #endif
 
 // [dshaligram] Maps can be mirrored; for every orientation, there must be
