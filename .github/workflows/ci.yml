@@ -129,18 +129,22 @@ jobs:
         shell: bash
         run: |
           packages=(
-            build-essential
-            clang
-            gdb
-            libfreetype6-dev
-            liblua5.1-0-dev
             libncurses-dev
-            libpng-dev
-            libsdl2-dev
-            libsdl2-image-dev
-            libsdl2-mixer-dev
-            pkg-config
+            pkgconf
           )
+          if [[ -z "$BUILD_ALL" ]]; then
+            packages+=(liblua5.1-0-dev)
+          fi
+          if [[ -n "$TILES" && -z "$BUILD_ALL" ]]; then
+            packages+=(
+              libfreetype6-dev
+              libpng-dev
+              libsdl2-dev
+              libsdl2-image-dev
+            )
+          elif [[ -n "$WEBTILES" && -z "$BUILD_ALL" ]]; then
+            packages+=(libpng-dev)
+          fi
           if [[ -n "$BUILD_ALL" ]]; then
             packages+=(
               libasound2-dev
