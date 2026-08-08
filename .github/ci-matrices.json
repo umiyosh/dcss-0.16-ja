@@ -95,6 +95,66 @@
       }
     ]
   },
+  "pr": {
+    "include": [
+      {
+        "compiler": {"name": "GCC", "cc": "gcc", "cxx": "g++"},
+        "variant": {"name": "Console", "full_debug": "", "tiles": "", "webtiles": "", "use_dgamelaunch": "", "build_all": ""}
+      },
+      {
+        "compiler": {"name": "GCC", "cc": "gcc", "cxx": "g++"},
+        "variant": {"name": "Console (debug)", "full_debug": "1", "tiles": "", "webtiles": "", "use_dgamelaunch": "", "build_all": ""}
+      },
+      {
+        "compiler": {"name": "GCC", "cc": "gcc", "cxx": "g++"},
+        "variant": {"name": "Tiles", "full_debug": "", "tiles": "1", "webtiles": "", "use_dgamelaunch": "", "build_all": ""}
+      },
+      {
+        "compiler": {"name": "GCC", "cc": "gcc", "cxx": "g++"},
+        "variant": {"name": "Tiles (debug)", "full_debug": "1", "tiles": "1", "webtiles": "", "use_dgamelaunch": "", "build_all": ""}
+      },
+      {
+        "compiler": {"name": "GCC", "cc": "gcc", "cxx": "g++"},
+        "variant": {"name": "Webtiles", "full_debug": "", "tiles": "", "webtiles": "1", "use_dgamelaunch": "", "build_all": ""}
+      },
+      {
+        "compiler": {"name": "GCC", "cc": "gcc", "cxx": "g++"},
+        "variant": {"name": "Webtiles (debug)", "full_debug": "1", "tiles": "", "webtiles": "1", "use_dgamelaunch": "", "build_all": ""}
+      },
+      {
+        "compiler": {"name": "GCC", "cc": "gcc", "cxx": "g++"},
+        "variant": {"name": "DGL", "full_debug": "", "tiles": "", "webtiles": "", "use_dgamelaunch": "1", "build_all": ""}
+      },
+      {
+        "compiler": {"name": "GCC", "cc": "gcc", "cxx": "g++"},
+        "variant": {"name": "DGL Webtiles", "full_debug": "", "tiles": "", "webtiles": "1", "use_dgamelaunch": "1", "build_all": ""}
+      },
+      {
+        "compiler": {"name": "GCC", "cc": "gcc", "cxx": "g++"},
+        "variant": {"name": "Tiles (bundled dependencies)", "full_debug": "", "tiles": "1", "webtiles": "", "use_dgamelaunch": "", "build_all": "1"}
+      },
+      {
+        "compiler": {"name": "GCC", "cc": "gcc", "cxx": "g++"},
+        "variant": {"name": "Webtiles (bundled dependencies)", "full_debug": "", "tiles": "", "webtiles": "1", "use_dgamelaunch": "", "build_all": "1"}
+      },
+      {
+        "compiler": {"name": "Clang", "cc": "clang", "cxx": "clang++"},
+        "variant": {"name": "Console (debug)", "full_debug": "1", "tiles": "", "webtiles": "", "use_dgamelaunch": "", "build_all": ""}
+      },
+      {
+        "compiler": {"name": "Clang", "cc": "clang", "cxx": "clang++"},
+        "variant": {"name": "Tiles (debug)", "full_debug": "1", "tiles": "1", "webtiles": "", "use_dgamelaunch": "", "build_all": ""}
+      },
+      {
+        "compiler": {"name": "Clang", "cc": "clang", "cxx": "clang++"},
+        "variant": {"name": "DGL Webtiles", "full_debug": "", "tiles": "", "webtiles": "1", "use_dgamelaunch": "1", "build_all": ""}
+      },
+      {
+        "compiler": {"name": "Clang", "cc": "clang", "cxx": "clang++"},
+        "variant": {"name": "Webtiles (bundled dependencies)", "full_debug": "", "tiles": "", "webtiles": "1", "use_dgamelaunch": "", "build_all": "1"}
+      }
+    ]
+  },
   "data": {
     "compiler": [
       {
