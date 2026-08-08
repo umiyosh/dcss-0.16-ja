@@ -1,0 +1,1122 @@
+%%%%
+A Zot trap
+
+この罠を踏んだ不運な者には、極めて危険で予測不能な魔法の効果が降りかかる。
+アビスへ投げ込まれる、膨大な量の荒ぶる魔力に汚染される、強大な悪魔を差し向けられるなど、何としても避けるべき罠である。
+ダンジョンの怪物が自ら罠を作動させ、その効果をあなたに向けることさえある。
+%%%%
+A basalt altar of Yredelemnul
+
+柱状の玄武岩を組み上げて造られた、暗黒のイレデレンヌルの祭壇だ。
+%%%%
+A blade trap
+
+振り子のように動く重りを備えた、巨大な大鎌めいた刃が裂け目に隠されている。
+
+精巧な感知機構により、上を飛び越えようとしても作動する。
+%%%%
+A bloodstained altar of Trog
+
+巨人の手で造られたかのように荒削りな、激怒せるトログの祭壇だ。
+そこかしこに血痕がこびりついている。
+%%%%
+A blossoming altar of Fedhas
+
+色鮮やかに生い茂る草花に覆われた、フェダス・マダシュの祭壇だ。
+%%%%
+A bolt trap
+
+巧妙に隠された穴の中に、自動装填機構を備えた弩めいた仕掛けが収められている。
+
+精巧な感知機構により、上を飛び越えようとしても作動する。
+%%%%
+# column_ruins
+A broken pillar
+
+この柱を築いた者たちは、はるか昔に滅ぼされた。
+彼らが何のためにこれを築いたのか、今や知る者はいない。
+%%%%
+A burning altar of Makhleb
+
+破壊者マクレブの、永遠に燃え続ける祭壇だ。
+炎の中には奇妙にねじれた姿が浮かんでいる。
+%%%%
+A closed door
+
+木製の扉だ。
+%%%%
+# These should get custom names instead. Currently used by: IceCv, Ossuary,
+# Sewer, Trove, Volcano.
+A collapsed entrance
+
+粗末な造りだったらしく、この通路は崩れ落ちて二度と使えない。
+%%%%
+A corrupted altar of Lugonu
+
+無形のルゴヌの祭壇だ。
+かつては別の力に捧げられていたのかもしれないが、今や取り返しのつかないほど歪められている。
+%%%%
+A crawl-hole back to the Lair
+
+蜘蛛の巣も少なく、もう少し広々とした獣の棲み処へ戻る抜け穴だ。
+%%%%
+A deep blue altar of Sif Muna
+
+最も深い青に彩られ、精緻な文様と忘れ去られた文字が刻まれた、知識の守護者シフ・ムーナの祭壇だ。
+%%%%
+A detected altar
+
+何らかの祭壇だ。
+近づかなければ、どの神に捧げられたものかは分からない。
+%%%%
+# mmap/antennae/etc
+A detected shop or portal
+
+何らかの入口だ。
+近づかなければ、どこへ通じているのかは分からない。
+%%%%
+A dry fountain
+
+とうに水が涸れ、かつての面影を失った噴水だ。
+%%%%
+A fountain of clear blue water
+
+澄んだ水をたたえる装飾用の噴水だ。
+%%%%
+A fountain of blood
+
+見るもおぞましい血を噴き上げる装飾用の噴水だ。
+%%%%
+A fountain of sparkling water
+
+きらきらと輝く水をたたえる装飾用の噴水だ。
+%%%%
+A gate leading back out of this place
+
+来た場所へ戻るための門だ。
+%%%%
+A gate leading out of Pandemonium
+
+ダンジョンへ戻るための門だ。
+%%%%
+A gate leading to another region of Pandemonium
+
+パンデモニウムの別の領域へ通じる門だ。
+その先にもまた、果てしなく領域が続いている。
+%%%%
+A one-way gate leading to the halls of Pandemonium
+
+パンデモニウムの果てなき広間へ通じる一方通行の門だ。
+%%%%
+A staircase to the Depths
+
+深層へ通じる階段だ。
+%%%%
+A gate to the Realm of Zot
+
+ゾットの領域へ通じる門だ。
+%%%%
+A gateway back into the Dungeon
+
+生きて地獄を脱するという、不可能と広く信じられている偉業を成し遂げるための門だ。
+%%%%
+A gateway leading out of the Abyss
+
+絶えず姿を変える景色の中で揺らめく、この呪われた地からの出口だ。
+%%%%
+A gateway leading deeper into the Abyss
+
+渦巻く景色の中にあって、不思議なほど静かな門だ。
+アビスのさらなる深みへと通じている。
+%%%%
+A gateway to a ziggurat
+
+ジグラットへ通じるポータルだ。
+%%%%
+A gateway to the ashen valley of Gehenna
+
+ゲヘナへ通じる門だ。
+%%%%
+A gateway to Hell
+
+地獄の入り口へ通じる門だ。
+自ら望んで足を踏み入れる者はほとんどいない。
+%%%%
+A gateway to the Iron City of Dis
+
+鉄の都ディースへ通じる門だ。
+%%%%
+A gateway to the decaying netherworld of Tartarus
+
+腐朽せる冥府タルタロスへ通じる門だ。
+%%%%
+A gateway to the freezing wastes of Cocytus
+
+凍てつく荒野コキュートスへ通じる門だ。
+%%%%
+A gleaming silver wall
+
+純銀から成るこの壁は、怪物を閉じ込めるためにジンの力で築かれた。
+急速に崩れつつあり、そう長くは持たないだろう。
+%%%%
+A glowing golden altar of the Shining One
+
+この上なく純粋な黄金で造られ、目も眩むほど輝く、輝けるものの祭壇だ。
+%%%%
+A glowing silver altar of Zin
+
+信徒に求められる清廉さを思わせる無垢な銀で造られ、柔らかな光を放つ、法の制定者ジンの祭壇だ。
+%%%%
+A granite statue
+
+硬い花崗岩で造られているにもかかわらず、像の面立ちは長い歳月に削り取られている。
+%%%%
+A hole to the Spider Nest
+
+蜘蛛の穴ぐらへ通じる穴だ。
+%%%%
+A labyrinth entrance
+
+ラビリンスへ通じるポータルだ。
+%%%%
+A mechanical trap
+
+侵入者を傷つけるために造られた機械仕掛けだ。
+
+精巧な感知機構により、上を飛び越えようとしても作動する。
+%%%%
+A metal wall
+
+青みがかった灰色の金属壁だ。
+ダンジョンの電気技師なら誰もが知るとおり、魔法の稲妻さえ地へ逃がしてしまう。
+%%%%
+A needle trap
+
+毒針を射出する機械仕掛けの罠だ。
+
+精巧な感知機構により、上を飛び越えようとしても作動する。
+%%%%
+A net trap
+
+ダンジョンの天井から吊られた巨大な網が巧妙に隠されており、下を通る者へ落ちるよう仕掛けられている。
+
+精巧な感知機構により、上を飛び越えようとしても作動する。
+%%%%
+A one-way gate to the infinite horrors of the Abyss
+
+アビスへ通じる一方通行の門だ。
+%%%%
+A passage of Golubria
+
+近くにある別のゴルブリアの通り道へ瞬時に移動できる、不安定な門だ。
+何かが通り抜けると、その背後で閉じてしまう。
+%%%%
+A portal to somewhere
+
+恐ろしい星空の異世界を覗かせる、現実そのものに開いた傷口のような裂け目だ。
+幸い、このポータルを開いた魔法が虚空の吸引を抑え、目に映るすべてが呑み込まれるのを防いでいる。
+%%%%
+A pressure plate
+
+何らかの仕掛けを作動させる踏み板だ。
+どのような罠につながっているのかは分からない。
+
+精巧な感知機構により、上を飛び越えようとしても作動する。
+%%%%
+A radiant altar of Vehumet
+
+イスケンデルンの光に照り輝き、ヴェフメットに従う者へ強大な破壊の力を約束する祭壇だ。
+%%%%
+A rock wall
+
+ありふれた岩でできた壁だ。
+%%%%
+A rock-blocked tunnel
+
+岩に塞がれ、もはや通ることのできない隧道だ。
+%%%%
+A rocky tunnel leading out of this place
+
+火山岩の中に穿たれた不安定な隧道から、向こう側の冷たい空気が流れ込んでいる。
+来た場所へ戻る道だが、一度通り抜ければここへは戻れない。
+%%%%
+A roughly hewn altar of Beogh
+
+オークの職人が荒々しく削り出したことが一目で分かる、ベオの祭壇だ。
+%%%%
+A runed door
+
+ルーン文字に覆われた扉だ。
+その先には何か特別なもの――危険か、あるいは財宝か――がありそうだ。
+ほかの扉と同じように開けば、ルーンを破ることができる。
+%%%%
+A sacrificial altar of Ru
+
+覚者ルーの祭壇だ。
+天秤の片方の皿には心臓が、もう片方には力と悟りを象徴する図像が載せられている。
+%%%%
+A sealed door
+
+秘術のルーンで固く封じられた扉だ。
+その魔法に認められない者には決して開かない。
+%%%%
+A sealed passage leading down
+
+魔法の障壁で固く封じられた下り道だ。
+魔法が保たれている限り、力ずくで通り抜けることはできそうにない。
+%%%%
+A sealed passage leading up
+
+魔法の障壁で固く封じられた上り道だ。
+魔法が保たれている限り、力ずくで通り抜けることはできそうにない。
+%%%%
+A shaft
+
+深い縦穴だ。
+落ちればどこへ辿り着くか、誰にも分からない。
+%%%%
+A shadow trap
+
+影とアビスの物質を織り合わせ、この地に棲む怪物の写し身を作り出す魔法の罠だ。
+その魔力はひどく鋭敏で、あなたの目の届くところで、召喚されたものではない生物が踏み込むと作動する。
+
+一度作動すると、再び力を取り戻すまでにはしばらくかかる。
+%%%%
+A dormant shadow trap
+
+影とアビスの物質を織り合わせ、この地に棲む怪物の写し身を作り出す魔法の罠だ。
+その魔力はひどく鋭敏で、あなたの目の届くところで、召喚されたものではない生物が踏み込むと作動する。
+
+今は力を失っているため安全に通れるが、まもなく再び作動する！
+%%%%
+A shadowy altar of Dithmenos
+
+周囲の光を吸い込んでいるかのように見える、陰影の神ディスメノスの祭壇だ。
+%%%%
+A shattered altar of Ashenzari
+
+アシェンザリが呪われたとき、この水晶の祭壇は粉々に砕け散った。
+それでも力は失われていない。暗い霊気が、砕け散る瞬間の破片を、祭壇が象徴する神そのもののように時空へ縛りつけている。
+%%%%
+A shimmering altar of Xom
+
+予測不可能のゾムの気まぐれを映すかのように、目に見えるあらゆる色――そして、おそらく目に見えない色でさえ――絶えずきらめく祭壇だ。
+%%%%
+A shop
+
+地上から隔絶されたダンジョンの店だ。
+秘密主義で世捨て人のような店主は値引きに応じず、払い戻しもせず、あなたの売り物には何の関心も示さない。
+出所不明の古物を扱い、品の質や正体についてほとんど手掛かりを示さない店もある。
+%%%%
+A slime covered rock wall
+
+鮮やかな緑色の粘液に厚く覆われた岩壁だ。うええ。
+触れると酸に焼かれ、深く進むほど腐食性が強まるようだ。
+%%%%
+A snail-covered altar of Cheibriados
+
+ほかの祭壇よりも、なぜかいっそう不動であるように見える。
+%%%%
+A sparkling altar of Nemelex Xobeh
+
+どんな賭場の灯りよりも眩い光をきらめかせ、ネメレクス・ソベーの信徒を誘う祭壇だ。
+%%%%
+A spear trap
+
+侵入者を串刺しにする、長く鋭い槍を射出する罠だ。
+
+精巧な感知機構により、上を飛び越えようとしても作動する。
+%%%%
+A staircase back to the Dungeon
+
+見慣れたダンジョンへ戻る階段だ。
+%%%%
+A staircase back to the Lair
+
+獣の棲み処へ戻る階段だ。
+%%%%
+A staircase back to the Mines
+
+オークの坑道へ戻る幅広い階段だ。
+%%%%
+A staircase back to the Vaults
+
+大いなる宝物庫へ戻る階段だ。
+%%%%
+A staircase leading out of the dungeon
+
+ダンジョンの外へ戻る階段だ。
+
+ゾットのオーブを携えていようといまいと、この階段を上ればあなたの冒険は終わる。
+%%%%
+A staircase back to the Crypt
+
+地下墓地へ戻る階段だ。
+%%%%
+A staircase to the Crypt
+
+地下墓地へ通じる階段だ。
+%%%%
+A staircase to the Ecumenical Temple
+
+諸宗派の寺院へ通じる階段だ。
+%%%%
+A staircase to the Elven Halls
+
+エルフの大広間へ通じる階段だ。
+%%%%
+A staircase to the Lair
+
+獣の棲み処へ通じる階段だ。
+%%%%
+A staircase to the Orcish Mines
+
+オークの坑道へ通じる階段だ。
+%%%%
+A staircase to the Shoals
+
+浅瀬へ通じる階段だ。
+%%%%
+A staircase to the Slime Pits
+
+スライムの穴ぐらへ通じる階段だ。
+%%%%
+A staircase to the Snake Pit
+
+蛇穴へ通じる階段だ。
+%%%%
+A staircase to the Swamp
+
+沼へ通じる階段だ。
+%%%%
+A staircase to the Tomb
+
+太古の霊廟へ通じる階段だ。
+%%%%
+A gate to the Vaults
+
+宝物庫へ通じる門だ。
+%%%%
+A stone staircase leading down
+
+さらに下層へ通じる石段だ。
+%%%%
+A stone staircase leading up
+
+上層へ戻る石段だ。
+%%%%
+A stone wall
+
+岩壁よりも堅固な障害物だ。
+石壁を砕けるのは極めて強大な魔法に限られる。
+%%%%
+A stormy altar of Qazlal
+
+嵐を呼ぶ者クァズラルの祭壇を、荒れ狂う風、放電、炎と溶岩の噴出、そして時折の揺れが取り巻いている。
+%%%%
+A short-range portal
+
+踏み込めば、近くにある別の部屋へ送り届けられるポータルだ。
+%%%%
+A teleport trap
+
+踏み込むか、その上を飛んだ不運な者を、同じ階の無作為な場所へ転移させる魔法の罠だ。
+ダンジョンで見つかるこの種の罠は古びており、一度使われると消滅する。
+新しく仕掛けられたものなら、何度か通り抜けても残ることがある。
+%%%%
+A permanent teleport trap
+
+踏み込むか、その上を飛んだ不運な者を、同じ階の無作為な場所へ転移させる魔法の罠だ。
+%%%%
+A translucent rock wall
+
+この岩を形作る鉱物は、上質な硝子のように半透明だ。
+自然にできたものか、魔法によるものかは分からない。
+%%%%
+A translucent stone wall
+
+岩壁よりも堅固で、極めて強大な魔法でなければ砕けない石壁だ。
+秘術の力を帯びており、向こう側を透かして見ることができる。
+%%%%
+A translucent unnaturally hard rock wall
+
+決して壊れず、硝子のように透き通る壁へと変える魔法が込められている。
+%%%%
+A tree
+
+ダンジョンは薄暗い魔法の光に満たされているが、ほとんどの場所では大きな植物を育むほど明るくない。
+それでも光にはむらがあり、フェダスの恵みによって、地上と変わらぬ大木が地下に育つ場所もある。
+
+斧で切り倒すには大きすぎるが、稲妻や十分に激しい炎には弱い。
+%%%%
+A viscous altar of Jiyva
+
+ぬめりながら絶えず姿を変える、ジーヴァの祭壇だ。
+何でできているのか見当もつかないし、知りたいとも思わない。
+%%%%
+A wall of green crystal
+
+磨き上げられた水晶で造られ、秘術の力を帯びた壁だ。
+容易な破壊を阻むとともに、熱と冷気を反射する。
+%%%%
+A wall of the weird stuff which makes up Pandemonium
+
+パンデモニウムを形作る奇妙な物質でできた壁だが、それ以外の性質は岩に近いようだ。
+%%%%
+A white marble altar of Elyvilon
+
+純白の大理石で造られ、浄化の聖杯をかたどった彫像を頂く、癒し手エリヴィロンの祭壇だ。
+%%%%
+A web
+
+この巣を残した蜘蛛はさぞ巨大だったのだろう。
+蝿ではなく{{ return you.genus(true) }}を捕らえるために張られたようだ。
+%%%%
+An abandoned shop
+
+打ち捨てられた店だ。
+%%%%
+An alarm trap
+
+この罠そのものに殺傷力はないが、けたたましい音を聞きつけて、代わりにあなたを傷つける何者かがやって来るかもしれない。
+音を立てるだけでなく、階層中の怪物にあなたの居場所を知らせる魔法をかける。
+%%%%
+An ancient bone altar of Kikubaaqudgha
+
+恐るべき悪魔神キクバークッグァのために、古びた骨を積み上げて築かれた祭壇だ。
+%%%%
+An arrow trap
+
+作動すると矢を放つ、機械仕掛けの罠だ。
+
+精巧な感知機構により、上を飛び越えようとしても作動する。
+%%%%
+An empty arch of ancient stone
+
+永遠の昔からここに立っているように見える、古びた石造りの門だ。
+どこかへ通じている様子はない。
+%%%%
+An escape hatch in the ceiling
+
+天井に設けられた、ばね仕掛けの一方通行の脱出口だ。
+%%%%
+An escape hatch in the floor
+
+ダンジョンの床に設けられた、ばね仕掛けの一方通行の脱出口だ。
+敵に追い詰められた冒険者は、この階の危険を次の階の危険と引き換えにできる。
+%%%%
+An exit through the horrors of the Abyss
+
+アビスの狂気を経て、ダンジョンへ戻る門だ。
+%%%%
+# shown if the player is an orc
+An idol of Beogh
+
+{{
+  if you.god() == "Beogh"
+    then
+      return "粗野ながら威厳に満ちたこの像は、栄光に輝くベオの姿を表している。"
+          .. "汚らわしき非オークどもに裁きを！";
+    else
+      return "この粗末な像は、ここに住む未開のオークが崇める神ベオをかたどっている。"
+          .. "彼らの教えは、すべての異教徒を殺すよう命じている。"
+          .. "この偶像を壊すのはさぞ愉快だろうが、復讐深いことで知られるベオには用心せよ。";
+  end
+}}
+%%%%
+An iron altar of Okawaru
+
+戦上手のオカワルに捧げられた、鉄と鋼の祭壇だ。
+縁は驚くほど鋭い。
+%%%%
+An iron grate
+
+錆びついた鉄格子だ。
+呪文やワンドなら容易に壊せそうだが、素手で破壊するには頑丈すぎる。
+%%%%
+An open door
+
+木製の扉だ。
+%%%%
+An opulent altar of Gozag
+
+強欲なるゴザーグ・イム・サゴーズの、黄金と宝石で飾られた豪奢な祭壇だ。
+薄暗いダンジョンの中でも眩く輝いている。
+%%%%
+An orcish idol
+
+オークの神ベオをかたどった偶像だ。
+破壊すればベオの怒りを買うだろう。
+%%%%
+An unnaturally hard rock wall
+
+いかなる手段をもってしても、この壁には影響を及ぼせない。
+%%%%
+The endless lava
+
+見渡す限りに炎と硫黄が広がる灼熱の海だ。
+この業火の上を飛べば、たちまち焼き尽くされるだろう。
+%%%%
+The floor
+
+床だ。
+%%%%
+Some deep water
+
+深く、危険な水だ。
+混乱した冒険者の多くが深みに沈み、不意に飛行が解けた不注意な侵入者はさらに多く溺れ死んだ。
+%%%%
+Some lava
+
+硫黄の煙を立ち昇らせる、猛烈に熱い溶岩のたまりだ。
+%%%%
+Some shallow water
+
+濁った腰までの浅瀬だ。
+陸に生きる者にとって移動や戦闘の妨げとなり、ときには危険だが、直接命を奪うことはない。
+%%%%
+The open sea
+
+果てしない風と波ばかりが広がり、灯台ひとつ見当たらない。
+進めばたちまち帰る望みを失うだろう。危険を冒すべきではない。
+%%%%
+########################
+## Big doors
+########################
+A large open door
+
+<An open door>
+%%%%
+An open gate
+
+<An open door>
+%%%%
+A huge open gate
+
+<An open door>
+%%%%
+A large closed door
+
+<A closed door>
+%%%%
+A closed gate
+
+<A closed door>
+%%%%
+A huge closed gate
+
+<A closed door>
+%%%%
+A large runed door
+
+<A runed door>
+%%%%
+A runed gate
+
+<A runed door>
+%%%%
+A huge runed gate
+
+<A runed door>
+%%%%
+A large sealed door
+
+<A sealed door>
+%%%%
+A sealed gate
+
+<A sealed door>
+%%%%
+A huge sealed gate
+
+<A sealed door>
+%%%%
+########################
+### Vault redefinitions
+########################
+# wizlabs
+A portal leading out of this place
+
+揺らめく魔法の門だ。これを通れば、来た場所へ戻ることができる。
+一度通り抜けると、ここへは戻れない。
+%%%%
+# wizlab: Wucad Mu
+An autumnal tree
+
+この大木は、永遠に秋の一瞬へ閉じ込められているようだ。
+赤や金に色づいた葉が枝から離れ、優雅に床へ舞い落ちてゆく。
+だが地に届く前に影がよぎり、揺らめきが収まると、葉は再び枝に戻って次の落下を待っている。
+%%%%
+A crumbled stone wall
+
+崩れかけたまま時の中に封じられた石壁だ。
+荒廃し、今にも崩れそうでありながら、決して崩れることができない。
+%%%%
+A strange statue
+
+異様で、この世ならぬ面立ちの像だ。
+風化して元の姿を見分けられなくなっただけなのか、それとも、かたどられたものが邪悪な悪魔だったのだろうか。
+%%%%
+# wizlab: Tukima
+A crystal clear mirror
+
+周囲のすべてを映し出す、きらめく鏡だ。
+%%%%
+A strange generator
+
+シューシュー、ポンポンと音を立てる奇妙な機械仕掛けだ。
+今にも踊る武器を吐き出しそうに見える。
+%%%%
+A glistening fountain
+
+水は涸れているが、眩くきらめく噴水だ。
+%%%%
+A black marble wall
+
+きらめく黒大理石の壁だ。
+実に美しい！
+%%%%
+The marble floor
+
+白と銀を基調とし、ところどころに淡紅色が差す大理石の床だ。
+%%%%
+# wizlab: Eringya
+A rose-covered archway
+
+美しい薔薇に覆われたアーチだ！
+%%%%
+A vine-covered statue
+
+蔓草だけで形作られた怪物のようにも見える像だ。
+%%%%
+A crumbling stone wall
+
+ひどく古び、崩れかけた石壁だ。
+%%%%
+The grass-covered ground
+
+落ち葉と小枝が散らばり、踏むたび高く音を立てる、瑞々しく張りのある草地だ。
+%%%%
+# wizlab: Doroklohe
+A strange rock wall
+
+墓所で目にするような図像で飾られた、奇妙な岩壁だ。
+%%%%
+A highly decorated stone wall
+
+不穏で恐ろしい図像に覆われた石壁だ。
+%%%%
+The rough-hewn floor
+
+荒く削り出され、ところどころに凹凸のある床だ。
+%%%%
+# wizlab: Cigotuvi
+Viscous fluid
+
+近くの壁から滲み出たらしい、粘り気のある液体だ。
+見るからに気味が悪い。
+%%%%
+A sinewy wall
+
+奇妙に生物めいて筋張っているが、恐ろしく強靭な壁だ。
+%%%%
+A thin membrane
+
+向こう側が透けて見えるほど薄い、奇妙な膜だ。
+%%%%
+The pulsating floor
+
+ぬめる床が、得体の知れない律動に合わせて脈打っているように見える。
+%%%%
+# wizlab: Zonguldrok
+Zonguldrok's gravestone
+
+墓石だ。「ゾングルドロック」の名が金文字で刻まれている。
+%%%%
+A gravestone
+
+名もなき者の墓だ。
+%%%%
+# wizlab: Golubria
+The dimension's edge
+
+孤立した小さな次元の縁で、空間そのものが虚無へ溶け落ちている。
+この黒い虚空へ入り込むことも、何らかの影響を及ぼすこともできない。
+%%%%
+A wall of crystal
+
+<A wall of green crystal>
+%%%%
+# wizlab: Cloud Mage
+The damp floor
+
+湿気のためか、絶えず雲が流れているためか、ここの床はいつまでも湿っている。
+%%%%
+A wall of white crystal
+
+乳白色の輝きを帯びた、質の低い水晶で造られた壁だ。
+%%%%
+# wizlab: Hellbinder
+A black wall
+
+石か、固めた木炭か、あるいは地獄の最深部にしかない物質でできているらしい黒い壁だ。
+%%%%
+A carved rock wall
+
+死と破壊の図像が刻まれた岩壁だ。
+%%%%
+# evilmike_haunted_forest (Crypt:5)
+A dead tree
+
+この場所のほかのすべてと同じく、完全に枯れ果てた木だ。
+%%%%
+# Dis:7
+An iron statue
+
+口のない鉄像だ。不気味だ！
+%%%%
+# Geh:7
+Ashen ground
+
+灰に覆われた地面だ。
+暖かく、意外なほど心地よい。
+%%%%
+A tempered metal wall
+
+熱を放つ、鍛えられた金属の壁だ。
+%%%%
+# Coc:7
+An ice-covered rock wall
+
+厚い氷に覆われた岩壁だ。
+%%%%
+An ice-covered stone wall
+
+厚い氷に覆われた石壁だ。
+%%%%
+Frost-covered floor
+
+霜に覆われた床だ。
+踏みしめると小気味よい音がする。
+%%%%
+# Pan: the holy level
+A golden statue
+
+聖人をかたどった純金の像だ。
+%%%%
+A silver wall
+
+純銀で造られた壁だ。
+%%%%
+# Slime:$
+A rune carved stone wall
+
+無数の神秘的なルーンを刻まれた、不思議なほど粘液の付いていない石壁だ。
+繰り返し現れる一組のルーンは「ロイヤルジェリー」を指しているように見える。
+%%%%
+# Tomb:1
+A sarcophagus
+
+古代の石棺だ。中は空のようだ。
+%%%%
+# Vaults:$
+A heavily etched metal wall
+
+宝物庫で盗みを働いて捕らえられた者がどうなるのかを、凄惨な細部まで描いた壁画が刻まれた金属壁だ。
+眺めていると吐き気を催す。
+%%%%
+A heavily etched wall of green crystal
+
+宝物庫で盗みを働いて捕らえられた者がどうなるのかを、凄惨な細部まで描いた壁画が刻まれた緑水晶の壁だ。
+眺めていると吐き気を催す。
+%%%%
+# moated_graveyard_entry (D:1)
+An adventurer's gravestone
+
+あと一歩で勝利へ届かなかった冒険者の墓だ。
+%%%%
+# minmay_entry_shattered_statue (D:1)
+A granite stump
+
+花崗岩の残骸だ。かつては像だったのだろう。
+%%%%
+# Ice Cave
+An ice choked empty arch of ancient stone
+
+氷塊にほとんど埋め尽くされ、力を失ったポータルだ。
+%%%%
+An ice covered gate leading back out of this place
+
+来た場所へ戻るポータルだ。
+門を塞がぬよう、その魔力が氷を押し留めている。
+一度通り抜けると、ここへは戻れない。
+%%%%
+An ice covered rock wall
+
+厚い霜と氷に覆われた岩壁だ。
+%%%%
+Some ice crusted deep water
+
+砕けた氷塊が浮かぶ深い水だ。
+%%%%
+Some ice crusted shallow water
+
+砕けた氷塊が浮かぶ浅瀬だ。
+%%%%
+# sewer_minmay_treatment (Sewer)
+A large window
+
+巨大な金属管の側面にはめ込まれた窓だ。
+中を流れる水を眺めることができる。
+%%%%
+A glass window
+
+表面に無数のくぼみがある、極めて硬い硝子窓だ。
+%%%%
+# due_jungle_book (Lair:8)
+An elephant-shaped statue
+
+番をする象をかたどった、風化した花崗岩の像だ。
+%%%%
+# pan_disco_hall (Pan)
+A weirdly glowing ball
+
+空中に浮かび、揺らめく光を放つ球体だ。
+%%%%
+# ragdoll_tomb_raider
+A sealed sarcophagus
+
+固く封じられた古代の石棺だ。
+%%%%
+###########################
+### Portal vault entrances
+###########################
+A flagged portal
+
+濠城へ通じるポータルだ。
+軍旗が地に降ろされる前に入った方がよさそうだ。
+%%%%
+# timed bazaar
+A flickering gateway to a bazaar
+
+行商人が品物を売るために集うバザールへ通じるポータルだ。
+彼らは一つの場所に長く留まることがない。
+%%%%
+# permanent bazaar
+A gateway to a bazaar
+
+行商人が品物を売るために集うバザールへ通じるポータルだ。
+彼らはあなたを待ってくれるが、ひとたび品々を見て回れば、ほかの客を求めて旅立つだろう。
+%%%%
+A frozen archway
+
+氷の洞穴へ通じるポータルだ。
+凍てついたアーチは少しずつ融けている。
+%%%%
+A sand-covered staircase
+
+納骨堂へ通じる階段だ。
+周囲の砂が絶えず階段へ流れ込み、間もなく完全に埋め尽くしてしまうだろう。
+%%%%
+A glowing drain
+
+下水道へ通じる通路だ。
+急速に錆びつき、詰まりつつあるようだ。
+%%%%
+A portal to a secret trove of treasure
+
+秘密の埋蔵庫へ通じるポータルだ。
+%%%%
+A dark tunnel
+
+火山の中心へ通じるポータルだ。
+隧道の天井や側面から岩が落ち、入口を埋めつつある。
+%%%%
+A magical portal
+
+魔術研究所へ通じるポータルだ。
+その姿は次第に薄れつつある。
+%%%%
+###########
+### Sprint
+###########
+# sprint_mu
+An open sea?
+
+あなたの知る物理と幾何のあらゆる法則に真っ向から逆らっているが、この小部屋に途方もなく広大で恐ろしい海があることは否定できない。
+
+さもなくば、ただの青い壁だ。
+%%%%
+# arena_sprint
+A spawn point
+
+敵が現れる入口の一つだ。
+%%%%
+############
+### Tutorial
+############
+An exit from the tutorial
+
+ダンジョンから外へ出て、この教練を終えるための出口だ。
+%%%%
+############
+### Clouds
+### TODO: move this to its own file!
+############
+flame cloud
+
+荒れ狂う炎の雲だ。
+炎に完全な耐性を持たない生物は、中に留まるほど傷つくが、防具によって被害を軽減できる。
+
+遠距離から放たれた冷気の攻撃はこの雲に阻まれるが、その際に雲を消し去る。
+
+水上に生じた場合、その熱が周囲に蒸気を発生させる。
+深い水の上では波の冷たさにより、炎の雲はさらに早く消えてゆく。
+%%%%
+noxious fumes cloud
+
+息も詰まるような有毒の煙だ。
+毒への耐性を持たず呼吸する生物が中に留まると、煙に意識を乱され、混乱するおそれがある。
+頑強で経験を積んだ生物ほど影響を受けにくい。
+%%%%
+freezing vapour cloud
+
+凍てつく空気の雲だ。
+冷気に完全な耐性を持たない生物は、中に留まるほど傷つくが、防具によって被害を軽減できる。
+
+遠距離から放たれた炎や溶岩の攻撃はこの雲に阻まれるが、その際に雲を消し去る。
+
+溶岩の上に生じた場合、その熱により雲はさらに早く消えてゆく。
+%%%%
+poison gas cloud
+
+猛毒の雲だ。
+毒への耐性を持たない生物は、中に留まるほど毒に侵され、直接傷つけられる。
+%%%%
+smoke cloud
+
+色のついた煙の雲だ。
+喘息持ちでなければ害はない。
+%%%%
+black smoke cloud
+
+<smoke cloud>
+%%%%
+grey smoke cloud
+
+<smoke cloud>
+%%%%
+blue smoke cloud
+
+<smoke cloud>
+%%%%
+purple smoke cloud
+
+<smoke cloud>
+%%%%
+translocational energy cloud
+
+つい先ほどまでここにいた何者かが、近く、階層の彼方、あるいは現実の外にあるアビスへ追放された後に残したものだ。
+あり得ない形に空間を歪める魔法への反応として、宇宙が起こす一種の「アレルギー反応」、すなわち宇宙のくしゃみだと唱える魔術師もいる。
+形而上の意味では気味が悪いかもしれないが、それ以外に害はない。
+%%%%
+spreading flames cloud
+
+荒れ狂う森の火だ。
+炎に完全な耐性を持たない生物は、中に留まるほど傷つくが、防具によって被害を軽減できる。
+
+この炎は特に激しく、ときおり燃え上がって周囲を小さな炎で満たす。
+近くにある不運な木々は、しばしば新たな薪へと変えられてしまう。
+
+遠距離から放たれた冷気の攻撃はこの雲に阻まれるが、その際に雲を消し去る。
+
+水上に生じた場合、その熱が周囲に蒸気を発生させる。
+深い水の上では波の冷たさにより、炎の雲はさらに早く消えてゆく。
+%%%%
+steam cloud
+
+焼けつく蒸気の雲だ。
+巻き込まれた生物は傷つくが、多少の防具か炎への耐性があれば、たいてい被害を耐えられる程度に抑えられる。
+%%%%
+ink cloud
+
+水中を余すところなく満たす墨の雲だ。
+%%%%
+calcifying dust cloud
+
+石化をもたらす粉塵の雲だ。
+中にしばらく留まった生物の体は石へ変わり始めるが、経験を積んだ冒険者なら耐えられることも多い。
+%%%%
+blessed fire cloud
+
+善なる神々の力と怒りを宿した、聖なる炎の雲だ。
+神々に仕える者にはいくらかの加護があるが、それ以外の者を守るのは頑丈な防具と、そもそも炎へ踏み込まない分別だけだ。
+邪悪な神に従う者は特に近寄るべきではなく、アンデッドや悪魔に至ってはなおさらである。
+%%%%
+foul pestilence cloud
+
+# XXX: clarify vine stalkers, gargoyles
+暗い瘴気の雲だ。
+ジンの神聖な加護を受けていない生者は、並の毒への耐性を無視する恐るべき猛毒に侵される。
+運の悪い者が中に留まれば、動きは鈍り、肉は腐り落ちてゆくだろう。
+ダンジョンのどれほど愚かな住人でさえ、できる限り瘴気を避ける。冒険者もそうするのが賢明だ。
+%%%%
+thin mist cloud
+
+雰囲気を添える薄靄だが、害はない。
+%%%%
+seething chaos cloud
+
+現実そのものの箍が外れている。
+雲の中に留まる者には、透明化から狂戦士化、完全な麻痺に至るまで、さまざまな刺激的な効果がもたらされる。
+賢い冒険者なら、体験する効果をできるだけ少なくするため、すぐに立ち去るだろう。
+%%%%
+rain cloud
+
+極めて狭い範囲に降る雨雲だ。
+ときおり浅瀬を作り出したり、すでにある水たまりを一時的に深くしたりする。
+全身が炎でできた生物は、なぜかこの雲の中に長居することを嫌う。
+
+溶岩の上に生じた場合、その熱により雲はさらに早く消えてゆく。
+%%%%
+mutagenic fog cloud
+
+形を持たない純粋な魔力が凝縮し、きらめく霧となったものだ。要するに、有毒な魔法廃棄物である。
+中へ踏み込んだ生物はほどなく闇の中で輝き始め、たいていはその直後にさまざまな刺激的な変異を得る。
+もちろん、楽しい類のものではない！
+%%%%
+magical condensation cloud
+
+高度に凝縮された魔力が通り過ぎた跡だ。
+それ自体は無害である。（これを生み出したものは、おそらく無害ではない！）
+%%%%
+raging winds cloud
+
+荒れ狂う竜巻の風だ。
+頑丈な防具なら最悪の被害は抑えられるが、ここに留まることが早死にへの近道であることに変わりはない。
+%%%%
+sparse dust cloud
+
+辺りを霞ませる薄い砂埃だが、害はない。
+%%%%
+ghostly flame cloud
+
+過ぎ去った炎の記憶だ。
+炎や負のエネルギーへの耐性ではこの雲を防げず、防具だけが頼りとなる。
+幸い、中に立っているだけなら被害はごく小さい。だが炎から現れる亡霊は、はるかに危険である……
+%%%%
+acidic fog cloud
+
+肉を焼き、金属を溶かす酸の霧だ。
+腐食への耐性や防具で被害を軽減できるが、防具は酸にたちまち蝕まれてしまう。
+この中で長く生き延びられる生物はほとんどいない。
+%%%%
+thunder cloud
+
+稲妻を吐き出す嵐だ。
+稲妻が走るのは時折だが、直撃すれば痛い！
+%%%%
+negative energy cloud
+
+死霊術の魔力に満ちた雲だ。
+囚われた生物は生命力を吸い取られるが、防具と負のエネルギーへの耐性によって被害を軽減できる。
