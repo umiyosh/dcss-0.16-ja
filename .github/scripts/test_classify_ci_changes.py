@@ -121,6 +121,30 @@ class CiMatrixTest(unittest.TestCase):
             clang_variants,
         )
 
+    def test_pr_matrix_tests_only_representative_console_builds(self):
+        tested_builds = {
+            (build["compiler"]["name"], build["variant"]["name"])
+            for build in self.matrices["pr"]["include"]
+            if build["variant"]["test"]
+        }
+        self.assertEqual(
+            {
+                ("GCC", "Console"),
+                ("GCC", "Console (debug)"),
+                ("Clang", "Console (debug)"),
+            },
+            tested_builds,
+        )
+
+    def test_every_variant_declares_a_valid_test_mode(self):
+        for matrix_name in ("full", "data"):
+            for variant in self.matrices[matrix_name]["variant"]:
+                self.assertIn(variant["test"], {"", "debug", "nondebug"})
+        for build in self.matrices["pr"]["include"]:
+            self.assertIn(
+                build["variant"]["test"], {"", "debug", "nondebug"}
+            )
+
     def test_data_matrix_uses_one_debug_console_build(self):
         matrix = self.matrices["data"]
         self.assertEqual({"GCC"}, self._names(matrix, "compiler"))

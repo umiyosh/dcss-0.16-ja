@@ -58,8 +58,9 @@ jobs:
                 matrix_scope=data
                 ;;
               full)
-                # Six non-Linux jobs plus these 14 builds keep a full PR at
-                # the repository's 20-job concurrency limit.
+                # Four non-Linux jobs plus these 14 builds keep the initial
+                # fan-out below the 20-job limit. The two macOS test shards
+                # start only after their debug build completes.
                 matrix_scope=pr
                 ;;
               *)
@@ -120,6 +121,7 @@ jobs:
       WEBTILES: ${{ matrix.variant.webtiles }}
       USE_DGAMELAUNCH: ${{ matrix.variant.use_dgamelaunch }}
       BUILD_ALL: ${{ matrix.variant.build_all }}
+      TEST_MODE: ${{ matrix.variant.test }}
       # The legacy Makefile uses this flag to shorten stress-test timeouts in CI.
       TRAVIS: "1"
       TERM: dumb
@@ -179,12 +181,19 @@ jobs:
             make -j"$(nproc)"
           fi
 
+      - name: Check the binary runs
+        working-directory: crawl-ref/source
+        run: ./crawl --version
+
       - name: Test
-        if: matrix.variant.tiles == ''
+        # The gameplay suites do not branch on Tiles, WebTiles or DGL flags.
+        # Every variant is still compiled and started above; the full suites
+        # run only on representative Console release/debug builds.
+        if: matrix.variant.test != ''
         shell: bash
         working-directory: crawl-ref/source
         run: |
-          if [[ -n "$FULLDEBUG" ]]; then
+          if [[ "$TEST_MODE" == debug ]]; then
             make -j2 test
           else
             make nondebugtest
@@ -213,20 +222,11 @@ jobs:
         variant:
           - name: Console
             tiles: ""
-            full_debug: ""
-          - name: Console (debug)
-            tiles: ""
-            full_debug: "1"
           - name: Tiles
             tiles: "1"
-            full_debug: ""
     env:
       TILES: ${{ matrix.variant.tiles }}
-      FULLDEBUG: ${{ matrix.variant.full_debug }}
       TERM: dumb
-      # The Lua tests compare Japanese item names, so the locale has to be
-      # UTF-8. macOS runners leave LANG unset, which lands us in the C locale
-      # and turns 死体 into 死ä½“ before the comparison.
       LANG: en_US.UTF-8
     steps:
       - name: Check out source
@@ -270,8 +270,6 @@ jobs:
           jobs=$(sysctl -n hw.ncpu 2>/dev/null || echo 3)
           if [[ -n "$TILES" ]]; then
             make TILES=y -j"$jobs"
-          elif [[ -n "$FULLDEBUG" ]]; then
-            make debug -j"$jobs"
           else
             make SHAREDDIR="$RUNNER_TEMP/dcss-death-endgame/shared" -j"$jobs"
           fi
@@ -313,16 +311,140 @@ jobs:
           perl mac/check-min-os.pl 11.0 \
                "build/app-bundle-stage/Dungeon Crawl Stone Soup - Tiles.app"
 
-      - name: Test
-        # -test only exists in a FULLDEBUG build, and `debug` has to stay in
-        # the goal list: the Makefile keys DEBUG and NO_OPTIMIZE off
-        # MAKECMDGOALS, so dropping it here changes the flags and forces a
-        # full rebuild. Only test-test is run; test-all is the stress suite,
-        # which allows up to 595s per case.
-        if: matrix.variant.full_debug != ''
+      - name: Print crash reports
+        if: failure()
         shell: bash
         working-directory: crawl-ref/source
-        run: make debug test-test
+        run: |
+          shopt -s nullglob
+          crash_reports=(morgue/crash-*.txt)
+          if (( ${#crash_reports[@]} > 0 )); then
+            cat "${crash_reports[@]}"
+          fi
+
+  # Keep this build independent from the release/Tiles matrix so its test
+  # shards can start as soon as the reusable debug binary is available.
+  build-macos-debug:
+    name: macOS / Console (debug) build
+    needs: changes
+    if: ${{ needs.changes.outputs.scope == 'full' }}
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      TERM: dumb
+      LANG: en_US.UTF-8
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Cache the built dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            crawl-ref/source/contrib/install
+            crawl-ref/source/contrib/.macos-deps-build/cache
+          key: macos-deps-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('crawl-ref/source/contrib/build-macos-deps.sh') }}
+
+      - name: Check out bundled dependencies
+        shell: bash
+        run: |
+          git config --global url."https://github.com/".insteadOf git://github.com/
+          git submodule update --init \
+            crawl-ref/source/contrib/lua \
+            crawl-ref/source/contrib/sqlite
+
+      - name: Initialize build version
+        working-directory: crawl-ref/source
+        run: printf '%s\n' 'v0.0-a0' > util/release_ver
+
+      - name: Build
+        shell: bash
+        working-directory: crawl-ref/source
+        run: |
+          jobs=$(sysctl -n hw.ncpu 2>/dev/null || echo 3)
+          make debug -j"$jobs"
+
+      - name: Check the binary runs
+        working-directory: crawl-ref/source
+        run: ./crawl --version
+
+      - name: Archive the test binary
+        working-directory: crawl-ref/source
+        run: tar -czf "$RUNNER_TEMP/macos-console-debug.tar.gz" crawl
+
+      - name: Upload the test binary
+        # actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: macos-console-debug
+          path: ${{ runner.temp }}/macos-console-debug.tar.gz
+          compression-level: 0
+          retention-days: 1
+
+      - name: Print crash reports
+        if: failure()
+        shell: bash
+        working-directory: crawl-ref/source
+        run: |
+          shopt -s nullglob
+          crash_reports=(morgue/crash-*.txt)
+          if (( ${#crash_reports[@]} > 0 )); then
+            cat "${crash_reports[@]}"
+          fi
+
+  test-macos:
+    name: macOS / Console (debug) tests ${{ matrix.display }}/2
+    needs:
+      - changes
+      - build-macos-debug
+    if: ${{ needs.changes.outputs.scope == 'full' }}
+    runs-on: macos-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: 0
+            display: 1
+          - shard: 1
+            display: 2
+    env:
+      TRAVIS: "1"
+      TERM: dumb
+      # The Lua tests compare Japanese item names, so the locale has to be
+      # UTF-8. macOS runners leave LANG unset, which lands us in the C locale
+      # and turns 死体 into 死ä½“ before the comparison.
+      LANG: en_US.UTF-8
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Download the test binary
+        # actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: macos-console-debug
+          path: ${{ runner.temp }}/macos-console-debug
+
+      - name: Restore the test binary
+        working-directory: crawl-ref/source
+        run: >-
+          tar -xzf
+          "$RUNNER_TEMP/macos-console-debug/macos-console-debug.tar.gz"
+
+      - name: Prepare tests
+        working-directory: crawl-ref/source
+        run: |
+          make util/fake_pty
+          ./crawl --builddb
+
+      - name: Test
+        working-directory: crawl-ref/source
+        run: >-
+          python3 ../../.github/scripts/shard_crawl_tests.py
+          --shard-index '${{ matrix.shard }}'
+          --shard-count 2
+          --runner ./util/fake_pty
 
       - name: Print crash reports
         if: failure()
@@ -343,6 +465,8 @@ jobs:
       - translation-check
       - build
       - build-macos
+      - build-macos-debug
+      - test-macos
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
@@ -353,12 +477,16 @@ jobs:
           TRANSLATION_RESULT: ${{ needs.translation-check.result }}
           BUILD_RESULT: ${{ needs.build.result }}
           MACOS_RESULT: ${{ needs.build-macos.result }}
+          MACOS_DEBUG_BUILD_RESULT: ${{ needs.build-macos-debug.result }}
+          MACOS_TEST_RESULT: ${{ needs.test-macos.result }}
         run: |
           for result in \
             "$CHANGES_RESULT" \
             "$TRANSLATION_RESULT" \
             "$BUILD_RESULT" \
-            "$MACOS_RESULT"
+            "$MACOS_RESULT" \
+            "$MACOS_DEBUG_BUILD_RESULT" \
+            "$MACOS_TEST_RESULT"
           do
             if [[ "$result" != success && "$result" != skipped ]]; then
               echo "Required CI job result: $result" >&2
