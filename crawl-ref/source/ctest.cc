@@ -24,6 +24,7 @@
 #include "clua.h"
 #include "cluautil.h"
 #include "coordit.h"
+#include "database.h"
 #include "dlua.h"
 #include "end.h"
 #include "errors.h"
@@ -116,12 +117,20 @@ static int crawl_string_width(lua_State *ls)
     return 1;
 }
 
+static int crawl_long_description(lua_State *ls)
+{
+    const string description = getLongDescription(luaL_checkstring(ls, 1));
+    lua_pushstring(ls, description.c_str());
+    return 1;
+}
+
 static const struct luaL_reg crawl_test_lib[] =
 {
     { "begin_test", crawl_begin_test },
     { "test_success", crawl_test_success },
     { "script_args", crawl_script_args },
     { "string_width", crawl_string_width },
+    { "long_description", crawl_long_description },
     { nullptr, nullptr }
 };
 

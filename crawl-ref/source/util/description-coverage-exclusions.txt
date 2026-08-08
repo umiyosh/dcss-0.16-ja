@@ -1,0 +1,5 @@
+# English description keys intentionally excluded from Japanese coverage.
+# Format: JSON [filename, key, reason, evidence]
+["monsters.txt", "ghost", "Removed-monster compatibility dummy, not a live monster.", "mon-data.h MONS_GHOST; monsters.txt records that it was removed."]
+["monsters.txt", "test spawner", "Arena, stress-test, and wizard-only monster.", "mon-data.h MONS_TEST_SPAWNER; its English description calls normal appearance a bug."]
+["monsters.txt", "program bug", "Internal invalid-monster sentinel excluded from normal lookup.", "enum.h MONS_PROGRAM_BUG; lookup_help.cc skips it and describe.cc supplies diagnostics."]

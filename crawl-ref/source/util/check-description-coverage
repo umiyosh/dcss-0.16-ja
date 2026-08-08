@@ -1,0 +1,479 @@
+#!/usr/bin/env python3
+
+import argparse
+from dataclasses import dataclass
+import json
+from pathlib import Path
+import sys
+
+
+SOURCE_ROOT = Path(__file__).resolve().parent.parent
+DESCRIPTION_ROOT = SOURCE_ROOT / "dat/descript"
+BASELINE_PATH = Path(__file__).with_name(
+    "description-coverage-baseline.txt"
+)
+EXCLUSIONS_PATH = Path(__file__).with_name(
+    "description-coverage-exclusions.txt"
+)
+QUOTES_FILE = "quotes.txt"
+# Alias lookup is confined to each TextDB; keep these groups aligned with
+# database.cc's descript/ inputs.
+DATABASE_GROUPS = (
+    (
+        "features.txt",
+        "items.txt",
+        "unident.txt",
+        "unrand.txt",
+        "monsters.txt",
+        "spells.txt",
+        "gods.txt",
+        "branches.txt",
+        "skills.txt",
+        "ability.txt",
+        "cards.txt",
+        "commands.txt",
+    ),
+    ("species.txt", "backgrounds.txt"),
+    ("hints.txt", "tutorial.txt"),
+)
+
+
+@dataclass(frozen=True, order=True)
+class KeyRef:
+    filename: str
+    key: str
+
+
+@dataclass(frozen=True)
+class Entry:
+    ref: KeyRef
+    display_key: str
+    line: int
+    value: str
+
+    @property
+    def has_value(self):
+        return bool(self.value)
+
+    @property
+    def alias_target(self):
+        if (
+            self.value.startswith("<")
+            and self.value.endswith(">\n")
+            and "<" not in self.value[1:]
+            and "\n" not in self.value[:-1]
+        ):
+            return normalize_key(self.value[1:-2])
+        return None
+
+
+@dataclass(frozen=True)
+class Exclusion:
+    ref: KeyRef
+    display_key: str
+    reason: str
+    evidence: str
+
+
+@dataclass(frozen=True)
+class FileCoverage:
+    filename: str
+    total: int
+    translated: int
+    missing: int
+    excluded: int
+
+
+@dataclass(frozen=True)
+class CoverageReport:
+    files: tuple
+    missing: tuple
+    excluded: tuple
+    quotes: tuple
+    unexpected: tuple
+    resolved_baseline: tuple
+    baseline_additions: tuple
+    invalid_exclusions: tuple
+
+
+def normalize_key(key):
+    """Match database.cc's trimmed, case-insensitive key lookup."""
+    return key.strip().lower()
+
+
+def parse_database(path):
+    """Read description keys using database.cc's %%%% block format."""
+    entries = {}
+    in_entry = False
+    display_key = None
+    key_line = 0
+    value_lines = []
+
+    def add_entry():
+        if display_key is None:
+            return
+        key = normalize_key(display_key)
+        if key in entries:
+            previous = entries[key]
+            raise ValueError(
+                f"{path}:{key_line}: duplicate key {display_key!r}; "
+                f"first defined at line {previous.line}"
+            )
+        while value_lines and not value_lines[0]:
+            value_lines.pop(0)
+        value = "".join(f"{line}\n" for line in value_lines)
+        entries[key] = Entry(
+            KeyRef(path.name, key), display_key, key_line, value
+        )
+
+    for line_number, line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(), start=1
+    ):
+        if line.startswith("#"):
+            continue
+        if line.startswith("%%%%"):
+            add_entry()
+            in_entry = True
+            display_key = None
+            key_line = 0
+            value_lines = []
+            continue
+        if not in_entry:
+            continue
+        if display_key is None:
+            candidate = line.strip()
+            if candidate:
+                display_key = candidate
+                key_line = line_number
+        else:
+            value_lines.append(line.rstrip(" \t\r\n"))
+
+    add_entry()
+
+    return entries
+
+
+def _manifest_lines(path):
+    for line_number, line in enumerate(
+        path.read_text(encoding="utf-8").splitlines(), start=1
+    ):
+        if not line or line.startswith("#"):
+            continue
+        yield line_number, line
+
+
+def load_baseline(path):
+    baseline = set()
+    for line_number, line in _manifest_lines(path):
+        try:
+            fields = json.loads(line)
+        except json.JSONDecodeError as error:
+            raise ValueError(f"{path}:{line_number}: {error.msg}")
+        if not isinstance(fields, list) or len(fields) != 2:
+            raise ValueError(
+                f"{path}:{line_number}: expected JSON [filename, key]"
+            )
+        if not all(isinstance(field, str) and field for field in fields):
+            raise ValueError(f"{path}:{line_number}: fields must be strings")
+        ref = KeyRef(fields[0], normalize_key(fields[1]))
+        if ref in baseline:
+            raise ValueError(
+                f"{path}:{line_number}: duplicate baseline entry {ref}"
+            )
+        baseline.add(ref)
+    return baseline
+
+
+def load_exclusions(path):
+    exclusions = {}
+    for line_number, line in _manifest_lines(path):
+        try:
+            fields = json.loads(line)
+        except json.JSONDecodeError as error:
+            raise ValueError(f"{path}:{line_number}: {error.msg}")
+        if not isinstance(fields, list) or len(fields) != 4:
+            raise ValueError(
+                f"{path}:{line_number}: expected JSON "
+                "[filename, key, reason, evidence]"
+            )
+        if not all(isinstance(field, str) and field for field in fields):
+            raise ValueError(f"{path}:{line_number}: fields must be strings")
+        filename, display_key, reason, evidence = fields
+        ref = KeyRef(filename, normalize_key(display_key))
+        if ref in exclusions:
+            raise ValueError(
+                f"{path}:{line_number}: duplicate exclusion {ref}"
+            )
+        exclusions[ref] = Exclusion(
+            ref, display_key, reason, evidence
+        )
+    return exclusions
+
+
+def _load_translation_databases(description_root):
+    databases = {}
+    for filenames in DATABASE_GROUPS:
+        entries = {}
+        for filename in filenames:
+            path = description_root / "ja" / filename
+            if path.exists():
+                entries.update(parse_database(path))
+        for filename in filenames:
+            databases[filename] = entries
+    return databases
+
+
+def _has_translated_value(key, entries, resolving=frozenset()):
+    if key in resolving:
+        return False
+    entry = entries.get(key)
+    if entry is None or not entry.has_value:
+        return False
+    if entry.alias_target is None:
+        return True
+    return _has_translated_value(
+        entry.alias_target, entries, resolving | {key}
+    )
+
+
+def analyze_coverage(
+    description_root, baseline, exclusions, reference_baseline=None
+):
+    missing = []
+    excluded = []
+    file_coverage = []
+    missing_refs = set()
+    translation_databases = _load_translation_databases(description_root)
+
+    english_paths = sorted(description_root.glob("*.txt"))
+    for english_path in english_paths:
+        if english_path.name == QUOTES_FILE:
+            continue
+
+        english = parse_database(english_path)
+        japanese = translation_databases.get(english_path.name)
+        if japanese is None:
+            japanese_path = description_root / "ja" / english_path.name
+            japanese = (
+                parse_database(japanese_path)
+                if japanese_path.exists()
+                else {}
+            )
+        file_missing = []
+        file_excluded = []
+
+        for key in sorted(english):
+            if _has_translated_value(key, japanese):
+                continue
+            entry = english[key]
+            if entry.ref in exclusions:
+                file_excluded.append(entry)
+                excluded.append(entry)
+            else:
+                file_missing.append(entry)
+                missing.append(entry)
+                missing_refs.add(entry.ref)
+
+        file_coverage.append(
+            FileCoverage(
+                english_path.name,
+                len(english),
+                len(english) - len(file_missing) - len(file_excluded),
+                len(file_missing),
+                len(file_excluded),
+            )
+        )
+
+    quotes_path = description_root / QUOTES_FILE
+    quote_entries = parse_database(quotes_path) if quotes_path.exists() else {}
+    quotes = tuple(quote_entries[key] for key in sorted(quote_entries))
+    unexpected = tuple(
+        entry for entry in missing if entry.ref not in baseline
+    )
+    resolved_baseline = tuple(sorted(baseline - missing_refs))
+    baseline_additions = (
+        tuple(sorted(baseline - reference_baseline))
+        if reference_baseline is not None
+        else ()
+    )
+    excluded_refs = {entry.ref for entry in excluded}
+    invalid_exclusions = tuple(
+        exclusions[ref]
+        for ref in sorted(set(exclusions) - excluded_refs)
+    )
+
+    return CoverageReport(
+        tuple(file_coverage),
+        tuple(missing),
+        tuple(excluded),
+        quotes,
+        unexpected,
+        resolved_baseline,
+        baseline_additions,
+        invalid_exclusions,
+    )
+
+
+def has_failures(report):
+    return bool(
+        report.unexpected
+        or report.resolved_baseline
+        or report.baseline_additions
+        or report.invalid_exclusions
+    )
+
+
+def _entry_line(kind, entry):
+    return f"{kind}\t{entry.ref.filename}\t{entry.display_key}"
+
+
+def print_report(report, list_keys=False):
+    print("Japanese description database coverage:")
+    for coverage in report.files:
+        print(
+            f"  {coverage.filename}: total={coverage.total} "
+            f"translated={coverage.translated} "
+            f"missing={coverage.missing} "
+            f"excluded={coverage.excluded}"
+        )
+    print(f"Reachable missing keys: {len(report.missing)}")
+    print(f"Excluded keys: {len(report.excluded)}")
+    print(f"Quote keys (not checked): {len(report.quotes)}")
+
+    if list_keys:
+        for entry in report.missing:
+            print(_entry_line("missing", entry))
+        for entry in report.excluded:
+            print(_entry_line("excluded", entry))
+        for entry in report.quotes:
+            print(_entry_line("quote", entry))
+
+    if report.unexpected:
+        print("Unexpected missing description keys:", file=sys.stderr)
+        for entry in report.unexpected:
+            print(_entry_line("new", entry), file=sys.stderr)
+    if report.resolved_baseline:
+        print(
+            "Baseline entries that are no longer missing; remove them:",
+            file=sys.stderr,
+        )
+        for ref in report.resolved_baseline:
+            print(
+                f"resolved\t{ref.filename}\t{ref.key}",
+                file=sys.stderr,
+            )
+    if report.baseline_additions:
+        print(
+            "Baseline entries added relative to the base revision:",
+            file=sys.stderr,
+        )
+        for ref in report.baseline_additions:
+            print(
+                f"added-baseline\t{ref.filename}\t{ref.key}",
+                file=sys.stderr,
+            )
+    if report.invalid_exclusions:
+        print("Invalid or stale exclusions:", file=sys.stderr)
+        for exclusion in report.invalid_exclusions:
+            print(
+                f"invalid-exclusion\t{exclusion.ref.filename}\t"
+                f"{exclusion.display_key}",
+                file=sys.stderr,
+            )
+
+
+def print_current_baseline(report):
+    print(
+        "# Reachable English description keys currently awaiting "
+        "Japanese translations."
+    )
+    print(
+        "# Remove a row when its Japanese key is added; never add a row "
+        "without review."
+    )
+    print("# Format: JSON [filename, key]")
+    for entry in report.missing:
+        print(
+            json.dumps(
+                [entry.ref.filename, entry.display_key],
+                ensure_ascii=False,
+            )
+        )
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description=(
+            "Check English and Japanese description database key coverage."
+        )
+    )
+    parser.add_argument(
+        "--root",
+        type=Path,
+        default=DESCRIPTION_ROOT,
+        help="Description database root (default: dat/descript).",
+    )
+    parser.add_argument(
+        "--baseline",
+        type=Path,
+        default=BASELINE_PATH,
+        help="Reviewed reachable-missing key manifest.",
+    )
+    parser.add_argument(
+        "--exclusions",
+        type=Path,
+        default=EXCLUSIONS_PATH,
+        help="Reasoned exclusion manifest.",
+    )
+    parser.add_argument(
+        "--reference-baseline",
+        type=Path,
+        help=(
+            "Baseline from the pull request base revision; current entries "
+            "must be a subset."
+        ),
+    )
+    parser.add_argument(
+        "--list",
+        action="store_true",
+        help="List every missing, excluded, and quote key.",
+    )
+    parser.add_argument(
+        "--print-current-baseline",
+        action="store_true",
+        help="Print the current reachable-missing manifest for review.",
+    )
+    args = parser.parse_args()
+
+    try:
+        exclusions = load_exclusions(args.exclusions)
+        baseline = (
+            set()
+            if args.print_current_baseline
+            else load_baseline(args.baseline)
+        )
+        reference_baseline = (
+            load_baseline(args.reference_baseline)
+            if args.reference_baseline and not args.print_current_baseline
+            else None
+        )
+        report = analyze_coverage(
+            args.root, baseline, exclusions, reference_baseline
+        )
+    except (OSError, ValueError) as error:
+        print(f"description coverage error: {error}", file=sys.stderr)
+        return 2
+
+    if args.print_current_baseline:
+        print_current_baseline(report)
+        return 0
+
+    print_report(report, args.list)
+    if has_failures(report):
+        return 1
+    print("Description coverage matches the reviewed baseline.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
