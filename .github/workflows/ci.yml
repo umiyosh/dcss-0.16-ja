@@ -368,9 +368,13 @@ jobs:
         working-directory: crawl-ref/source
         run: ./crawl --version
 
-      - name: Archive the test binary
+      - name: Archive the test runtime
         working-directory: crawl-ref/source
-        run: tar -czf "$RUNNER_TEMP/macos-console-debug.tar.gz" crawl
+        # tags.lua is generated during the build and is required before the
+        # restored binary can rebuild the test database in a fresh checkout.
+        run: >-
+          tar -czf "$RUNNER_TEMP/macos-console-debug.tar.gz"
+          crawl dat/dlua/tags.lua
 
       - name: Upload the test binary
         # actions/upload-artifact@v4
