@@ -368,6 +368,7 @@ void run_tests()
 #if defined(USE_TILE_LOCAL) && defined(USE_SDL)
     _run_test("sdl-textinput", _sdl_textinput_tests);
 #endif
+    _run_test("map-epilogue-validation", mapdef_epilogue_tests);
     _run_test("map-cache-recovery", mapdef_tests);
 
     // Get a list of Lua files in test. Order of execution of
