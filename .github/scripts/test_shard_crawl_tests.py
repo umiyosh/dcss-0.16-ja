@@ -15,7 +15,7 @@ class ShardTestsTest(unittest.TestCase):
         ]
         script_tests = {"lua-a", "lua-b", "lua-c", "lua-d"}
 
-        shards = shard_tests(listed, script_tests, 2)
+        shards = shard_tests(listed, script_tests, 3)
 
         self.assertEqual(set(listed), set().union(*map(set, shards)))
         self.assertEqual(len(listed), sum(map(len, shards)))
