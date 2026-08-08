@@ -99,8 +99,28 @@ jobs:
           python3 crawl-ref/source/util/test-check-lua-jtrans
 
       - name: Check player-visible messages
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          python3 crawl-ref/source/util/check-description-coverage
+          baseline_args=()
+          baseline_path=crawl-ref/source/util/description-coverage-baseline.txt
+          if [[ "$EVENT_NAME" == pull_request ]]; then
+            if ! git cat-file -e "$BASE_SHA^{commit}"; then
+              echo "Pull request base revision is unavailable: $BASE_SHA" >&2
+              exit 1
+            fi
+            if git cat-file -e "$BASE_SHA:$baseline_path" 2>/dev/null; then
+              reference_baseline="$RUNNER_TEMP/description-baseline.txt"
+              git show "$BASE_SHA:$baseline_path" > "$reference_baseline"
+              baseline_args=(--reference-baseline "$reference_baseline")
+            else
+              echo "Base revision has no description baseline; bootstrap comparison skipped."
+            fi
+          fi
+          python3 crawl-ref/source/util/check-description-coverage \
+            "${baseline_args[@]}"
           python3 crawl-ref/source/util/check-jtrans --all
           python3 crawl-ref/source/util/check-lua-jtrans
 

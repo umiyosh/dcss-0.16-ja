@@ -16,6 +16,26 @@ EXCLUSIONS_PATH = Path(__file__).with_name(
     "description-coverage-exclusions.txt"
 )
 QUOTES_FILE = "quotes.txt"
+# Alias lookup is confined to each TextDB; keep these groups aligned with
+# database.cc's descript/ inputs.
+DATABASE_GROUPS = (
+    (
+        "features.txt",
+        "items.txt",
+        "unident.txt",
+        "unrand.txt",
+        "monsters.txt",
+        "spells.txt",
+        "gods.txt",
+        "branches.txt",
+        "skills.txt",
+        "ability.txt",
+        "cards.txt",
+        "commands.txt",
+    ),
+    ("species.txt", "backgrounds.txt"),
+    ("hints.txt", "tutorial.txt"),
+)
 
 
 @dataclass(frozen=True, order=True)
@@ -29,7 +49,22 @@ class Entry:
     ref: KeyRef
     display_key: str
     line: int
-    has_value: bool
+    value: str
+
+    @property
+    def has_value(self):
+        return bool(self.value)
+
+    @property
+    def alias_target(self):
+        if (
+            self.value.startswith("<")
+            and self.value.endswith(">\n")
+            and "<" not in self.value[1:]
+            and "\n" not in self.value[:-1]
+        ):
+            return normalize_key(self.value[1:-2])
+        return None
 
 
 @dataclass(frozen=True)
@@ -57,6 +92,7 @@ class CoverageReport:
     quotes: tuple
     unexpected: tuple
     resolved_baseline: tuple
+    baseline_additions: tuple
     invalid_exclusions: tuple
 
 
@@ -71,7 +107,7 @@ def parse_database(path):
     in_entry = False
     display_key = None
     key_line = 0
-    has_value = False
+    value_lines = []
 
     def add_entry():
         if display_key is None:
@@ -83,8 +119,11 @@ def parse_database(path):
                 f"{path}:{key_line}: duplicate key {display_key!r}; "
                 f"first defined at line {previous.line}"
             )
+        while value_lines and not value_lines[0]:
+            value_lines.pop(0)
+        value = "".join(f"{line}\n" for line in value_lines)
         entries[key] = Entry(
-            KeyRef(path.name, key), display_key, key_line, has_value
+            KeyRef(path.name, key), display_key, key_line, value
         )
 
     for line_number, line in enumerate(
@@ -97,7 +136,7 @@ def parse_database(path):
             in_entry = True
             display_key = None
             key_line = 0
-            has_value = False
+            value_lines = []
             continue
         if not in_entry:
             continue
@@ -106,8 +145,8 @@ def parse_database(path):
             if candidate:
                 display_key = candidate
                 key_line = line_number
-        elif line.strip():
-            has_value = True
+        else:
+            value_lines.append(line.rstrip(" \t\r\n"))
 
     add_entry()
 
@@ -171,11 +210,40 @@ def load_exclusions(path):
     return exclusions
 
 
-def analyze_coverage(description_root, baseline, exclusions):
+def _load_translation_databases(description_root):
+    databases = {}
+    for filenames in DATABASE_GROUPS:
+        entries = {}
+        for filename in filenames:
+            path = description_root / "ja" / filename
+            if path.exists():
+                entries.update(parse_database(path))
+        for filename in filenames:
+            databases[filename] = entries
+    return databases
+
+
+def _has_translated_value(key, entries, resolving=frozenset()):
+    if key in resolving:
+        return False
+    entry = entries.get(key)
+    if entry is None or not entry.has_value:
+        return False
+    if entry.alias_target is None:
+        return True
+    return _has_translated_value(
+        entry.alias_target, entries, resolving | {key}
+    )
+
+
+def analyze_coverage(
+    description_root, baseline, exclusions, reference_baseline=None
+):
     missing = []
     excluded = []
     file_coverage = []
     missing_refs = set()
+    translation_databases = _load_translation_databases(description_root)
 
     english_paths = sorted(description_root.glob("*.txt"))
     for english_path in english_paths:
@@ -183,17 +251,19 @@ def analyze_coverage(description_root, baseline, exclusions):
             continue
 
         english = parse_database(english_path)
-        japanese_path = description_root / "ja" / english_path.name
-        japanese = (
-            parse_database(japanese_path)
-            if japanese_path.exists()
-            else {}
-        )
+        japanese = translation_databases.get(english_path.name)
+        if japanese is None:
+            japanese_path = description_root / "ja" / english_path.name
+            japanese = (
+                parse_database(japanese_path)
+                if japanese_path.exists()
+                else {}
+            )
         file_missing = []
         file_excluded = []
 
         for key in sorted(english):
-            if key in japanese and japanese[key].has_value:
+            if _has_translated_value(key, japanese):
                 continue
             entry = english[key]
             if entry.ref in exclusions:
@@ -221,6 +291,11 @@ def analyze_coverage(description_root, baseline, exclusions):
         entry for entry in missing if entry.ref not in baseline
     )
     resolved_baseline = tuple(sorted(baseline - missing_refs))
+    baseline_additions = (
+        tuple(sorted(baseline - reference_baseline))
+        if reference_baseline is not None
+        else ()
+    )
     excluded_refs = {entry.ref for entry in excluded}
     invalid_exclusions = tuple(
         exclusions[ref]
@@ -234,6 +309,7 @@ def analyze_coverage(description_root, baseline, exclusions):
         quotes,
         unexpected,
         resolved_baseline,
+        baseline_additions,
         invalid_exclusions,
     )
 
@@ -242,6 +318,7 @@ def has_failures(report):
     return bool(
         report.unexpected
         or report.resolved_baseline
+        or report.baseline_additions
         or report.invalid_exclusions
     )
 
@@ -283,6 +360,16 @@ def print_report(report, list_keys=False):
         for ref in report.resolved_baseline:
             print(
                 f"resolved\t{ref.filename}\t{ref.key}",
+                file=sys.stderr,
+            )
+    if report.baseline_additions:
+        print(
+            "Baseline entries added relative to the base revision:",
+            file=sys.stderr,
+        )
+        for ref in report.baseline_additions:
+            print(
+                f"added-baseline\t{ref.filename}\t{ref.key}",
                 file=sys.stderr,
             )
     if report.invalid_exclusions:
@@ -339,6 +426,14 @@ def main():
         help="Reasoned exclusion manifest.",
     )
     parser.add_argument(
+        "--reference-baseline",
+        type=Path,
+        help=(
+            "Baseline from the pull request base revision; current entries "
+            "must be a subset."
+        ),
+    )
+    parser.add_argument(
         "--list",
         action="store_true",
         help="List every missing, excluded, and quote key.",
@@ -357,7 +452,14 @@ def main():
             if args.print_current_baseline
             else load_baseline(args.baseline)
         )
-        report = analyze_coverage(args.root, baseline, exclusions)
+        reference_baseline = (
+            load_baseline(args.reference_baseline)
+            if args.reference_baseline and not args.print_current_baseline
+            else None
+        )
+        report = analyze_coverage(
+            args.root, baseline, exclusions, reference_baseline
+        )
     except (OSError, ValueError) as error:
         print(f"description coverage error: {error}", file=sys.stderr)
         return 2
