@@ -112,10 +112,17 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.changes.outputs.linux_matrix) }}
     env:
-      CC: ${{ matrix.compiler.cc }}
-      CXX: ${{ matrix.compiler.cxx }}
-      FORCE_CC: ${{ matrix.compiler.cc }}
-      FORCE_CXX: ${{ matrix.compiler.cxx }}
+      CC: ccache ${{ matrix.compiler.cc }}
+      CXX: ccache ${{ matrix.compiler.cxx }}
+      FORCE_CC: ccache ${{ matrix.compiler.cc }}
+      FORCE_CXX: ccache ${{ matrix.compiler.cxx }}
+      CCACHE_DIR: ${{ runner.temp }}/ccache
+      # Normalize the checkout path so objects remain reusable across runners.
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      # Runner image updates can replace a compiler without changing its name.
+      CCACHE_COMPILERCHECK: content
+      # Twenty scheduled variants must coexist within GitHub's cache quota.
+      CCACHE_MAXSIZE: 150M
       FULLDEBUG: ${{ matrix.variant.full_debug }}
       TILES: ${{ matrix.variant.tiles }}
       WEBTILES: ${{ matrix.variant.webtiles }}
@@ -129,10 +136,22 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v7
 
+      - name: Cache compiler outputs
+        # actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: ${{ runner.temp }}/ccache
+          # Compiler flags differ by variant, so each matrix entry owns an
+          # immutable cache. A new SHA restores the latest matching entry and
+          # saves its partially refreshed result without cross-job conflicts.
+          key: linux-ccache-v1-${{ runner.os }}-${{ runner.arch }}-${{ matrix.compiler.name }}-${{ matrix.variant.name }}-${{ github.sha }}
+          restore-keys: linux-ccache-v1-${{ runner.os }}-${{ runner.arch }}-${{ matrix.compiler.name }}-${{ matrix.variant.name }}-
+
       - name: Install build dependencies
         shell: bash
         run: |
           packages=(
+            ccache
             libncurses-dev
             pkgconf
           )
@@ -159,6 +178,9 @@ jobs:
           fi
           sudo apt-get update
           sudo apt-get install --yes "${packages[@]}"
+
+      - name: Initialize compiler cache statistics
+        run: ccache --zero-stats
 
       - name: Check out bundled dependencies
         if: matrix.variant.build_all != ''
@@ -198,6 +220,10 @@ jobs:
           else
             make nondebugtest
           fi
+
+      - name: Show compiler cache statistics
+        if: always()
+        run: ccache --show-stats
 
       - name: Print crash reports
         if: failure()
