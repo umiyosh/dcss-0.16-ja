@@ -149,6 +149,7 @@ jobs:
             packages+=(
               libasound2-dev
               libegl1-mesa-dev
+              libsdl2-dev
               libxss-dev
             )
           fi
