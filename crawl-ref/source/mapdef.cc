@@ -2458,11 +2458,13 @@ void mapdef_epilogue_tests()
 
     map_def map;
     map.name = "epilogue_validation_test_map";
-    map.tags = " dummy ";
+    map.tags = " epilogue_validation_test ";
     map.epilogue.set_chunk(make_stringf("%s = %s + 1", counter, counter));
 
     const depth_ranges default_depths;
-    map.validate_map_def(default_depths);
+    const string validation_error = map.validate_map_def(default_depths);
+    if (!validation_error.empty())
+        fail("Could not validate test map: %s", validation_error.c_str());
 
     if (dlua.execstring(make_stringf("return %s", counter).c_str(),
                         "mapdef epilogue test", 1))
@@ -2492,6 +2494,13 @@ void mapdef_epilogue_tests()
         fail("Placed map epilogue ran %d time(s), expected once",
              placement_count);
     }
+
+    map_def invalid_map;
+    invalid_map.name = "invalid_epilogue_test_map";
+    invalid_map.tags = " epilogue_validation_test ";
+    invalid_map.epilogue.set_chunk("this is not valid Lua");
+    if (invalid_map.validate_map_def(default_depths).empty())
+        fail("Map validation accepted an invalid epilogue");
 
     dlua.execstring(make_stringf("%s = nil", counter).c_str(),
                     "mapdef epilogue test");
@@ -2934,7 +2943,15 @@ string map_def::validate_map_def(const depth_ranges &default_depths)
     fixup();
     resolve();
     test_lua_validate(true);
-    run_lua_epilogue(true);
+
+    // Epilogues may change player state, so compile them during validation
+    // without executing them. They run after the map is actually placed.
+    {
+        lua_stack_cleaner clean(dlua);
+        const int epilogue_err = epilogue.load(dlua);
+        if (epilogue_err != E_CHUNK_LOAD_FAILURE && epilogue_err)
+            return epilogue.orig_error();
+    }
 
     if (!has_depth() && !lc_default_depths.empty())
         depths.add_depths(lc_default_depths);
