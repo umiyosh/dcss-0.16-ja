@@ -479,6 +479,7 @@ jobs:
           python3 ../../.github/scripts/shard_crawl_tests.py
           --shard-index '${{ matrix.shard }}'
           --shard-count 3
+          --durations ../../.github/test-durations-macos.json
           --runner ./util/fake_pty
 
       - name: Print crash reports
