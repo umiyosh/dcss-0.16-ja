@@ -1,5 +1,3 @@
-# Translation source: crawl-ref/source/dat/descript/monsters.txt
-
 %%%%
 Aizul
 
