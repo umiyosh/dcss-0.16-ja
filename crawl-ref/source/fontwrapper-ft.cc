@@ -571,9 +571,11 @@ unsigned int FTFontWrapper::string_width(const char *text)
 
     unsigned int width = base_width;
     unsigned int adjust = 0;
-    for (const unsigned char *itr = (unsigned const char *)text; *itr; itr++)
+    ucs_t uchar;
+    for (const char *itr = text; int length = utf8towc(&uchar, itr);
+         itr += length)
     {
-        if (*itr == '\n')
+        if (uchar == '\n')
         {
             max_width = max(width + adjust, max_width);
             width = base_width;
@@ -581,7 +583,7 @@ unsigned int FTFontWrapper::string_width(const char *text)
         }
         else
         {
-            unsigned int c = map_unicode(*itr);
+            unsigned int c = map_unicode(uchar);
             width += m_glyphs[c].advance;
             adjust = max(0, m_glyphs[c].width - m_glyphs[c].advance);
         }
@@ -597,13 +599,15 @@ int FTFontWrapper::find_index_before_width(const char *text, int max_width)
 
     max_width *= scale_num / scale_den;
 
-    for (int i = 0; text[i]; i++)
+    ucs_t uchar;
+    for (const char *itr = text; int length = utf8towc(&uchar, itr);
+         itr += length)
     {
-        unsigned int c = map_unicode(text[i]);
+        unsigned int c = map_unicode(uchar);
         width += m_glyphs[c].advance;
         int adjust = max(0, m_glyphs[c].width - m_glyphs[c].advance);
         if (width + adjust > max_width)
-            return i;
+            return itr - text;
     }
 
     return -1;
@@ -679,61 +683,14 @@ void FTFontWrapper::render_string(unsigned int px, unsigned int py,
 {
     ASSERT(text);
 
-    // Determine extent of this text
-    unsigned int max_rows = 1;
-    unsigned int cols = 0;
-    unsigned int max_cols = 0;
-    ucs_t c;
-    for (const char *tp = text; int s = utf8towc(&c, tp); tp += s)
-    {
-        int w = wcwidth(c);
-        if (w != -1)
-            cols += w;
-        max_cols = max(cols, max_cols);
-
-        // NOTE: only newlines should be used for tool tips.  Don't use EOL.
-        ASSERT(c != '\r');
-
-        if (c == '\n')
-        {
-            cols = 0;
-            max_rows++;
-        }
-    }
-
-    // Create the text block
-    ucs_t *chars = (ucs_t*)malloc(max_rows * max_cols * sizeof(ucs_t));
-    uint8_t *colours = (uint8_t*)malloc(max_rows * max_cols);
-    for (unsigned int i = 0; i < max_rows * max_cols; i++)
-        chars[i] = ' ';
-    memset(colours, font_colour, max_rows * max_cols);
-
-    // Fill the text block
-    cols = 0;
-    unsigned int rows = 0;
-    for (const char *tp = text; int s = utf8towc(&c, tp); tp += s)
-    {
-        int w = wcwidth(c);
-        if (w > 0) // FIXME: combining characters are silently ignored
-        {
-            chars[cols + rows * max_cols] = c;
-            cols++;
-            if (w == 2)
-                chars[cols + rows * max_cols] = ' ', cols++;
-        }
-
-        if (c == '\n')
-        {
-            cols = 0;
-            rows++;
-        }
-    }
+    utf8_textblock block = make_utf8_textblock(text);
+    vector<uint8_t> colours(block.chars.size(), font_colour);
 
     // Find a suitable location on screen
     const int buffer = 5;  // additional buffer size from edges
 
     int wx = string_width(text);
-    int wy = max_rows * char_height();
+    int wy = block.height * char_height();
 
     int sx, sy; // box starting location, uses extra buffer
     int tx, ty; // text starting location
@@ -769,10 +726,10 @@ void FTFontWrapper::render_string(unsigned int px, unsigned int py,
     if (box_alpha != 0)
         _draw_box(tx, ty, wx, wy, outline, box_colour, box_alpha);
 
-    render_textblock(tx, ty, chars, colours, max_cols, max_rows, drop_shadow);
-
-    free(chars);
-    free(colours);
+    render_textblock(tx, ty,
+                     block.chars.empty() ? nullptr : &block.chars[0],
+                     colours.empty() ? nullptr : &colours[0],
+                     block.width, block.height, drop_shadow);
 }
 
 void FTFontWrapper::store(FontBuffer &buf, float &x, float &y,

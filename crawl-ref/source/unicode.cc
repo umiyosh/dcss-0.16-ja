@@ -112,6 +112,49 @@ int utf8towc(ucs_t *d, const char *s)
     return cnt;
 }
 
+utf8_textblock make_utf8_textblock(const char *text)
+{
+    ASSERT(text);
+
+    utf8_textblock block;
+    block.width = 0;
+    block.height = 1;
+
+    unsigned int line_width = 0;
+    ucs_t c;
+    for (const char *pos = text; int length = utf8towc(&c, pos);
+         pos += length)
+    {
+        ASSERT(c != '\r');
+        if (c == '\n')
+        {
+            block.width = max(block.width, line_width);
+            line_width = 0;
+            ++block.height;
+        }
+        else if (wcwidth(c) > 0)
+            ++line_width;
+    }
+    block.width = max(block.width, line_width);
+
+    block.chars.assign(block.width * block.height, ' ');
+    unsigned int column = 0;
+    unsigned int row = 0;
+    for (const char *pos = text; int length = utf8towc(&c, pos);
+         pos += length)
+    {
+        if (c == '\n')
+        {
+            column = 0;
+            ++row;
+        }
+        else if (wcwidth(c) > 0)
+            block.chars[column++ + row * block.width] = c;
+    }
+
+    return block;
+}
+
 ucs_t pop_utf8_char(string &text)
 {
     ASSERT(!text.empty());

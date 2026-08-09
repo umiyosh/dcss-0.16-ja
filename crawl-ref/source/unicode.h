@@ -21,6 +21,15 @@ string align_left(const string &s, int width, char fillchar = ' ');
 int wctoutf8(char *d, ucs_t s);
 int utf8towc(ucs_t *d, const char *s);
 ucs_t pop_utf8_char(string &text);
+
+struct utf8_textblock
+{
+    vector<ucs_t> chars;
+    unsigned int width;
+    unsigned int height;
+};
+
+utf8_textblock make_utf8_textblock(const char *text);
 #ifdef TARGET_OS_WINDOWS
 typedef wchar_t utf16_t;
 wstring utf8_to_16(const char *s);
