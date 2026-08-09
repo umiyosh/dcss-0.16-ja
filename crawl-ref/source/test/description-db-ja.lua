@@ -18,6 +18,9 @@ local cases = {
   { "amulet of Vitality", "この名高い護符" },
   { "Screaming Sword", "所有者に歌いかける" },
   { "A closed door", "木製の扉" },
+  { "Dig ability", "柔らかな岩や錆びた格子" },
+  { "Apocalypse ability", "ルーの真実を敵に示す" },
+  { "Evoke Twister ability", "敵味方の別なく" },
 }
 
 for _, case in ipairs(cases) do
