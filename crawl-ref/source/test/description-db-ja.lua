@@ -18,6 +18,13 @@ local cases = {
   { "amulet of Vitality", "この名高い護符" },
   { "Screaming Sword", "所有者に歌いかける" },
   { "A closed door", "木製の扉" },
+  { "Dig ability", "柔らかな岩や錆びた格子" },
+  { "Apocalypse ability", "ルーの真実を敵に示す" },
+  { "Evoke Twister ability", "敵味方の別なく" },
+  { "Sacrifice Durability ability", "甲冑スキル" },
+  { "Sacrifice Nimbleness ability", "躱し身スキル" },
+  { "Sacrifice Essence ability", "魔法防御の低下" },
+  { "Sacrifice Purity ability", "道具による回復効果の低下" },
 }
 
 for _, case in ipairs(cases) do
