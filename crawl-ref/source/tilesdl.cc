@@ -64,9 +64,9 @@
 // Default Screen Settings
 // width, height, map, crt, stat, msg, tip, lbl
 #ifdef TOUCH_UI
-static int _screen_sizes[6][8] =
+static constexpr int _screen_sizes[6][8] =
 #else
-static int _screen_sizes[4][8] =
+static constexpr int _screen_sizes[4][8] =
 #endif
 {
     // Default
@@ -83,6 +83,21 @@ static int _screen_sizes[4][8] =
     ,{320, 240, 1, 8, 8, 6, 8, 6} // :(
 #endif
 };
+
+static_assert(_screen_sizes[0][3] == _screen_sizes[0][5],
+              "CRT and message font sizes must match");
+static_assert(_screen_sizes[1][3] == _screen_sizes[1][5],
+              "CRT and message font sizes must match");
+static_assert(_screen_sizes[2][3] == _screen_sizes[2][5],
+              "CRT and message font sizes must match");
+static_assert(_screen_sizes[3][3] == _screen_sizes[3][5],
+              "CRT and message font sizes must match");
+#ifdef TOUCH_UI
+static_assert(_screen_sizes[4][3] == _screen_sizes[4][5],
+              "CRT and message font sizes must match");
+static_assert(_screen_sizes[5][3] == _screen_sizes[5][5],
+              "CRT and message font sizes must match");
+#endif
 
 TilesFramework tiles;
 
