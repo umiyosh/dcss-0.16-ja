@@ -8,6 +8,15 @@ local cases = {
   { "Drain Magic spell", "反魔法の武器" },
   { "Tornado spell", "力強い旋風" },
   { "club", "重量がある木の棒" },
+  { "arbalest", "クロスボウの矢" },
+  { "quicksilver dragon armour", "敵対的な魔法を退ける力" },
+  { "scroll of enchant armour", "胴鎧と馬甲・具装" },
+  { "scroll of summoning", "読み手のいる土地で見られる生物" },
+  { "staff of air", "発動スキルと風の魔術スキル" },
+  { "wand of paralysis", "生物を麻痺させ" },
+  { "book", "由来の知れない呪文" },
+  { "amulet of Vitality", "この名高い護符" },
+  { "Screaming Sword", "所有者に歌いかける" },
   { "A closed door", "木製の扉" },
 }
 

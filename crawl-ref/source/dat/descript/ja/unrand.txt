@@ -598,3 +598,15 @@ quick blades "Gyre" and "Gimble"
 あたかもそれらに意思が宿っているかのように、片方を振ると装備者はもう片方をも振る
 ことが強いられる。
 %%%%
+amulet of Vitality
+
+この名高い護符は、装着者の生命力を大きく高める。
+%%%%
+Screaming Sword
+
+<Singing Sword>
+%%%%
+Sulking Sword
+
+<Singing Sword>
+%%%%
