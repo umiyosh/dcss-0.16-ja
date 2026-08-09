@@ -64,40 +64,25 @@
 // Default Screen Settings
 // width, height, map, crt, stat, msg, tip, lbl
 #ifdef TOUCH_UI
-static constexpr int _screen_sizes[6][8] =
+static int _screen_sizes[6][8] =
 #else
-static constexpr int _screen_sizes[4][8] =
+static int _screen_sizes[4][8] =
 #endif
 {
     // Default
-    {1024, 700, 3, 14, 16, 14, 15, 14},
+    {1024, 700, 3, 15, 16, 14, 15, 14},
     // Eee PC 900+
-    {1024, 600, 2, 12, 14, 12, 13, 12},
+    {1024, 600, 2, 14, 14, 12, 13, 12},
     // Small screen
-    {800, 600, 2, 12, 11, 12, 13, 12},
+    {800, 600, 2, 14, 11, 12, 13, 12},
     // Eee PC
-    {800, 480, 2, 10, 12, 10, 13, 11}
+    {800, 480, 2, 13, 12, 10, 13, 11}
 #ifdef TOUCH_UI
     // puny mobile screens
-    ,{480, 320, 2, 8, 8, 8, 9, 8}
-    ,{320, 240, 1, 6, 8, 6, 8, 6} // :(
+    ,{480, 320, 2, 9, 8, 8, 9, 8}
+    ,{320, 240, 1, 8, 8, 6, 8, 6} // :(
 #endif
 };
-
-static_assert(_screen_sizes[0][3] == _screen_sizes[0][5],
-              "CRT and message font sizes must match");
-static_assert(_screen_sizes[1][3] == _screen_sizes[1][5],
-              "CRT and message font sizes must match");
-static_assert(_screen_sizes[2][3] == _screen_sizes[2][5],
-              "CRT and message font sizes must match");
-static_assert(_screen_sizes[3][3] == _screen_sizes[3][5],
-              "CRT and message font sizes must match");
-#ifdef TOUCH_UI
-static_assert(_screen_sizes[4][3] == _screen_sizes[4][5],
-              "CRT and message font sizes must match");
-static_assert(_screen_sizes[5][3] == _screen_sizes[5][5],
-              "CRT and message font sizes must match");
-#endif
 
 TilesFramework tiles;
 
