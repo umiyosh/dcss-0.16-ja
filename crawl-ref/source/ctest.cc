@@ -334,6 +334,35 @@ static void _utf8_input_queue_tests()
         fail("UTF-8 input did not consume a leading NUL byte.");
 }
 
+static void _utf8_textblock_tests()
+{
+    const utf8_textblock block = make_utf8_textblock("AコB\n水");
+    if (block.width != 3 || block.height != 2)
+    {
+        fail("UTF-8 text block was %u x %u, expected 3 x 2.",
+             block.width, block.height);
+        return;
+    }
+
+    const ucs_t expected[] = { 'A', 0x30B3, 'B', 0x6C34, ' ', ' ' };
+    if (block.chars.size() != ARRAYSZ(expected))
+    {
+        fail("UTF-8 text block contained %u cells, expected %u.",
+             static_cast<unsigned int>(block.chars.size()),
+             static_cast<unsigned int>(ARRAYSZ(expected)));
+        return;
+    }
+
+    for (unsigned int i = 0; i < ARRAYSZ(expected); ++i)
+    {
+        if (block.chars[i] != expected[i])
+        {
+            fail("UTF-8 text block cell %u was %u, expected %u.",
+                 i, block.chars[i], expected[i]);
+        }
+    }
+}
+
 #if defined(USE_TILE_LOCAL) && defined(USE_SDL)
 static void _sdl_textinput_tests()
 {
@@ -401,6 +430,7 @@ void run_tests()
     _run_test("macos-crawl-dir", _macos_crawl_dir_tests);
 #endif
     _run_test("utf8-input-queue", _utf8_input_queue_tests);
+    _run_test("utf8-textblock", _utf8_textblock_tests);
 #if defined(USE_TILE_LOCAL) && defined(USE_SDL)
     _run_test("sdl-textinput", _sdl_textinput_tests);
 #endif
