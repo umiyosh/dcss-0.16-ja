@@ -1,7 +1,7 @@
 local cases = {
   { "rat", "不潔な齧歯類" },
   { "Abjuration spell", "元いた場所に送還" },
-  { "Controlled Blink spell", "正確に制御可能な短距離" },
+  { "Controlled Blink spell", "テレポート制御を妨げる領域でも" },
   { "Glaciate spell", "猛烈な氷の奔流" },
   { "Dragon's Call spell", "竜の領域" },
   { "Necromutation spell", "力ある骸骨" },
