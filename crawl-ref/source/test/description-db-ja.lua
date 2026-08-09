@@ -8,6 +8,12 @@ local cases = {
   { "Drain Magic spell", "反魔法の武器" },
   { "Tornado spell", "力強い旋風" },
   { "club", "重量がある木の棒" },
+  { "arbalest", "巻き上げ機で弦を引く大型の弩" },
+  { "quicksilver dragon armour", "水銀ドラゴンの鱗" },
+  { "scroll of enchant armour", "バックラー、盾、大盾" },
+  { "book", "由来の知れない呪文" },
+  { "amulet of Vitality", "この名高い護符" },
+  { "Screaming Sword", "所有者に歌いかける" },
   { "A closed door", "木製の扉" },
 }
 
