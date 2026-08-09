@@ -1,0 +1,377 @@
+#!/usr/bin/env python3
+
+from importlib.machinery import SourceFileLoader
+from importlib.util import module_from_spec, spec_from_loader
+from pathlib import Path
+from tempfile import TemporaryDirectory
+import io
+import json
+from contextlib import redirect_stdout
+import unittest
+
+
+CHECKER_PATH = Path(__file__).with_name("check-description-coverage")
+LOADER = SourceFileLoader("check_description_coverage", str(CHECKER_PATH))
+SPEC = spec_from_loader(LOADER.name, LOADER)
+CHECKER = module_from_spec(SPEC)
+LOADER.exec_module(CHECKER)
+
+
+class CheckDescriptionCoverageTest(unittest.TestCase):
+    def setUp(self):
+        self.temporary_directory = TemporaryDirectory()
+        temporary_root = Path(self.temporary_directory.name)
+        self.root = temporary_root / "descript"
+        (self.root / "ja").mkdir(parents=True)
+        self.baseline_path = temporary_root / "baseline.txt"
+        self.reference_baseline_path = temporary_root / "reference.txt"
+        self.exclusions_path = temporary_root / "exclusions.txt"
+        self.baseline_path.write_text("", encoding="utf-8")
+        self.reference_baseline_path.write_text("", encoding="utf-8")
+        self.exclusions_path.write_text("", encoding="utf-8")
+
+    def tearDown(self):
+        self.temporary_directory.cleanup()
+
+    def write_database(self, filename, entries, language=None):
+        root = self.root / language if language else self.root
+        text = "preamble ignored\n"
+        for key, value in entries:
+            text += f"%%%%\n# reviewed entry\n{key}\n\n{value}\n"
+        path = root / filename
+        path.write_text(text, encoding="utf-8")
+        return path
+
+    def write_baseline(self, rows):
+        self.write_manifest(self.baseline_path, rows)
+
+    def write_reference_baseline(self, rows):
+        self.write_manifest(self.reference_baseline_path, rows)
+
+    def write_manifest(self, path, rows):
+        path.write_text(
+            "".join(
+                json.dumps([filename, key]) + "\n"
+                for filename, key in rows
+            ),
+            encoding="utf-8",
+        )
+
+    def write_exclusions(self, rows):
+        self.exclusions_path.write_text(
+            "".join(
+                json.dumps([filename, key, reason, evidence]) + "\n"
+                for filename, key, reason, evidence in rows
+            ),
+            encoding="utf-8",
+        )
+
+    def report(self, compare_with_reference=False):
+        reference = (
+            CHECKER.load_baseline(self.reference_baseline_path)
+            if compare_with_reference
+            else None
+        )
+        return CHECKER.analyze_coverage(
+            self.root,
+            CHECKER.load_baseline(self.baseline_path),
+            CHECKER.load_exclusions(self.exclusions_path),
+            reference,
+        )
+
+    def test_parser_ignores_preamble_comments_and_normalizes_keys(self):
+        path = self.write_database(
+            "items.txt", [("  Magic Club  ", "A club.")]
+        )
+
+        entries = CHECKER.parse_database(path)
+
+        self.assertEqual(list(entries), ["magic club"])
+        self.assertEqual(entries["magic club"].display_key, "Magic Club")
+
+    def test_reports_missing_excluded_and_quotes_separately(self):
+        self.write_database(
+            "monsters.txt",
+            [("rat", "A rat."), ("ghost", "A removed monster.")],
+        )
+        self.write_database("monsters.txt", [], "ja")
+        self.write_database("quotes.txt", [("rat", "Squeak.")])
+        self.write_baseline([("monsters.txt", "rat")])
+        self.write_exclusions(
+            [
+                (
+                    "monsters.txt",
+                    "ghost",
+                    "Removed compatibility dummy.",
+                    "mon-data.h MONS_GHOST",
+                )
+            ]
+        )
+
+        report = self.report()
+
+        self.assertEqual(
+            [entry.display_key for entry in report.missing], ["rat"]
+        )
+        self.assertEqual(
+            [entry.display_key for entry in report.excluded], ["ghost"]
+        )
+        self.assertEqual(
+            [entry.display_key for entry in report.quotes], ["rat"]
+        )
+        self.assertFalse(CHECKER.has_failures(report))
+
+    def test_new_english_key_fails(self):
+        self.write_database(
+            "items.txt",
+            [("old key", "Old."), ("new key", "New.")],
+        )
+        self.write_database("items.txt", [], "ja")
+        self.write_baseline([("items.txt", "old key")])
+
+        report = self.report()
+
+        self.assertEqual(
+            [entry.display_key for entry in report.unexpected],
+            ["new key"],
+        )
+        self.assertTrue(CHECKER.has_failures(report))
+
+    def test_new_key_and_matching_baseline_addition_still_fails(self):
+        self.write_database(
+            "items.txt",
+            [("old key", "Old."), ("new key", "New.")],
+        )
+        self.write_database("items.txt", [], "ja")
+        self.write_baseline(
+            [("items.txt", "old key"), ("items.txt", "new key")]
+        )
+        self.write_reference_baseline([("items.txt", "old key")])
+
+        report = self.report(compare_with_reference=True)
+
+        self.assertEqual(report.unexpected, ())
+        self.assertEqual(
+            report.baseline_additions,
+            (CHECKER.KeyRef("items.txt", "new key"),),
+        )
+        self.assertTrue(CHECKER.has_failures(report))
+
+    def test_reference_baseline_allows_removing_entries(self):
+        self.write_database("items.txt", [("old key", "Old.")])
+        self.write_database("items.txt", [], "ja")
+        self.write_baseline([("items.txt", "old key")])
+        self.write_reference_baseline(
+            [("items.txt", "old key"), ("items.txt", "translated key")]
+        )
+
+        report = self.report(compare_with_reference=True)
+
+        self.assertEqual(report.baseline_additions, ())
+        self.assertFalse(CHECKER.has_failures(report))
+
+    def test_missing_key_replacement_fails_when_total_is_unchanged(self):
+        self.write_database(
+            "items.txt",
+            [("old key", "Old."), ("new key", "New.")],
+        )
+        self.write_database("items.txt", [("old key", "翻訳。")], "ja")
+        self.write_baseline([("items.txt", "old key")])
+
+        report = self.report()
+
+        self.assertEqual(len(report.missing), 1)
+        self.assertEqual(report.unexpected[0].display_key, "new key")
+        self.assertEqual(
+            report.resolved_baseline,
+            (CHECKER.KeyRef("items.txt", "old key"),),
+        )
+        self.assertTrue(CHECKER.has_failures(report))
+
+    def test_japanese_key_reduces_missing_and_requires_baseline_cleanup(self):
+        self.write_database("spells.txt", [("Blink spell", "Blink.")])
+        self.write_database(
+            "spells.txt", [("blink spell", "瞬間移動する。")], "ja"
+        )
+        self.write_baseline([("spells.txt", "Blink spell")])
+
+        report = self.report()
+
+        self.assertEqual(report.missing, ())
+        self.assertEqual(
+            report.resolved_baseline,
+            (CHECKER.KeyRef("spells.txt", "blink spell"),),
+        )
+        self.assertTrue(CHECKER.has_failures(report))
+
+    def test_matching_translation_and_baseline_pass(self):
+        self.write_database(
+            "features.txt",
+            [("A closed door", "A door."), ("A Zot trap", "A trap.")],
+        )
+        self.write_database(
+            "features.txt", [("A closed door", "木製の扉だ。")], "ja"
+        )
+        self.write_baseline([("features.txt", "A Zot trap")])
+
+        report = self.report()
+
+        self.assertFalse(CHECKER.has_failures(report))
+        self.assertEqual(len(report.missing), 1)
+        self.assertEqual(report.files[0].translated, 1)
+
+    def test_empty_japanese_entry_remains_missing(self):
+        self.write_database("items.txt", [("club", "A club.")])
+        self.write_database("items.txt", [("club", "")], "ja")
+        self.write_baseline([("items.txt", "club")])
+
+        report = self.report()
+
+        self.assertEqual(
+            [entry.display_key for entry in report.missing], ["club"]
+        )
+        self.assertFalse(CHECKER.has_failures(report))
+
+    def test_japanese_alias_to_missing_target_remains_missing(self):
+        self.write_database(
+            "items.txt",
+            [
+                ("alias key", "<target key>"),
+                ("target key", "English."),
+            ],
+        )
+        self.write_database(
+            "items.txt", [("alias key", "<target key>")], "ja"
+        )
+        self.write_baseline(
+            [("items.txt", "alias key"), ("items.txt", "target key")]
+        )
+
+        report = self.report()
+
+        self.assertEqual(
+            [entry.display_key for entry in report.missing],
+            ["alias key", "target key"],
+        )
+        self.assertFalse(CHECKER.has_failures(report))
+
+    def test_japanese_alias_chain_to_japanese_body_is_translated(self):
+        self.write_database(
+            "items.txt",
+            [
+                ("first alias", "<second alias>"),
+                ("second alias", "<target key>"),
+                ("target key", "English."),
+            ],
+        )
+        self.write_database(
+            "items.txt",
+            [
+                ("first alias", "<second alias>"),
+                ("second alias", "<target key>"),
+                ("target key", "日本語。"),
+            ],
+            "ja",
+        )
+
+        report = self.report()
+
+        self.assertEqual(report.missing, ())
+        self.assertFalse(CHECKER.has_failures(report))
+
+    def test_japanese_alias_resolves_across_one_runtime_database(self):
+        self.write_database(
+            "features.txt", [("alias key", "<target key>")]
+        )
+        self.write_database("items.txt", [("target key", "English.")])
+        self.write_database(
+            "features.txt", [("alias key", "<target key>")], "ja"
+        )
+        self.write_database(
+            "items.txt", [("target key", "日本語。")], "ja"
+        )
+
+        report = self.report()
+
+        self.assertEqual(report.missing, ())
+        self.assertFalse(CHECKER.has_failures(report))
+
+    def test_japanese_alias_cycle_remains_missing(self):
+        self.write_database(
+            "items.txt",
+            [
+                ("first alias", "<second alias>"),
+                ("second alias", "<first alias>"),
+            ],
+        )
+        self.write_database(
+            "items.txt",
+            [
+                ("first alias", "<second alias>"),
+                ("second alias", "<first alias>"),
+            ],
+            "ja",
+        )
+        self.write_baseline(
+            [("items.txt", "first alias"), ("items.txt", "second alias")]
+        )
+
+        report = self.report()
+
+        self.assertEqual(len(report.missing), 2)
+        self.assertFalse(CHECKER.has_failures(report))
+
+    def test_stale_exclusion_fails(self):
+        self.write_database("monsters.txt", [("rat", "A rat.")])
+        self.write_database("monsters.txt", [("rat", "鼠だ。")], "ja")
+        self.write_exclusions(
+            [
+                (
+                    "monsters.txt",
+                    "rat",
+                    "Not reachable.",
+                    "example evidence",
+                )
+            ]
+        )
+
+        report = self.report()
+
+        self.assertEqual(len(report.invalid_exclusions), 1)
+        self.assertTrue(CHECKER.has_failures(report))
+
+    def test_exclusion_requires_reason_and_evidence(self):
+        self.exclusions_path.write_text(
+            '["monsters.txt", "ghost", "missing evidence"]\n',
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(ValueError, "reason, evidence"):
+            CHECKER.load_exclusions(self.exclusions_path)
+
+    def test_output_and_current_baseline_are_deterministic(self):
+        self.write_database(
+            "items.txt", [("z key", "Z."), ("a key", "A.")]
+        )
+        self.write_database("items.txt", [], "ja")
+        self.write_baseline(
+            [("items.txt", "a key"), ("items.txt", "z key")]
+        )
+        report = self.report()
+
+        first = io.StringIO()
+        second = io.StringIO()
+        with redirect_stdout(first):
+            CHECKER.print_report(report, list_keys=True)
+        with redirect_stdout(second):
+            CHECKER.print_report(report, list_keys=True)
+
+        self.assertEqual(first.getvalue(), second.getvalue())
+        self.assertLess(
+            first.getvalue().index("missing\titems.txt\ta key"),
+            first.getvalue().index("missing\titems.txt\tz key"),
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()
