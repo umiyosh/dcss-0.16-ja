@@ -77,10 +77,8 @@ void TextRegion::addstr(const char *buffer)
             c = 0;
             newline = true;
         }
-        // TODO: use wcwidth() to handle widths!=1:
-        // *  2 for CJK chars -- add a zero-width blank?
-        // *  0 for combining characters -- would need extra support
-        // * -1 for non-printable stuff -- assert or ignore
+        // addstr_aux() expands wide glyphs to their terminal cell width.
+        // Combining and non-printable characters still occupy one cell.
         buf2[j] = c;
         j++;
 
@@ -109,17 +107,32 @@ void TextRegion::addstr_aux(const ucs_t *buffer, int len)
     int y = print_y - cy_ofs;
     int adrs = y * mx;
     int head = x;
-    int tail = x + len - 1;
+    int cells = 0;
+
+    for (int i = 0; i < len; i++)
+        cells += max(wcwidth(buffer[i]), 1);
+
+    int tail = x + cells - 1;
 
     // XXX: What does this even do?
     adjust_region(&head, &tail, y);
 
-    for (int i = 0; i < len && x + i < mx; i++)
+    int cell = 0;
+    for (int i = 0; i < len && x + cell < mx; i++)
     {
-        cbuf[adrs+x+i] = buffer[i];
-        abuf[adrs+x+i] = text_col;
+        const int width = max(wcwidth(buffer[i]), 1);
+
+        cbuf[adrs+x+cell] = buffer[i];
+        abuf[adrs+x+cell] = text_col;
+        cell++;
+
+        for (int j = 1; j < width && x + cell < mx; j++, cell++)
+        {
+            cbuf[adrs+x+cell] = 0;
+            abuf[adrs+x+cell] = text_col & 0xf;
+        }
     }
-    print_x += len;
+    print_x += cells;
 }
 
 void TextRegion::clear_to_end_of_line()
