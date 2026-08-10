@@ -30,11 +30,15 @@
 #include "errors.h"
 #include "files.h"
 #include "initfile.h"
+#include "japanese.h"
 #include "libutil.h"
 #include "maps.h"
 #include "message.h"
+#include "mon-info.h"
 #include "mon-pick.h"
+#include "mon-poly.h"
 #include "mon-util.h"
+#include "monster.h"
 #include "ng-init.h"
 #include "options.h"
 #include "output.h"
@@ -264,6 +268,49 @@ static void _equip_slot_name_tests()
         fail("Invalid equipment slot name was accepted.");
 }
 
+static void _check_monster_full_names(const monster& mon,
+                                      const string& expected_english,
+                                      const string& expected_japanese)
+{
+    const monster_info info(&mon, MILEV_NAME);
+    const string actual_english = info.full_name_en(DESC_A, true);
+    if (actual_english != expected_english)
+    {
+        fail("English monster name was '%s', expected '%s'.",
+             actual_english.c_str(), expected_english.c_str());
+    }
+
+    const string actual_japanese = info.full_name(DESC_A, true);
+    if (actual_japanese != expected_japanese)
+    {
+        fail("Japanese monster name was '%s', expected '%s'.",
+             actual_japanese.c_str(), expected_japanese.c_str());
+    }
+}
+
+static void _monster_full_name_translation_tests()
+{
+    monster blork;
+    blork.type = MONS_BLORK_THE_ORC;
+    _check_monster_full_names(blork, "Blork the orc",
+                              jtrans("Blork the orc"));
+
+    monster transformed_blork;
+    transformed_blork.type = MONS_CENTAUR;
+    transformed_blork.mname = jtrans("Blork the orc");
+    transformed_blork.props[ORIGINAL_TYPE_KEY].get_int()
+        = MONS_BLORK_THE_ORC;
+    _check_monster_full_names(transformed_blork, "Blork, the centaur",
+                              jtrans("centaur") + "の『ブロルク』");
+
+    monster named_centaur;
+    named_centaur.type = MONS_CENTAUR;
+    named_centaur.mname = "Durwent";
+    named_centaur.props[ORIGINAL_TYPE_KEY].get_int() = MONS_KOBOLD;
+    _check_monster_full_names(named_centaur, "Durwent, the centaur",
+                              jtrans("centaur") + "『Durwent』");
+}
+
 #if defined(TARGET_OS_MACOSX)
 static string _macos_default_data_dir()
 {
@@ -434,6 +481,8 @@ void run_tests()
     _run_test("mon-spell", debug_monspells);
     _run_test("coordit", coordit_tests);
     _run_test("equip-slot-name", _equip_slot_name_tests);
+    _run_test("monster-full-name-translation",
+              _monster_full_name_translation_tests);
 #if defined(TARGET_OS_MACOSX)
     _run_test("macos-crawl-dir", _macos_crawl_dir_tests);
 #endif
