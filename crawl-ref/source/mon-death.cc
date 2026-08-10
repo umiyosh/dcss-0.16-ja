@@ -3280,8 +3280,8 @@ void elven_twin_died(monster* twin, bool in_transit, killer_type killer, int kil
     // Will generate strings such as 'Duvessa_Duvessa_dies' or, alternately
     // 'Dowan_Dowan_dies', but as neither will match, these can safely be
     // ignored.
-    string key = mons->name(DESC_THE, true) + "_"
-                 + twin->name(DESC_THE, true) + "_dies_";
+    string key = mons->name_en(DESC_THE, true) + "_"
+                 + twin->name_en(DESC_THE, true) + "_dies_";
 
     if (mons_near(mons) && !mons->observable())
         key += "invisible_";

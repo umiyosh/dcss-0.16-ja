@@ -1352,7 +1352,8 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
             }
             else if (!mon->is_child_tentacle())
             {
-                msg = getSpeakString(mon->name(DESC_PLAIN) + " cornered");
+                msg = getSpeakString(mon->name_en(DESC_PLAIN, true)
+                                     + " cornered");
                 if (msg.empty())
                     msg = jtrans("PLAIN:Cornered, @The_monster@ turns to fight!");
             }
