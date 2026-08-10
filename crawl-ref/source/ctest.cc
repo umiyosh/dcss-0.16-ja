@@ -74,6 +74,8 @@ static vector<file_error> failures;
 
 typedef std::chrono::steady_clock test_clock;
 
+string commandline_options_help();
+
 static void _report_test_duration(const string &name,
                                   const test_clock::time_point &started)
 {
@@ -266,6 +268,90 @@ static void _equip_slot_name_tests()
         fail("Translated equipment slot names should remain supported.");
     if (equip_name_to_slot("not an equipment slot") != -1)
         fail("Invalid equipment slot name was accepted.");
+}
+
+static void _commandline_options_help_tests()
+{
+    const string help = commandline_options_help();
+    static const char *required_text[] =
+    {
+        "コマンドラインオプション:",
+        "コマンドラインオプションは初期設定ファイルより優先され",
+        "ハイスコア一覧オプション",
+        "闘技場オプション",
+        "その他のオプション",
+        "CRAWL_NAME, CRAWL_DIR, CRAWL_RC",
+        "optname=optval",
+        "<monster list> v <monster list> arena:<arena map>",
+    };
+    static const char *required_options[] =
+    {
+        "-help", "-name <string>", "-species <arg>",
+        "-background <arg>", "-dir <path>", "-rc <file>",
+        "-rcdir <dir>", "-morgue <dir>", "-macro <dir>",
+        "-version", "-save-version <name>", "-sprint",
+        "-sprint-map <name>", "-tutorial",
+#ifdef WIZARD
+        "-wizard", "-explore",
+#endif
+#ifdef DGAMELAUNCH
+        "-no-throttle",
+#else
+        "-throttle",
+#endif
+        "-extra-opt-first optname=optval",
+        "-extra-opt-last  optname=optval",
+        "-scores [N]", "-tscores [N]", "-vscores [N]",
+        "-scorefile <filename>", "-arena",
+#ifdef DEBUG_DIAGNOSTICS
+        "-test", "-script <name>",
+#endif
+#ifdef DEBUG_STATISTICS
+        "-mapstat [<levels>]", "-objstat [<levels>]", "-iters <num>",
+#endif
+        "-dump-maps",
+#ifndef TARGET_OS_WINDOWS
+        "-gdb/-no-gdb",
+#endif
+        "-list-combos",
+    };
+    static const char *english_prose[] =
+    {
+        "Command line options:",
+        "prints this list of options",
+        "character name",
+        "preselect character",
+        "crawl directory",
+        "init file name",
+        "Highscore list options:",
+        "Arena options:",
+        "Diagnostic options:",
+        "Miscellaneous options:",
+    };
+
+    for (unsigned int i = 0; i < ARRAYSZ(required_text); ++i)
+    {
+        if (help.find(required_text[i]) == string::npos)
+            fail("Command line help did not contain '%s'.", required_text[i]);
+    }
+    for (unsigned int i = 0; i < ARRAYSZ(required_options); ++i)
+    {
+        if (help.find(required_options[i]) == string::npos)
+        {
+            fail("Command line help did not preserve option '%s'.",
+                 required_options[i]);
+        }
+    }
+    for (unsigned int i = 0; i < ARRAYSZ(english_prose); ++i)
+    {
+        if (help.find(english_prose[i]) != string::npos)
+        {
+            fail("Command line help retained English prose '%s'.",
+                 english_prose[i]);
+        }
+    }
+    if (help.empty() || help[help.length() - 1] != '\n')
+        fail("Command line help did not end with a newline.");
 }
 
 static void _check_monster_full_names(const monster& mon,
@@ -481,6 +567,7 @@ void run_tests()
     _run_test("mon-spell", debug_monspells);
     _run_test("coordit", coordit_tests);
     _run_test("equip-slot-name", _equip_slot_name_tests);
+    _run_test("commandline-options-help", _commandline_options_help_tests);
     _run_test("monster-full-name-translation",
               _monster_full_name_translation_tests);
 #if defined(TARGET_OS_MACOSX)
