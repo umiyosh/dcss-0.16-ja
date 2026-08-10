@@ -245,7 +245,6 @@ static bool _is_public_key(string key)
      || key == "glyph"
      || key == "dbname"
      || key == "monster_tile"
-     || key == ORIGINAL_TYPE_KEY
 #ifdef USE_TILE
      || key == TILE_NUM_KEY
 #endif
@@ -477,6 +476,13 @@ monster_info::monster_info(const monster* m, int milev)
         for (const auto &entry : m->props)
             if (_is_public_key(entry.first))
                 props[entry.first] = entry.second;
+    }
+    if (m->props.exists(ORIGINAL_TYPE_KEY))
+    {
+        const monster_type original_type = static_cast<monster_type>(
+            m->props[ORIGINAL_TYPE_KEY].get_int());
+        if (mons_is_unique(original_type))
+            props[ORIGINAL_TYPE_KEY] = original_type;
     }
 
     // Translate references to tentacles into just their locations
