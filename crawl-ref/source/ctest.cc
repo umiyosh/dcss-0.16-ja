@@ -74,8 +74,6 @@ static vector<file_error> failures;
 
 typedef std::chrono::steady_clock test_clock;
 
-string commandline_options_help();
-
 static void _report_test_duration(const string &name,
                                   const test_clock::time_point &started)
 {
