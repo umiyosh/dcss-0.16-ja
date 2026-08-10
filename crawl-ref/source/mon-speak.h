@@ -6,6 +6,7 @@
 #ifndef MONSPEAK_H
 #define MONSPEAK_H
 
+string mons_speech_name(const monster* mons, bool use_base_name);
 void maybe_mons_speaks(monster* mons);
 bool mons_speaks(monster* mons);
 bool mons_speaks_msg(monster* mons, const string &msg,
