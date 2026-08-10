@@ -348,6 +348,7 @@ struct monster_info : public monster_info_base
 protected:
     string _core_name() const;
     string _core_name_en() const;
+    string _english_proper_name() const;
     string _base_name() const;
     string _apply_adjusted_description(description_level_type desc, const string& s) const;
     string _apply_adjusted_description_j(description_level_type desc, const string& s) const;

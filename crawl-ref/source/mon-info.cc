@@ -31,6 +31,7 @@
 #include "mon-book.h"
 #include "mon-chimera.h"
 #include "mon-death.h" // ELVEN_IS_ENERGIZED_KEY
+#include "mon-poly.h"
 #include "mon-tentacle.h"
 #include "options.h"
 #include "religion.h"
@@ -244,6 +245,7 @@ static bool _is_public_key(string key)
      || key == "glyph"
      || key == "dbname"
      || key == "monster_tile"
+     || key == ORIGINAL_TYPE_KEY
 #ifdef USE_TILE
      || key == TILE_NUM_KEY
 #endif
@@ -961,14 +963,14 @@ string monster_info::_core_name() const
     {
         if (mname == "apprentice") // apprentice kobold demonologist
             s = replace_all(s, "の", "の" + jtrans(mname));
-        else if(mname == "conjurer" || // conjurer statue
+        else if (mname == "conjurer" || // conjurer statue
                 mname == "fire elementalist" || // sprint_mu
                 mname == "water elementalist" ||
                 mname == "air elementalist" ||
                 mname == "earth elementalist" ||
                 mname == "zot")
             s = jtrans(mname) + "の" + s;
-        else if(mname == "giant") // giant anaconda
+        else if (mname == "giant") // giant anaconda
             s = "巨大" + s;
         else
             s = jtrans(mname) + s;
@@ -1389,12 +1391,29 @@ string monster_info::proper_name_en(description_level_type desc) const
     if (has_proper_name())
     {
         if (desc == DESC_ITS)
-            return apostrophise(mname);
+            return apostrophise(_english_proper_name());
         else
-            return mname;
+            return _english_proper_name();
     }
     else
         return common_name_en(desc);
+}
+
+string monster_info::_english_proper_name() const
+{
+    if (!props.exists(ORIGINAL_TYPE_KEY))
+        return mname;
+
+    const monster_type original_type = static_cast<monster_type>(
+        props[ORIGINAL_TYPE_KEY].get_int());
+    if (!mons_is_unique(original_type))
+        return mname;
+
+    string name = mons_type_name(original_type, DESC_PLAIN);
+    const string::size_type the_pos = name.find(" the ");
+    if (the_pos != string::npos)
+        name.erase(the_pos);
+    return name;
 }
 
 string monster_info::full_name(description_level_type desc, bool use_comma) const
@@ -1431,7 +1450,8 @@ string monster_info::full_name_en(description_level_type desc, bool use_comma) c
 
     if (has_proper_name())
     {
-        string s = mname + (use_comma ? ", the " : " the ") + common_name_en();
+        string s = _english_proper_name()
+                   + (use_comma ? ", the " : " the ") + common_name_en();
         if (desc == DESC_ITS)
             s = apostrophise(s);
         return s;
