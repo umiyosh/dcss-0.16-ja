@@ -31,6 +31,7 @@ local cases = {
   { "Sacrifice Nimbleness ability", "躱し身スキル" },
   { "Sacrifice Essence ability", "魔法防御の低下" },
   { "Sacrifice Purity ability", "道具による回復効果の低下" },
+  { "CMD_MAP_EXPLORE verbose", "自動探索が次に向かう場所" },
 }
 
 for _, case in ipairs(cases) do
@@ -39,3 +40,7 @@ for _, case in ipairs(cases) do
          "Japanese description not found for " .. case[1] ..
          ": " .. description)
 end
+
+local welcome = crawl.hint_string("welcome")
+assert(string.find(welcome, "伝説のゾットのオーブ", 1, true),
+       "Japanese hint not found for welcome: " .. welcome)

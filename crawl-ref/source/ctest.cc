@@ -124,6 +124,13 @@ static int crawl_long_description(lua_State *ls)
     return 1;
 }
 
+static int crawl_hint_string(lua_State *ls)
+{
+    const string hint = getHintString(luaL_checkstring(ls, 1));
+    lua_pushstring(ls, hint.c_str());
+    return 1;
+}
+
 static const struct luaL_reg crawl_test_lib[] =
 {
     { "begin_test", crawl_begin_test },
@@ -131,6 +138,7 @@ static const struct luaL_reg crawl_test_lib[] =
     { "script_args", crawl_script_args },
     { "string_width", crawl_string_width },
     { "long_description", crawl_long_description },
+    { "hint_string", crawl_hint_string },
     { nullptr, nullptr }
 };
 
