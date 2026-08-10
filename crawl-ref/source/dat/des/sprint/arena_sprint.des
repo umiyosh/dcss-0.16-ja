@@ -45,6 +45,17 @@ function arena_sprint_is_boss_round(round_id)
 end
 
 
+function arena_sprint_direction(index)
+    local directions = {
+        { key = "north", label = "北" },
+        { key = "east", label = "東" },
+        { key = "south", label = "南" },
+        { key = "west", label = "西" },
+    }
+    return directions[index]
+end
+
+
 function arena_sprint_spawn_enemies(data)
     local sp = dgn.find_marker_positions_by_prop(data.spawn_dir, 1)
     for _, pos in ipairs(sp) do
@@ -887,9 +898,11 @@ function thing_do_arena(data, triggerable, triggerer, marker, ev)
                 -- 50% chance of picking a specific direction to spawn from, else
                 -- spawn from all four directions.
                 if crawl.coinflip() then
-                    local directions = {"北", "東", "南", "西"}
-                    data.spawn_dir = directions[crawl.random2(#directions) + 1]
-                    crawl.mpr("あなたは" .. data.spawn_dir .. "の方向に気配を感じた。")
+                    local direction = arena_sprint_direction(
+                        crawl.random2(4) + 1)
+                    data.spawn_dir = direction.key
+                    crawl.mpr("あなたは" .. direction.label ..
+                              "の方向に気配を感じた。")
                 else
                     data.spawn_dir = "spawn_point"
                 end
