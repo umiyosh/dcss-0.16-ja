@@ -4715,6 +4715,94 @@ static bool _check_extra_opt(char* _opt)
     return true;
 }
 
+string commandline_options_help()
+{
+    string help =
+        "コマンドラインオプション:\n"
+        "  -help                 このオプション一覧を表示\n"
+        "  -name <string>        キャラクター名\n"
+        "  -species <arg>        種族を事前選択（文字、略称、名前）\n"
+        "  -background <arg>     職業を事前選択（文字、略称、名前）\n"
+        "  -dir <path>           Crawlディレクトリ\n"
+        "  -rc <file>            初期設定ファイル名\n"
+        "  -rcdir <dir>          読み込むrcファイルを含むディレクトリ\n"
+        "  -morgue <dir>         キャラクターダンプの保存先\n"
+        "  -macro <dir>          macro.txtの検索・保存先\n"
+        "  -version              Crawlのバージョンとコンパイル情報\n"
+        "  -save-version <name>  指定プレイヤーのセーブファイルバージョン\n"
+        "  -sprint               スプリントを選択\n"
+        "  -sprint-map <name>    スプリントマップを事前選択\n"
+        "  -tutorial             チュートリアルを選択\n";
+#ifdef WIZARD
+    help +=
+        "  -wizard               ウィザードモードを利用可能にする\n"
+        "  -explore              探索モードを利用可能にする\n";
+#endif
+#ifdef DGAMELAUNCH
+    help +=
+        "  -no-throttle          ユーザーLuaスクリプトの実行速度を制限しない\n";
+#else
+    help +=
+        "  -throttle             ユーザーLuaスクリプトの実行速度を制限する\n";
+#endif
+
+    help +=
+        "\n"
+        "コマンドラインオプションは初期設定ファイルより優先され、\n"
+        "初期設定ファイルは環境変数（CRAWL_NAME, CRAWL_DIR, CRAWL_RC）より"
+        "優先されます。\n"
+        "\n"
+        "  -extra-opt-first optname=optval\n"
+        "  -extra-opt-last  optname=optval\n"
+        "\n"
+        "初期設定ファイルの先頭または末尾に 'optname=optval' があるものとして"
+        "扱います。\n"
+        "複数回指定できます。\n"
+        "\n"
+        "ハイスコア一覧オプション（moreなどへリダイレクトできます）:\n"
+        "  -scores [N]            ハイスコア一覧\n"
+        "  -tscores [N]           簡易ハイスコア一覧\n"
+        "  -vscores [N]           詳細ハイスコア一覧\n"
+        "  -scorefile <filename>  表示対象のスコアファイル\n"
+        "\n"
+        "闘技場オプション（さまざまなモンスターによる大会を開催します）:\n"
+        "  -arena \"<monster list> v <monster list> arena:<arena map>\"\n";
+#ifdef DEBUG_DIAGNOSTICS
+    help +=
+        "\n"
+        "診断オプション:\n"
+        "  -test               test/big/を除くtest/内の全テストを実行\n"
+        "  -test foo,bar       テスト \"foo\" と \"bar\" のみ実行\n"
+        "  -test list          利用可能なテストを一覧表示\n"
+        "  -script <name>      ./scripts内の<name>に一致するスクリプトを実行\n";
+#endif
+#ifdef DEBUG_STATISTICS
+#ifndef DEBUG_DIAGNOSTICS
+    help += "\n診断オプション:\n";
+#endif
+    help +=
+        "  -mapstat [<levels>] 指定した階層範囲でマップ統計を実行\n"
+        "      既定ではダンジョン全体。階層範囲はdesのDEPTH構文に従います。\n"
+        "      例: '-mapstat D,Depths' と"
+        " '-mapstat Snake:1-4,Spider:1-4,Orc'\n"
+        "  -objstat [<levels>] 指定した階層範囲でモンスターとアイテムの統計を実行\n"
+        "      既定ではダンジョン全体。階層構文は-mapstatと同じです。\n"
+        "  -iters <num>        -mapstatと-objstatの反復回数を指定\n";
+#endif
+    help +=
+        "\n"
+        "その他のオプション:\n"
+        "  -dump-maps       .desファイル解析時にマップLuaをstderrへ出力\n";
+#ifndef TARGET_OS_WINDOWS
+    help +=
+        "  -gdb/-no-gdb     クラッシュ時にgdbバックトレースを生成（既定:有効）\n";
+#endif
+    help +=
+        "  -list-combos     プレイ可能な種族、職業、組み合わせを一覧表示\n";
+
+    return help;
+}
+
 bool parse_args(int argc, char **argv, bool rc_only)
 {
     COMPILE_CHECK(ARRAYSZ(cmd_ops) == CLO_NOPS);

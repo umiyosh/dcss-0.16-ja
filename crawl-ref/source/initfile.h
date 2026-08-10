@@ -68,6 +68,7 @@ public:
 
 extern system_environment SysEnv;
 
+string commandline_options_help();
 bool parse_args(int argc, char **argv, bool rc_only);
 
 struct newgame_def;

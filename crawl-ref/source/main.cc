@@ -491,89 +491,11 @@ NORETURN static void _launch_game()
 
 static void _show_commandline_options_help()
 {
+    const string help = commandline_options_help();
 #if defined(TARGET_OS_WINDOWS) && defined(USE_TILE_LOCAL)
-    string help;
-# define puts(x) (help += x, help += '\n')
-#endif
-
-    puts("Command line options:");
-    puts("  -help                 prints this list of options");
-    puts("  -name <string>        character name");
-    puts("  -species <arg>        preselect character species (by letter, abbreviation, or name)");
-    puts("  -background <arg>     preselect character background (by letter, abbreviation, or name)");
-    puts("  -dir <path>           crawl directory");
-    puts("  -rc <file>            init file name");
-    puts("  -rcdir <dir>          directory that contains (included) rc files");
-    puts("  -morgue <dir>         directory to save character dumps");
-    puts("  -macro <dir>          directory to save/find macro.txt");
-    puts("  -version              Crawl version (and compilation info)");
-    puts("  -save-version <name>  Save file version for the given player");
-    puts("  -sprint               select Sprint");
-    puts("  -sprint-map <name>    preselect a Sprint map");
-    puts("  -tutorial             select the Tutorial");
-#ifdef WIZARD
-    puts("  -wizard               allow access to wizard mode");
-    puts("  -explore              allow access to explore mode");
-#endif
-#ifdef DGAMELAUNCH
-    puts("  -no-throttle          disable throttling of user Lua scripts");
+    text_popup(help, L"Dungeon Crawl コマンドラインヘルプ");
 #else
-    puts("  -throttle             enable throttling of user Lua scripts");
-#endif
-
-    puts("");
-
-    puts("Command line options override init file options, which override");
-    puts("environment options (CRAWL_NAME, CRAWL_DIR, CRAWL_RC).");
-    puts("");
-    puts("  -extra-opt-first optname=optval");
-    puts("  -extra-opt-last  optname=optval");
-    puts("");
-    puts("Acts as if 'optname=optval' was at the top or bottom of the init");
-    puts("file.  Can be used multiple times.");
-    puts("");
-
-    puts("Highscore list options: (Can be redirected to more, etc.)");
-    puts("  -scores [N]            highscore list");
-    puts("  -tscores [N]           terse highscore list");
-    puts("  -vscores [N]           verbose highscore list");
-    puts("  -scorefile <filename>  scorefile to report on");
-    puts("");
-    puts("Arena options: (Stage a tournament between various monsters.)");
-    puts("  -arena \"<monster list> v <monster list> arena:<arena map>\"");
-#ifdef DEBUG_DIAGNOSTICS
-    puts("");
-    puts("Diagnostic options:");
-    puts("  -test               run all test cases in test/ except test/big/");
-    puts("  -test foo,bar       run only tests \"foo\" and \"bar\"");
-    puts("  -test list          list available tests");
-    puts("  -script <name>      run script matching <name> in ./scripts");
-#endif
-#ifdef DEBUG_STATISTICS
-#ifndef DEBUG_DIAGNOSTICS
-    puts("");
-    puts("Diagnostic options:");
-#endif
-    puts("  -mapstat [<levels>] run map stats on the given range of levels");
-    puts("      Defaults to entire dungeon; level ranges follow des DEPTH "
-         "syntax.");
-    puts("      Examples: '-mapstat D,Depths' and '-mapstat Snake:1-4,Spider:1-4,Orc'");
-    puts("  -objstat [<levels>] run monster and item stats on the given range "
-         "of levels");
-    puts("      Defaults to entire dungeon; same level syntax as -mapstat.");
-    puts("  -iters <num>        For -mapstat and -objstat, set the number of "
-         "iterations");
-#endif
-    puts("");
-    puts("Miscellaneous options:");
-    puts("  -dump-maps       write map Lua to stderr when parsing .des files");
-#ifndef TARGET_OS_WINDOWS
-    puts("  -gdb/-no-gdb     produce gdb backtrace when a crash happens (default:on)");
-#endif
-    puts("  -list-combos     list playable species, jobs, and character combos.");
-
-#if defined(TARGET_OS_WINDOWS) && defined(USE_TILE_LOCAL)
-    text_popup(help, L"Dungeon Crawl command line help");
+    fputs(help.c_str(), stdout);
 #endif
 }
 
