@@ -331,3 +331,51 @@ CMD_ZOOM_OUT verbose
 
 ダンジョン領域を縮小する。
 %%%%
+CMD_PRAY verbose
+
+あなたの神が犠牲を好むなら、死体や他のアイテムを捧げる。
+また、祭壇の上にいる場合は、その祭壇の神へ入信できる。
+いくつかの神は、信仰値が高い状態で祭壇に祈ると固有の贈り物を授ける。
+%%%%
+CMD_CHARACTER_DUMP
+
+キャラクターの進行状況をファイルへ出力
+%%%%
+CMD_CHARACTER_DUMP verbose
+
+キャラクターに関する膨大な情報をmorgueディレクトリ内の
+‘playername.txt’へ出力し、後から自由に読めるようにする。
+主な能力値、装備、呪文、スキル、記録などが含まれる。
+%%%%
+CMD_SAFE_WAIT
+
+安全な場合に1ターン待機
+%%%%
+CMD_SAFE_WAIT verbose
+
+視界内に敵対的な怪物がいない場合に限り、1ターン待機して休息する。
+%%%%
+CMD_LOOKUP_HELP
+
+情報を検索
+%%%%
+CMD_LOOKUP_HELP verbose
+
+怪物や呪文などの情報を検索する。
+%%%%
+CMD_MAP_EXPLORE
+
+次の自動探索の目標を検索
+%%%%
+CMD_MAP_EXPLORE verbose
+
+自動探索が次に向かう場所へマップカーソルを移動する。
+%%%%
+CMD_SHOW_KEYBOARD
+
+画面キーボードを表示
+%%%%
+CMD_SHOW_KEYBOARD verbose
+
+利用できる環境では、画面上のキーボードを表示する。
+%%%%

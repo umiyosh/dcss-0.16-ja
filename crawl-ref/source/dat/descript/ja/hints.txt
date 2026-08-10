@@ -12,3 +12,186 @@ death ranger melee
 あなたの持つ弓と矢は、距離をとってモンスターを攻撃することに便利だ。
 ダンジョンの中でそれらを発見したら、必ず確保しておけ！
 %%%%
+welcome
+
+<white>ダンジョンクロウルへようこそ！</white>
+
+あなたの目的は、<w>{{ return you.race() }} {{ return you.class()
+}}</w>をダンジョンの深奥へ無事に導き、伝説のゾットのオーブを手にして
+地上へ持ち帰ることです。とはいえ、最初は発見することを目標にしましょう。
+できる限り深く潜ってみてください。ただし、死は至る所に潜んでいます。
+
+今は、次のキーと機能だけを覚えてください。
+  <input>$cmd[CMD_DISPLAY_COMMANDS]?</input> — アイテムとコマンドを表示します
+  <input>$cmd[CMD_SAVE_GAME]</input>  — ゲームを保存し、後から再開できます
+（ただし、一度死ぬと生き返ることはできません）
+  <input>$cmd[CMD_LOOK_AROUND]</input>  — 周囲にあるものを調べます
+
+ヒントモードでは、文書を読まなくてもCrawlの遊び方を学べます。
+まだならチュートリアルを試してみてもよいでしょう。さらに詳しく知りたければ、
+docs/ディレクトリにある次の文書も参照できます（ゲーム内でも読めます）。
+  <lightblue>quickstart.txt</lightblue>     — Crawlのごく短い手引きです。
+  <lightblue>crawl_manual.txt</lightblue>   — 種族、魔法、スキルなどの
+詳細をすべて説明しています。
+  <lightblue>options_guide.txt</lightblue>  — Crawlの操作画面は幅広く
+変更できます。この文書ではすべての設定項目を説明しています。
+
+それでは、よき探索を！
+%%%%
+death conjurer melee
+
+妖術師の主な武器は攻撃魔法です。もっと頻繁に呪文を唱えましょう！
+魔力が少なくなったら休息することも忘れないでください。
+%%%%
+death berserker unberserked
+
+特に手強い敵と戦うときは、狂戦士化を忘れないでください。
+危険は伴いますが、より素早く頑強になります。
+{{
+    if you.hunger() < 3 then
+        return "ひどく空腹であるか、さらに飢えている間は狂戦士化できません。" ..
+               "いざという時に狂戦士化できるよう、常に十分な食事を取りましょう。"
+    end
+}}
+%%%%
+death random 0
+
+怪物と接近戦を始める前に、飛び道具、ワンド、呪文を使えないか
+必ず考えてみましょう。
+%%%%
+death random 1
+
+かなわない相手から逃げるべき時を学びましょう。これはとても重要です！
+ひときわ危険な階層を後回しにするのが賢明なこともあります。
+ただし、深く潜るほど怪物は強くなるため、後回しにしすぎてはいけません。
+%%%%
+death random 2
+
+戦いの合間には、できれば探索済みで怪物を一掃した場所で休息しましょう。
+<input>$cmd[CMD_REST]</input>を押す<localtiles>か、
+<input>ステータス欄をクリックする</input></localtiles>と、しばらく休息できます
+（100ターンが経過するか、完全に回復すると休息を終えます）。
+%%%%
+death random 3
+
+見つけた巻物、薬、ワンドを使うことも忘れないでください。
+鑑定の巻物だけですべてを鑑定できるとは限りません。工夫を凝らし、
+実際に使って正体を確かめることも覚えましょう。
+%%%%
+death random 4
+
+とても勝てそうにない相手と出会ったら、早めに緊急用のアイテムを使いましょう。
+テレポートの巻物やスピードの薬が、まさに命を救うこともあります。
+%%%%
+death random 5
+
+避けられるなら、二体以上の怪物と同時に戦ってはいけません。
+常に通路へ退き、一対一で戦わざるを得ないようにしましょう。
+%%%%
+finished
+
+おめでとうございます！ ヒントモードの最後まで生き延びました。
+ぜひ他のモードも試してみてください。これからはコマンドヘルプ画面
+（<input>$cmd[CMD_DISPLAY_COMMANDS]?</input>）の表示が大きく変わります。
+最後に、もう一つだけ冒険の助言を示します。
+%%%%
+finished explored
+
+自動探索（<input>$cmd[CMD_EXPLORE]</input>）を使えば、階層内の移動と探索が
+簡単になります。Crawlが自動で移動し、興味深いアイテムを拾います。<localtiles>
+
+ミニマップを<input>Ctrl-Leftclick</input>しても自動探索を始められます。</localtiles>
+%%%%
+finished travel
+
+離れたダンジョンの階層間を移動する便利な方法があります。
+<input>$cmd[CMD_INTERLEVEL_TRAVEL]</input>を押し、目的地を入力してください。
+移動が中断された場合は、<input>$cmd[CMD_INTERLEVEL_TRAVEL]
+Enter</input>を入力すると再開できます。
+%%%%
+finished stashes
+
+<input>$cmd[CMD_SEARCH_STASHES]</input>コマンドを使うと、ダンジョン内にある
+すべてのアイテムを検索できます。たとえば、
+<input>$cmd[CMD_SEARCH_STASHES]</input> <w>“dagger”</w>と入力すると、
+すべてのダガーが一覧表示され、いずれかの場所まで移動できます。
+<w>“shop”</w>や<w>“altar”</w>といった言葉を入力することもできます。
+%%%%
+finished random 0
+
+ゲームはキャラクターの冒険記録を自動で残します。
+<input>$cmd[CMD_DISPLAY_COMMANDS]:</input>で記録を読み、
+<input>$cmd[CMD_MAKE_NOTE]</input>コマンドで自分の記録も追加できます。
+キャラクターが死ぬと、<w>morgue/</w>ディレクトリに二つのmorgueファイルが
+残されます。.txtで終わるファイルには冒険記録の写しが含まれます。
+プレイ中は<input>$cmd[CMD_CHARACTER_DUMP]</input>でダンプファイルを作成できます。
+%%%%
+finished random 1
+
+Crawlにはマクロ機能があります。<input>~m</input>を押し、まず起動キー
+（たとえば<input>F1</input>）を指定してから、<input>za.</input>のような
+コマンド列を指定します。この例では、<input>F1</input>を押すたびに
+スロットaの呪文を最も近い怪物へ唱えます。マクロについて詳しく知るには、
+<input>$cmd[CMD_DISPLAY_COMMANDS]~</input>を入力してください。
+%%%%
+finished random 2
+
+操作画面は幅広く変更できます。すべての設定項目は<w>docs</w>ディレクトリの
+<w>options_guide.txt</w>で説明されています。設定自体は<w>init.txt</w>か
+<w>.crawlrc</w>に記述します。どちらのファイルも見つからなければ、
+Crawlが警告します。
+%%%%
+finished random 3
+
+freenode（<w>irc.freenode.net</w>）の<w>##crawl</w> IRC
+（Internet Relay Chat）チャンネルでは、他のCrawlプレイヤーに
+助言や手助けを求められます。
+%%%%
+dissection reminder
+
+その死体を食べないなら、祈り（<input>$cmd[CMD_PRAY]</input>）を捧げ、
+{{ return you.god() }}への犠牲にすることも考えてみましょう。
+<localtiles>所持品タイルの床部分に表示された死体は、
+<input>left mouse button</input>でクリックして解体することもできます。
+</localtiles>ヒントモードで死体を調べるたびに、この情報を読み返せます。
+%%%%
+HINT_CONVERT Xom
+
+あなたは<w>ゾム</w>を信仰したばかりです。ゾムを楽しませておけば
+喜ばせることができます。この神を退屈させることだけは絶対に避けてください！
+
+ゾムを楽しませ続ければ、あなたを慰みものとして扱い、気まぐれに助けたり
+傷つけたりします。さもなければ、気に入らない慰みものとして扱うでしょう。
+%%%%
+HINT_CONVERT
+
+#
+# Not the case for Chei, but not sure if we need to go into that much
+# detail here.
+#
+あなたは<w>{{ return you.god() }}</w>を信仰したばかりです。
+信仰値（神の恩寵）は時とともに徐々に減少し、尽きれば{{ return
+you.god() }}はあなたを破門して罰します。しかし、{{ return you.god() }}が
+喜ぶ行いをすればこれを防ぎ、能力や神からの贈り物を授かるに足る信仰値を
+得ることもできます。慌てる必要はありません。初めから十分な信仰値があり、
+破門される危険はまだ遠い先のことです。
+
+<input>$cmd[CMD_DISPLAY_RELIGION]</input>を入力すると、神の好みや嫌いな行い、
+現在の信仰状況、授かった能力を確認できます<localtiles>（自分の姿を
+<input>Shift-right-click</input>することでも確認できます）</localtiles>。
+%%%%
+HINT_SEEN_FIRST_OBJECT
+
+その<console>$1 </console>はアイテムです。そこへ移動して
+<input>$cmd[CMD_PICKUP]</input>を押すと拾えます。<console>通常、アイテムは
+<w>%?!"=()[</w>のような英字以外の記号で表示されます。</console><tiles>
+アイテムのある場所に立ち、<input>left mouse button</input>でクリックしても
+拾えます。</tiles>また、いくつかの種類のアイテムは通常、自動で拾われます。
+<tiles>そのようなアイテムは緑色の枠で囲まれます。</tiles>
+
+所持品へ入れたアイテムは、<tiles><input>Shift-leftclick</input>で</tiles>
+<console><input>$cmd[CMD_DROP]</input>で</console>再び床へ置けます。
+<tiles>アイテムを<input>right-click</input>して調べると</tiles><console>
+所持品（<input>$cmd[CMD_DISPLAY_INVENTORY]</input>）のアイテムを調べると</console>、
+その性質と説明を読むことができます。
+%%%%
