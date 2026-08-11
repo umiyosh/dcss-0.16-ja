@@ -1562,9 +1562,10 @@ void init_feat_desc_cache()
     for (int i = 0; i < NUM_FEATURES; i++)
     {
         dungeon_feature_type feat = static_cast<dungeon_feature_type>(i);
-        string               desc = feature_description(feat);
+        string               desc = feature_description_en(feat);
 
         lowercase(desc);
+        strip_suffix(desc, ".");
         if (!feat_desc_cache.count(desc))
             feat_desc_cache[desc] = feat;
     }
@@ -1573,9 +1574,7 @@ void init_feat_desc_cache()
 dungeon_feature_type feat_by_desc(string desc)
 {
     lowercase(desc);
-
-    if (desc[desc.size() - 1] != '.')
-        desc += ".";
+    strip_suffix(desc, ".");
 
     return lookup(feat_desc_cache, desc, DNGN_UNSEEN);
 }

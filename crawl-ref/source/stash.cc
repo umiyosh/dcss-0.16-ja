@@ -593,6 +593,29 @@ string Stash::feature_description() const
     return feat_desc;
 }
 
+static bool _stash_feature_matches(const string &feature_name,
+                                   dungeon_feature_type feature,
+                                   trap_type trap,
+                                   const base_pattern &search)
+{
+    if (!feature_name.empty() && search.matches(feature_name))
+        return true;
+
+    const string feature_name_en = feature_description_en(
+        feature, trap, "", DESC_A, false);
+    return !feature_name_en.empty() && search.matches(feature_name_en);
+}
+
+#ifdef DEBUG_TESTS
+bool stash_feature_test_matches(const string &feature_name,
+                                dungeon_feature_type feature,
+                                trap_type trap,
+                                const base_pattern &search)
+{
+    return _stash_feature_matches(feature_name, feature, trap, search);
+}
+#endif
+
 bool Stash::matches_search(const string &prefix,
                            const base_pattern &search,
                            stash_search_result &res) const
@@ -631,7 +654,7 @@ bool Stash::matches_search(const string &prefix,
     if (!res.matches && feat != DNGN_FLOOR)
     {
         const string fdesc = feature_description();
-        if (!fdesc.empty() && search.matches(fdesc))
+        if (_stash_feature_matches(fdesc, feat, trap, search))
         {
             res.match = fdesc;
             res.matches = 1;
