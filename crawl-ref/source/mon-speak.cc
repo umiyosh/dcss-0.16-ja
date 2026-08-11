@@ -27,6 +27,12 @@
 #include "stringutil.h"
 #include "view.h"
 
+string mons_speech_name(const monster* mons, bool use_base_name)
+{
+    return use_base_name ? mons->base_name_en(DESC_PLAIN, true)
+                         : mons->name_en(DESC_PLAIN, true);
+}
+
 // Try the exact key lookup along with the entire prefix list.
 // If that fails, start ignoring hostile/religion/branch/silence, in that order,
 // first skipping hostile, then hostile *and* religion, then hostile, religion
@@ -620,14 +626,14 @@ bool mons_speaks(monster* mons)
         // old speech?
         if (!mons->mname.empty() && mons->can_speak() && msg.empty())
         {
-            msg = _get_speak_string(prefixes, mons->name(DESC_PLAIN),
+            msg = _get_speak_string(prefixes, mons_speech_name(mons, false),
                                     mons, no_player, no_foe, no_foe_name,
                                     no_god, unseen);
         }
 
         if (msg.empty())
         {
-            msg = _get_speak_string(prefixes, mons->base_name(DESC_PLAIN),
+            msg = _get_speak_string(prefixes, mons_speech_name(mons, true),
                                     mons, no_player, no_foe, no_foe_name,
                                     no_god, unseen);
         }

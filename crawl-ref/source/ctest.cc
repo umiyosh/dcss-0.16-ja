@@ -37,6 +37,7 @@
 #include "mon-info.h"
 #include "mon-pick.h"
 #include "mon-poly.h"
+#include "mon-speak.h"
 #include "mon-util.h"
 #include "monster.h"
 #include "ng-init.h"
@@ -395,6 +396,20 @@ static void _monster_full_name_translation_tests()
                               jtrans("centaur") + "『Durwent』");
 }
 
+static void _monster_speech_name_tests()
+{
+    monster aizul;
+    aizul.type = MONS_AIZUL;
+
+    const string key = mons_speech_name(&aizul, false);
+    if (key != "Aizul")
+    {
+        fail("Aizul speech key was '%s', expected 'Aizul'.", key.c_str());
+    }
+    if (getSpeakString(key).empty())
+        fail("Aizul speech key did not resolve in the speech database.");
+}
+
 #if defined(TARGET_OS_MACOSX)
 static string _macos_default_data_dir()
 {
@@ -568,6 +583,7 @@ void run_tests()
     _run_test("commandline-options-help", _commandline_options_help_tests);
     _run_test("monster-full-name-translation",
               _monster_full_name_translation_tests);
+    _run_test("monster-speech-name", _monster_speech_name_tests);
 #if defined(TARGET_OS_MACOSX)
     _run_test("macos-crawl-dir", _macos_crawl_dir_tests);
 #endif
