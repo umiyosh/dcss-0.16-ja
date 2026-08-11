@@ -35,6 +35,7 @@
 #include "mon-info.h"
 #include "mon-tentacle.h"
 #include "output.h"
+#include "pattern.h"
 #include "prompt.h"
 #include "religion.h"
 #include "skills.h"
@@ -42,6 +43,7 @@
 #include "spl-book.h"
 #include "spl-util.h"
 #include "terrain.h"
+#include "unicode.h"
 #ifdef USE_TILE
 #include "tilepick.h"
 #include "tileview.h"
@@ -56,6 +58,7 @@ typedef void (*db_keys_recap)(vector<string>&);
 typedef MenuEntry* (*menu_entry_generator)(char letter, const string &str,
                                            string &key);
 typedef function<int (const string &, const string &, string)> key_describer;
+typedef string (*localized_key_name)(const string &key);
 
 /// A set of optional functionality for lookup types.
 enum lookup_type_flag
@@ -81,11 +84,13 @@ public:
                db_find_filter _filter_forbid, keys_by_glyph _glyph_fetch,
                simple_key_list _simple_key_fetch,
                menu_entry_generator _menu_gen, key_describer _describer,
-               lookup_type_flags _flags)
+               lookup_type_flags _flags,
+               localized_key_name _localized_name = nullptr)
     : symbol(_symbol), type(_type), display_label(_display_label),
       filter_forbid(_filter_forbid), flags(_flags),
       simple_key_fetch(_simple_key_fetch), glyph_fetch(_glyph_fetch),
-      recap(_recap), menu_gen(_menu_gen), describer(_describer)
+      recap(_recap), menu_gen(_menu_gen), describer(_describer),
+      localized_name(_localized_name)
     {
         // XXX: will crash at startup; compile-time would be better
         // also, ugh
@@ -145,6 +150,8 @@ private:
     menu_entry_generator menu_gen;
     /// A function to handle describing & interacting with a given key.
     key_describer describer;
+    /// A function returning the localized display name for a database key.
+    localized_key_name localized_name;
 };
 
 
@@ -268,6 +275,7 @@ static vector<string> _get_desc_keys(string regex, db_find_filter filter)
     // Merge key_matches and body_matches, discarding duplicates.
     vector<string> tmp = key_matches;
     tmp.insert(tmp.end(), body_matches.begin(), body_matches.end());
+
     sort(tmp.begin(), tmp.end());
     vector<string> all_matches;
     for (unsigned int i = 0, size = tmp.size(); i < size; i++)
@@ -275,6 +283,29 @@ static vector<string> _get_desc_keys(string regex, db_find_filter filter)
             all_matches.push_back(tmp[i]);
 
     return all_matches;
+}
+
+static void _add_localized_matches(const string &regex,
+                                   db_find_filter filter,
+                                   localized_key_name localized_name,
+                                   vector<string> &matches)
+{
+    if (!localized_name)
+        return;
+
+    const text_pattern pattern(regex, true);
+    if (!pattern.valid())
+        return;
+
+    const vector<string> all_keys = _get_desc_keys(".*", filter);
+    for (const string &key : all_keys)
+    {
+        if (pattern.matches(localized_name(key)))
+            matches.push_back(key);
+    }
+
+    sort(matches.begin(), matches.end());
+    matches.erase(unique(matches.begin(), matches.end()), matches.end());
 }
 
 static vector<string> _get_monster_keys(ucs_t showchar)
@@ -424,6 +455,20 @@ static bool _ability_filter(string key, string body)
         return false;
 
     return true;
+}
+
+static bool _cloud_filter(string key, string /*body*/)
+{
+    lowercase(key);
+    if (!strip_suffix(key, "cloud"))
+        return true;
+    trim_string(key);
+    return cloud_name_to_type(key) == NUM_CLOUD_TYPES;
+}
+
+static bool _status_filter(string key, string /*body*/)
+{
+    return !strip_suffix(lowercase(key), " status");
 }
 
 
@@ -609,7 +654,9 @@ static MenuEntry* _monster_menu_gen(char letter, const string &str,
 static MenuEntry* _feature_menu_gen(char letter, const string &str, string &key)
 {
     const dungeon_feature_type feat = feat_by_desc(str);
-    MenuEntry* me = new FeatureMenuEntry(str, feat, letter);
+    const string title = str + "/" + feature_description(
+        feat, NUM_TRAPS, "", DESC_A, false);
+    MenuEntry* me = new FeatureMenuEntry(title, feat, letter);
     me->data = &key;
 
 #ifdef USE_TILE
@@ -622,6 +669,13 @@ static MenuEntry* _feature_menu_gen(char letter, const string &str, string &key)
 #endif
 
     return me;
+}
+
+static string _feature_name_j(const string &key)
+{
+    const dungeon_feature_type feat = feat_by_desc(key);
+    return feat == DNGN_UNSEEN ? "" : feature_description(
+        feat, NUM_TRAPS, "", DESC_A, false);
 }
 
 /**
@@ -693,6 +747,8 @@ static MenuEntry* _cloud_menu_gen(char letter, const string &str, string &key)
     const cloud_type cloud = cloud_name_to_type(cloud_name);
     ASSERT(cloud != NUM_CLOUD_TYPES);
 
+    me->text += "/" + cloud_type_name_j(cloud);
+
     cloud_struct fake_cloud;
     fake_cloud.type = cloud;
     fake_cloud.decay = 1000;
@@ -706,6 +762,28 @@ static MenuEntry* _cloud_menu_gen(char letter, const string &str, string &key)
     me->add_tile(tile_def(idx, TEX_DEFAULT));
 #endif
 
+    return me;
+}
+
+static string _cloud_name_j(const string &key)
+{
+    string cloud_name = lowercase_string(key);
+    strip_suffix(cloud_name, " cloud");
+    const cloud_type cloud = cloud_name_to_type(cloud_name);
+    return cloud == NUM_CLOUD_TYPES ? "" : cloud_type_name_j(cloud);
+}
+
+static string _status_name_j(const string &key)
+{
+    string status_name = key;
+    strip_suffix(status_name, " status");
+    return tagged_jtrans("[dur]", status_name);
+}
+
+static MenuEntry* _status_menu_gen(char letter, const string &str, string &key)
+{
+    MenuEntry* me = _simple_menu_gen(letter, str, key);
+    me->text += "/" + _status_name_j(str);
     return me;
 }
 
@@ -748,7 +826,10 @@ vector<string> LookupType::matching_keys(string regex) const
     else if (regex.size() == 1 && supports_glyph_lookup())
         key_list = glyph_fetch(regex[0]);
     else
+    {
         key_list = _get_desc_keys(regex, filter_forbid);
+        _add_localized_matches(regex, filter_forbid, localized_name, key_list);
+    }
 
     if (recap != nullptr)
         (*recap)(key_list);
@@ -875,8 +956,23 @@ int LookupType::describe(const string &key, bool exact_match) const
  * @param extra_info    Extra info to append to the database description.
  * @return              The keypress the user made to exit.
  */
+static string _bilingual_title(const string &title_ja,
+                               const string &title_en, int columns)
+{
+    if (title_ja.empty() || title_ja == title_en)
+        return title_en;
+    if (strwidth(title_ja) + strwidth(title_en) + 2 > columns)
+        return title_ja;
+
+    const int spacer_width = columns - strwidth(title_ja)
+                                      - strwidth(title_en) - 1;
+    return title_ja + string(spacer_width, ' ') + title_en;
+}
+
 static int _describe_key(const string &key, const string &suffix,
-                         string footer, const string &extra_info)
+                         string footer, const string &extra_info,
+                         const string &force_title_ja = "",
+                         const string &force_title_en = "")
 {
     describe_info inf;
     inf.quote = getQuoteString(key);
@@ -886,14 +982,14 @@ static int _describe_key(const string &key, const string &suffix,
 
     inf.body << desc << extra_info;
 
-    string title = key;
-    if (ends_with(title, suffix))
-        title.erase(title.length() - suffix.length());
-    title = uppercase_first(title);
+    string title_en = force_title_en.empty() ? key : force_title_en;
+    strip_suffix(title_en, suffix);
+    title_en = uppercase_first(title_en);
+    const string title_ja = force_title_ja;
     linebreak_string(footer, width - 1);
 
     inf.footer = footer;
-    inf.title  = title;
+    inf.title = _bilingual_title(title_ja, title_en, get_number_of_cols());
 
 #ifdef USE_TILE_WEB
     tiles_crt_control show_as_menu(CRT_MENU, "description");
@@ -915,6 +1011,12 @@ static int _describe_generic(const string &key, const string &suffix,
                              string footer)
 {
     return _describe_key(key, suffix, footer, "");
+}
+
+static int _describe_feature(const string &key, const string &suffix,
+                             string footer)
+{
+    return _describe_key(key, suffix, footer, "", _feature_name_j(key));
 }
 
 /**
@@ -1002,7 +1104,14 @@ static int _describe_cloud(const string &key, const string &suffix,
         "\n" + jtrans("This cloud is opaque; one tile will not block vision, but "
                       "multiple will.")
         : "";
-    return _describe_key(key, suffix, footer, extra_info);
+    return _describe_key(key, suffix, footer, extra_info,
+                         cloud_type_name_j(cloud));
+}
+
+static int _describe_status(const string &key, const string &suffix,
+                            string footer)
+{
+    return _describe_key(key, suffix, footer, "", _status_name_j(key));
 }
 
 
@@ -1116,8 +1225,8 @@ static const vector<LookupType> lookup_types = {
     LookupType('F', "feature", "feature lookup",
                _recap_feat_keys, _feature_filter,
                nullptr, nullptr, _feature_menu_gen,
-               _describe_generic,
-               LTYPF_SUPPORT_TILES),
+               _describe_feature,
+               LTYPF_SUPPORT_TILES, _feature_name_j),
     LookupType('G', "god", "god lookup", nullptr, nullptr,
                nullptr, _get_god_keys, _god_menu_gen,
                _describe_god,
@@ -1126,10 +1235,14 @@ static const vector<LookupType> lookup_types = {
                nullptr, _get_branch_keys, _simple_menu_gen,
                _describe_generic,
                LTYPF_DISABLE_SORT),
-    LookupType('L', "cloud", "cloud lookup", nullptr, nullptr,
+    LookupType('L', "cloud", "cloud lookup", nullptr, _cloud_filter,
                nullptr, _get_cloud_keys, _cloud_menu_gen,
                _describe_cloud,
-               LTYPF_DB_SUFFIX | LTYPF_SUPPORT_TILES),
+               LTYPF_DB_SUFFIX | LTYPF_SUPPORT_TILES, _cloud_name_j),
+    LookupType('T', "status", "status lookup", nullptr, _status_filter,
+               nullptr, nullptr, _status_menu_gen,
+               _describe_status,
+               LTYPF_DB_SUFFIX, _status_name_j),
 };
 
 /**
@@ -1144,6 +1257,23 @@ static map<char, const LookupType*> _build_lookup_type_map()
 }
 static const map<char, const LookupType*> _lookup_types_by_symbol
     = _build_lookup_type_map();
+
+#ifdef DEBUG_TESTS
+vector<string> lookup_help_test_matching_keys(char symbol,
+                                              const string &regex)
+{
+    const LookupType * const *lookup = map_find(_lookup_types_by_symbol,
+                                                toupper(symbol));
+    return lookup ? (*lookup)->matching_keys(regex) : vector<string>();
+}
+
+string lookup_help_test_bilingual_title(const string &title_ja,
+                                        const string &title_en,
+                                        int columns)
+{
+    return _bilingual_title(title_ja, title_en, columns);
+}
+#endif
 
 /**
  * Prompt the player for a search string for the given lookup type.

@@ -91,6 +91,10 @@ cloud lookup
 
 雲
 %%%%
+status lookup
+
+ステータス
+%%%%
 %s is blasted by your radiant heat.
 
 %sはあなたの放つ熱で吹き飛ばされた。

@@ -17,6 +17,13 @@ class reader;
 class writer;
 class StashMenu;
 
+#ifdef DEBUG_TESTS
+bool stash_feature_test_matches(const string &feature_name,
+                                dungeon_feature_type feature,
+                                trap_type trap,
+                                const base_pattern &search);
+#endif
+
 struct stash_search_result;
 class Stash
 {

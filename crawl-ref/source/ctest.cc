@@ -25,6 +25,7 @@
 #include "cluautil.h"
 #include "coordit.h"
 #include "database.h"
+#include "directn.h"
 #include "dlua.h"
 #include "end.h"
 #include "errors.h"
@@ -32,6 +33,7 @@
 #include "initfile.h"
 #include "japanese.h"
 #include "libutil.h"
+#include "lookup_help.h"
 #include "maps.h"
 #include "message.h"
 #include "mon-info.h"
@@ -43,8 +45,11 @@
 #include "ng-init.h"
 #include "options.h"
 #include "output.h"
+#include "pattern.h"
 #include "state.h"
+#include "stash.h"
 #include "stringutil.h"
+#include "terrain.h"
 #include "unicode.h"
 #include "unwind.h"
 #include "version.h"
@@ -410,6 +415,74 @@ static void _monster_speech_name_tests()
         fail("Aizul speech key did not resolve in the speech database.");
 }
 
+static bool _same_keys(vector<string> lhs, vector<string> rhs)
+{
+    sort(lhs.begin(), lhs.end());
+    sort(rhs.begin(), rhs.end());
+    return lhs == rhs;
+}
+
+static void _bilingual_lookup_tests()
+{
+    init_feat_desc_cache();
+
+    const vector<string> altar_en
+        = lookup_help_test_matching_keys('F', "altar");
+    const vector<string> altar_ja
+        = lookup_help_test_matching_keys('F', "祭壇");
+    if (altar_en.empty() || !_same_keys(altar_en, altar_ja))
+    {
+        fail("Feature lookup differed: English [%s], Japanese [%s].",
+             comma_separated_line(altar_en.begin(), altar_en.end()).c_str(),
+             comma_separated_line(altar_ja.begin(), altar_ja.end()).c_str());
+    }
+
+    const vector<string> cloud_en
+        = lookup_help_test_matching_keys('L', "poison");
+    const vector<string> cloud_ja
+        = lookup_help_test_matching_keys('L', "猛毒");
+    if (cloud_en.empty() || !_same_keys(cloud_en, cloud_ja))
+    {
+        fail("Cloud lookup differed: English [%s], Japanese [%s].",
+             comma_separated_line(cloud_en.begin(), cloud_en.end()).c_str(),
+             comma_separated_line(cloud_ja.begin(), cloud_ja.end()).c_str());
+    }
+
+    const vector<string> status_en
+        = lookup_help_test_matching_keys('T', "Pois");
+    const vector<string> status_ja
+        = lookup_help_test_matching_keys('T', "毒");
+    if (status_en.empty() || !_same_keys(status_en, status_ja))
+    {
+        fail("Status lookup differed: English [%s], Japanese [%s].",
+             comma_separated_line(status_en.begin(), status_en.end()).c_str(),
+             comma_separated_line(status_ja.begin(), status_ja.end()).c_str());
+    }
+
+    const string title_ja = "『キクバークッグァ』の古代の骨で造られた祭壇";
+    const string title_en = "An ancient bone altar of Kikubaaqudgha";
+    if (lookup_help_test_bilingual_title(title_ja, title_en, 40) != title_ja)
+        fail("A narrow lookup title did not fall back to Japanese only.");
+    if (lookup_help_test_bilingual_title(title_ja, title_en, 100)
+        .find(title_en) == string::npos)
+    {
+        fail("A wide lookup title did not retain the English title.");
+    }
+
+    const string altar_name = feature_description(DNGN_ALTAR_ZIN, NUM_TRAPS,
+                                                   "", DESC_A, false);
+    if (!stash_feature_test_matches(altar_name, DNGN_ALTAR_ZIN, NUM_TRAPS,
+                                    text_pattern("altar", true)))
+    {
+        fail("Stash feature search did not match an English altar name.");
+    }
+    if (!stash_feature_test_matches(altar_name, DNGN_ALTAR_ZIN, NUM_TRAPS,
+                                    text_pattern("祭壇")))
+    {
+        fail("Stash feature search did not match a Japanese altar name.");
+    }
+}
+
 #if defined(TARGET_OS_MACOSX)
 static string _macos_default_data_dir()
 {
@@ -584,6 +657,7 @@ void run_tests()
     _run_test("monster-full-name-translation",
               _monster_full_name_translation_tests);
     _run_test("monster-speech-name", _monster_speech_name_tests);
+    _run_test("bilingual-lookup", _bilingual_lookup_tests);
 #if defined(TARGET_OS_MACOSX)
     _run_test("macos-crawl-dir", _macos_crawl_dir_tests);
 #endif
