@@ -51,8 +51,8 @@ Apple の公証 (notarization) を受けているため、ダブルクリック�
 ## ソースからビルドする
 
 ```bash
-git -c url."https://github.com/".insteadOf=git://github.com/ \
-    submodule update --init crawl-ref/source/contrib/lua crawl-ref/source/contrib/sqlite
+git submodule sync --recursive
+git submodule update --init crawl-ref/source/contrib/lua crawl-ref/source/contrib/sqlite
 make -C crawl-ref/source TILES=y -j6
 ```
 

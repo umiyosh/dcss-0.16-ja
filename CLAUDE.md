@@ -38,11 +38,11 @@ make -C crawl-ref/source nondebugtest    # 非debugビルド向け（-test は�
    `SDKROOT` を自分で指定したいときは環境変数か make 変数で渡せば尊重される。
 
 2. **submodule が要るのは lua と sqlite の 2 つだけ** — この 2 つは今も contrib の
-   submodule からビルドする。`.gitmodules` の URL は 11 件すべて `git://github.com/...` で、
-   GitHub はこのプロトコルを廃止済みなので insteadOf が要る:
+   submodule からビルドする。既存 checkout では `.gitmodules` の HTTPS URL を
+   `.git/config` に同期してから初期化する:
 
    ```bash
-   git config --global url."https://github.com/".insteadOf git://github.com/
+   git submodule sync --recursive
    git submodule update --init crawl-ref/source/contrib/lua crawl-ref/source/contrib/sqlite
    ```
 
